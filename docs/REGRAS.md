@@ -59,9 +59,11 @@ As funções com menos gente habilitada são preenchidas primeiro.
 | Encontro de Vida - Dmg Manhã | Domingo | 9h |
 | Encontro de Vida - Dmg Noite | Domingo | 18h30 |
 
+## Cadastro
+
+- Igreja: **Igreja Nasci Pra Deus**.
+- Nomes unificados na importação: "Marco" → **Marcos**; "Márcio Conti" → **Márcio**.
+
 ## Pendências para confirmar
 
-- "Marco" e "Marcos" são a mesma pessoa?
-- "Márcio" e "Márcio Conti" são a mesma pessoa?
-- Nome oficial da igreja (hoje está como "Igreja (piloto)").
 - Coordenadores e funções de Projeção e Iluminação.

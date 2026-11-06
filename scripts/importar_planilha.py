@@ -33,8 +33,14 @@ from pathlib import Path
 import openpyxl
 
 NS = uuid.UUID("7d5c1a52-4b8e-4f0e-9a51-6f1d3c2b9e10")
-IGREJA_SLUG = "igreja-piloto"
-IGREJA_NOME = "Igreja (piloto)"  # troque pelo nome real
+IGREJA_SLUG = "nasci-pra-deus"
+IGREJA_NOME = "Igreja Nasci Pra Deus"
+
+# Grafias diferentes da mesma pessoa na planilha -> nome oficial
+NOMES_UNIFICADOS = {
+    "Marco": "Marcos",
+    "Márcio Conti": "Márcio",
+}
 COORDENADOR_TRANSMISSAO = "Luciano"
 
 FUNCOES_TRANSMISSAO = {  # coluna -> (nome, ordem)
@@ -69,7 +75,8 @@ def q(v) -> str:
 
 
 def limpar(v) -> str:
-    return str(v).strip() if v is not None else ""
+    texto = str(v).strip() if v is not None else ""
+    return NOMES_UNIFICADOS.get(texto, texto)
 
 
 def hora_de(v) -> str | None:

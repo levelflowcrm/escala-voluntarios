@@ -3,7 +3,7 @@
 ## Etapa 0 – Base
 - [x] Projeto Next.js + Supabase
 - [x] Estrutura do banco com regras e segurança (RLS)
-- [x] Importação da planilha (jul–out/2026: 35 pessoas, 73 eventos, 195 escalações)
+- [x] Importação da planilha (jul–out/2026: 33 pessoas, 73 eventos, 195 escalações)
 - [x] Motor de sugestão automática com testes
 - [ ] Projeto no Supabase criado e migrações aplicadas
 - [ ] Login (Google + link mágico por e-mail)
