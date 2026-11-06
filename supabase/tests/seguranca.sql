@@ -68,3 +68,37 @@ select set_config('request.jwt.claim.sub', '', false);
 -- Limpeza
 update pessoas set auth_user_id = null where nome = 'Josy';
 delete from igrejas where slug = 'outra';
+
+-- 4) Vincular conta pelo e-mail no primeiro login
+update pessoas set email = 'Thamires@Exemplo.com' where nome = 'Thamires';
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000c003', false);
+select set_config('request.jwt.claims', '{"email":"thamires@exemplo.com"}', false);
+do $$
+declare p uuid; n int;
+begin
+  p := vincular_conta();
+  if p is null or p <> (select id from pessoas where nome = 'Thamires') then
+    raise exception 'FALHOU: não vinculou a conta da Thamires';
+  end if;
+  if vincular_conta() <> p then raise exception 'FALHOU: segunda chamada mudou o vínculo'; end if;
+  select count(*) into n from escalas where pessoa_id = p;
+  if n = 0 then raise exception 'FALHOU: Thamires não vê as próprias escalas'; end if;
+  raise notice 'Vincular conta por e-mail: OK';
+end $$;
+
+-- E-mail não cadastrado não vincula nem enxerga nada
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000d004', false);
+select set_config('request.jwt.claims', '{"email":"desconhecido@exemplo.com"}', false);
+do $$
+declare n int;
+begin
+  if vincular_conta() is not null then raise exception 'FALHOU: vinculou e-mail desconhecido'; end if;
+  select count(*) into n from pessoas;
+  if n > 0 then raise exception 'FALHOU: e-mail desconhecido vê % pessoas', n; end if;
+  raise notice 'E-mail não cadastrado: sem acesso OK';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+select set_config('request.jwt.claims', '', false);
+update pessoas set email = null, auth_user_id = null where nome = 'Thamires';
