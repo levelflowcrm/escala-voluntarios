@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { fmtMes, limitesMes, mesAtual, mesValido, somarMes } from "@/lib/datas";
+import { limitesMes, mesAtual, mesValido } from "@/lib/datas";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { Grade, type EventoGrade } from "./grade";
+import { type EventoGrade } from "./grade";
+import { TelaMontar } from "./tela";
 
 export default async function Montar({ searchParams }: { searchParams: Promise<{ min?: string; mes?: string }> }) {
   const params = await searchParams;
@@ -103,49 +103,14 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
     };
   });
 
-  const link = (m: string, min = ministerio.id) => `/montar?min=${min}&mes=${m}`;
-
   return (
-    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-5 px-4 py-8">
-      <header className="flex flex-col gap-3">
-        <Link href="/" className="text-sm text-neutral-500">
-          ← Minhas escalas
-        </Link>
-        <h1 className="text-2xl font-semibold">Montar escala</h1>
-        {ministerios.length > 1 && (
-          <nav className="flex flex-wrap gap-2">
-            {ministerios.map((m) => (
-              <Link
-                key={m.id}
-                href={link(mes, m.id)}
-                className={`rounded-full px-3 py-1.5 text-sm ${m.id === ministerio.id ? "bg-violet-600 text-white" : "border border-neutral-300 dark:border-neutral-700"}`}
-              >
-                {m.nome}
-              </Link>
-            ))}
-          </nav>
-        )}
-        <div className="flex items-center justify-between rounded-xl border border-neutral-200 p-2 dark:border-neutral-800">
-          <Link href={link(somarMes(mes, -1))} className="px-3 py-1 text-lg" aria-label="Mês anterior">
-            ‹
-          </Link>
-          <p className="font-medium capitalize">
-            {ministerio.nome} · {fmtMes.format(new Date(`${mes}-15T12:00:00-03:00`))}
-          </p>
-          <Link href={link(somarMes(mes, 1))} className="px-3 py-1 text-lg" aria-label="Próximo mês">
-            ›
-          </Link>
-        </div>
-      </header>
-
-      {funcaoIds.length === 0 ? (
-        <p className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
-          {ministerio.nome} ainda não tem funções cadastradas. Assim que as funções e quem opera cada uma forem definidas,
-          a escala pode ser montada aqui.
-        </p>
-      ) : (
-        <Grade ministerioId={ministerio.id} mes={mes} eventos={grade} aptos={aptos} />
-      )}
-    </main>
+    <TelaMontar
+      ministerios={ministerios}
+      ministerio={ministerio}
+      mes={mes}
+      temFuncoes={funcaoIds.length > 0}
+      grade={grade}
+      aptos={aptos}
+    />
   );
 }
