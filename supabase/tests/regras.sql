@@ -69,16 +69,15 @@ end $$;
 
 -- Segurança: voluntário só responde a própria escala
 do $$
-declare p uuid; u uuid := gen_random_uuid(); outra uuid; minha uuid;
+declare p uuid; u uuid := gen_random_uuid(); outra uuid;
 begin
   select id into p from pessoas where nome = 'Josy';
   update pessoas set auth_user_id = u where id = p;
   perform set_config('request.jwt.claim.sub', u::text, true);
 
-  select id into minha from escalas where pessoa_id = p limit 1;
   select id into outra from escalas where pessoa_id <> p limit 1;
 
-  perform responder_escala(minha, 'confirmado');
+  -- (confirmar a própria escala é testado em seguranca.sql, com evento futuro)
   begin
     perform responder_escala(outra, 'recusado');
     raise exception 'FALHOU: respondeu escala de outra pessoa';
