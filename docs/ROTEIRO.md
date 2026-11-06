@@ -5,7 +5,7 @@
 - [x] Estrutura do banco com regras e segurança (RLS)
 - [x] Importação da planilha (jul–out/2026: 33 pessoas, 73 eventos, 195 escalações)
 - [x] Motor de sugestão automática com testes
-- [ ] Projeto no Supabase criado e migrações aplicadas
+- [x] Projeto no Supabase criado e banco aplicado (33 pessoas, 73 eventos, 195 escalações)
 - [ ] Login (Google + link mágico por e-mail)
 - [ ] Publicação na Vercel
 
