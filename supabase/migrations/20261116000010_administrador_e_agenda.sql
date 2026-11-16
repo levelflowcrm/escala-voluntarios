@@ -106,7 +106,7 @@ begin
   end if;
 end $$;
 
--- Luciano Oliveira: administrador master (quando já estiver cadastrado)
+-- Criador do app (Luciano Oliveira): administrador master, fora do time de voluntários
 insert into administradores (pessoa_id, master)
-select id, true from pessoas where nome_completo = 'Luciano Oliveira'
+select id, true from pessoas where email = 'levelflowcrm@gmail.com'
 on conflict (pessoa_id) do update set master = true;
