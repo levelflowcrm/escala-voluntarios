@@ -10,7 +10,8 @@ export default async function Inicio() {
   if (!pessoaId) redirect("/sem-cadastro");
 
   const agora = new Date().toISOString();
-  const [{ data: pessoa }, { data: coordenador }, { data: futuras }, { data: passadas }] = await Promise.all([
+  const quinzeDias = new Date(Date.now() - 14 * 86_400_000).toISOString();
+  const [{ data: pessoa }, { data: coordenador }, { data: futuras }, { data: passadas }, { data: avisos }] = await Promise.all([
     supabase.from("pessoas").select("nome").eq("id", pessoaId).single(),
     supabase.rpc("sou_coordenador_algum"),
     supabase
@@ -28,6 +29,12 @@ export default async function Inicio() {
       .lt("eventos.inicio", agora)
       .order("inicio", { referencedTable: "eventos", ascending: false })
       .limit(5),
+    supabase
+      .from("comunicados")
+      .select("id, titulo, texto, ministerios!inner(nome)")
+      .gte("criado_em", quinzeDias)
+      .order("criado_em", { ascending: false })
+      .limit(2),
   ]);
 
   // A ordenação por tabela relacionada não ordena as linhas principais; ordena aqui.
@@ -37,6 +44,17 @@ export default async function Inicio() {
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
 
   return (
-    <TelaInicio nome={pessoa?.nome ?? ""} coordenador={!!coordenador} proximas={proximas} historico={historico} />
+    <TelaInicio
+      nome={pessoa?.nome ?? ""}
+      coordenador={!!coordenador}
+      proximas={proximas}
+      historico={historico}
+      avisos={(avisos ?? []).map((a) => ({
+        id: a.id,
+        titulo: a.titulo,
+        texto: a.texto,
+        ministerio: (a.ministerios as unknown as { nome: string }).nome,
+      }))}
+    />
   );
 }

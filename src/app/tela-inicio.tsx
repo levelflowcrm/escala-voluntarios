@@ -33,11 +33,13 @@ export function TelaInicio({
   coordenador,
   proximas,
   historico,
+  avisos = [],
 }: {
   nome: string;
   coordenador: boolean;
   proximas: Linha[];
   historico: Linha[];
+  avisos?: { id: string; titulo: string; texto: string; ministerio: string }[];
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
 
@@ -109,7 +111,26 @@ export function TelaInicio({
         >
           Vagas abertas
         </Link>
+        <Link
+          href="/comunicados"
+          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+        >
+          Comunicados
+        </Link>
       </nav>
+
+      {avisos.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-neutral-500">Comunicados</h2>
+          {avisos.map((a) => (
+            <Link key={a.id} href="/comunicados" className="rounded-xl bg-violet-50 p-4 dark:bg-violet-950/40">
+              <p className="font-medium">{a.titulo}</p>
+              <p className="line-clamp-2 text-sm text-neutral-600 dark:text-neutral-300">{a.texto}</p>
+              <p className="mt-1 text-xs text-neutral-500">{a.ministerio}</p>
+            </Link>
+          ))}
+        </section>
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Minhas próximas escalas</h2>
