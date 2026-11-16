@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { validarNovoVoluntario } from "@/lib/voluntario";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -52,4 +53,27 @@ export async function definirHabilidade(pessoaId: string, funcaoId: string, nive
   revalidatePath("/voluntarios");
   if (error || !data?.length) return { erro: "Sem permissão para alterar as habilidades" };
   return { erro: null };
+}
+
+export type DadosNovoVoluntario = { nome: string; email: string; celular: string; ministerio: string; funcoes: string[] };
+
+/**
+ * Cadastra um voluntário no ministério (e marca as funções escolhidas como "apto").
+ * A função do banco confere se quem chama coordena o ministério.
+ */
+export async function adicionarVoluntario(d: DadosNovoVoluntario): Promise<{ erro: string | null; nome?: string; jaExistia?: boolean }> {
+  const v = validarNovoVoluntario(d);
+  if (v.erro !== null) return { erro: v.erro };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc("adicionar_voluntario", {
+    p_nome: v.nome,
+    p_email: v.email,
+    p_celular: v.celular,
+    p_ministerio: d.ministerio,
+    p_funcoes: d.funcoes,
+  });
+  if (error) return { erro: error.message };
+  revalidatePath("/voluntarios");
+  const linha = (Array.isArray(data) ? data[0] : data) as { ja_existia?: boolean } | null;
+  return { erro: null, nome: v.nome, jaExistia: !!linha?.ja_existia };
 }

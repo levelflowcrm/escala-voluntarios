@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { salvarEmail, type NivelHab } from "./acoes";
 import { Habilidades, type AreaFuncoes } from "./habilidades";
+import { NovoVoluntario } from "./novo";
 
 export type Voluntario = { id: string; nome: string; email: string; conectado: boolean };
 
@@ -91,6 +92,7 @@ export function TelaVoluntarios({
         Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir). No primeiro login com esse e-mail, a pessoa é vinculada à escala
         automaticamente. {conectados} de {voluntarios.length} já entraram.
       </p>
+      <NovoVoluntario areas={areas} />
       <input
         placeholder="Buscar pelo nome"
         value={busca}
