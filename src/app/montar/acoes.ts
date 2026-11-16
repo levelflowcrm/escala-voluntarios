@@ -133,7 +133,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
     .map((m) => m.pessoa_id);
   const desde = new Date(new Date(inicio).getTime() - 90 * DIA_MS).toISOString();
 
-  const [{ data: escalasMes }, { data: habs }, { data: indisp }, { data: bloq }, { data: anteriores }] =
+  const [{ data: escalasMes }, { data: habs }, { data: indisp }, { data: bloq }, { data: anteriores }, { data: prefs }] =
     await Promise.all([
       supabase.from("escalas").select("evento_id, ministerio_id, funcao_id, pessoa_id, papel").in("evento_id", eventosIds).in("status", ATIVOS),
       supabase.from("habilitacoes").select("pessoa_id, funcao_id").eq("nivel", "apto").in("funcao_id", funcoes.map((f) => f.id)),
@@ -146,6 +146,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
         .in("status", ATIVOS)
         .gte("eventos.inicio", desde)
         .lt("eventos.inicio", inicio),
+      supabase.from("preferencias").select("pessoa_id, limite_mensal").in("pessoa_id", pessoaIds),
     ]);
 
   // Eventos que entram: futuros, não são reunião geral e não têm responsável do dia neste ministério
@@ -166,6 +167,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
       .filter((i) => i.pessoa_id === id)
       .map((i) => ({ diaSemana: i.dia_semana, periodo: i.periodo, ordemNoMes: i.ordem_no_mes })),
     bloqueios: (bloq ?? []).filter((b) => b.pessoa_id === id).map((b) => ({ inicio: b.inicio, fim: b.fim })),
+    limitePorMes: (prefs ?? []).find((p) => p.pessoa_id === id)?.limite_mensal ?? null,
     historico: (anteriores ?? [])
       .filter((a) => a.pessoa_id === id)
       .map((a) => (a.eventos as unknown as { inicio: string }).inicio),

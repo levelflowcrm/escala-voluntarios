@@ -64,3 +64,16 @@ export async function removerBloqueio(id: string): Promise<Resultado> {
   revalidatePath("/disponibilidade");
   return { erro: error?.message ?? null };
 }
+
+export async function salvarPreferencias(limite: number | null, observacao: string): Promise<{ erro: string | null }> {
+  if (limite !== null && (!Number.isInteger(limite) || limite < 1 || limite > 10)) return { erro: "Limite inválido" };
+  const nota = observacao.trim().slice(0, 200);
+  const supabase = await criarClienteServidor();
+  const { data: eu } = await supabase.rpc("minha_pessoa");
+  if (!eu) return { erro: "Cadastro não encontrado" };
+  const { error } = await supabase
+    .from("preferencias")
+    .upsert({ pessoa_id: eu, limite_mensal: limite, observacao: nota || null, atualizado_em: new Date().toISOString() });
+  revalidatePath("/disponibilidade");
+  return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
+}

@@ -51,6 +51,8 @@ export interface VoluntarioEntrada {
   funcoesAptas: string[];
   indisponibilidades?: Indisponibilidade[];
   bloqueios?: Bloqueio[];
+  /** Preferência da pessoa: máximo de serviços por mês (nulo = sem limite) */
+  limitePorMes?: number | null;
   /** Datas/horas de serviços já realizados ou já escalados fora desta sugestão */
   historico?: (string | Date)[];
 }
@@ -173,7 +175,8 @@ export function sugerirEscala(
         if (noEvento.has(v.id)) return false;
         if (indisponivel(v, d) || bloqueado(v, d)) return false;
         const noMes = servicos.get(v.id)!.filter((s) => s.mes === d.mes).length;
-        if (opcoes.limitePorMes != null && noMes >= opcoes.limitePorMes) return false;
+        const limite = Math.min(opcoes.limitePorMes ?? Infinity, v.limitePorMes ?? Infinity);
+        if (noMes >= limite) return false;
         return true;
       });
 
