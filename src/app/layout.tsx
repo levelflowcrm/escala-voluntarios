@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escala de Voluntários",
+  title: "Culto360",
   description: "Escalas, confirmações e cuidado com os voluntários da igreja",
 };
 
