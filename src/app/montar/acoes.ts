@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { CORES } from "@/lib/cores-evento";
 import { diasDaSemanaNoMes, FUSO, inicioNoFuso, limitesMes, mesValido } from "@/lib/datas";
 import { sugerirEscala, type VoluntarioEntrada } from "@/lib/escala/sugerir";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -252,12 +253,14 @@ export async function criarEvento(
   dia: string,
   hora: string,
   convocacaoGeral: boolean,
+  cor = "",
 ): Promise<Resultado> {
   const nome = titulo.trim();
   if (!nome) return { erro: "Dê um nome ao evento" };
   if (nome.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || Number.isNaN(Date.parse(`${dia}T12:00:00Z`))) return { erro: "Data inválida" };
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return { erro: "Horário inválido" };
+  if (cor && !CORES[cor]) return { erro: "Cor inválida" };
 
   const supabase = await criarClienteServidor();
   const { data: igrejaId } = await supabase.rpc("minha_igreja");
@@ -268,9 +271,20 @@ export async function criarEvento(
 
   const { error } = await supabase
     .from("eventos")
-    .insert({ igreja_id: igrejaId, titulo: nome, inicio, convocacao_geral: convocacaoGeral });
+    .insert({ igreja_id: igrejaId, titulo: nome, inicio, convocacao_geral: convocacaoGeral, cor: cor || null });
   revalidatePath("/montar");
   return error ? { erro: traduzirErro(error) } : { erro: null, aviso: "Evento criado. Ele aparece no mês correspondente." };
+}
+
+/** Define (ou limpa, com "") a cor de um culto/evento de escala. Só coordenador (a RLS barra os demais). */
+export async function definirCorEvento(eventoId: string, cor: string): Promise<Resultado> {
+  if (cor && !CORES[cor]) return { erro: "Cor inválida" };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("eventos").update({ cor: cor || null }).eq("id", eventoId).eq("so_agenda", false).select("id");
+  revalidatePath("/montar");
+  revalidatePath("/");
+  if (error || !data?.length) return { erro: "Sem permissão para alterar a cor desse evento" };
+  return { erro: null };
 }
 
 /** "Criar automático": cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */

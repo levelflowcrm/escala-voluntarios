@@ -4,7 +4,7 @@ import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
 import { limitesMes, mesAtual } from "@/lib/datas";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
-const CAMPOS = "id, papel, status, motivo, eventos!inner(titulo, inicio), funcoes(nome), ministerios(nome)";
+const CAMPOS = "id, papel, status, motivo, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
 
 export default async function Inicio() {
   const supabase = await criarClienteServidor();

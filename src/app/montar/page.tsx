@@ -20,7 +20,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
 
   const [{ data: funcoes }, { data: eventos }, { data: membros }] = await Promise.all([
     supabase.from("funcoes").select("id, nome").eq("ministerio_id", ministerio.id).eq("ativo", true).order("ordem"),
-    supabase.from("eventos").select("id, titulo, inicio, convocacao_geral, intensivo").eq("so_agenda", false).gte("inicio", inicio).lt("inicio", fim).order("inicio"),
+    supabase.from("eventos").select("id, titulo, inicio, convocacao_geral, intensivo, cor").eq("so_agenda", false).gte("inicio", inicio).lt("inicio", fim).order("inicio"),
     supabase
       .from("membros_ministerio")
       .select("pessoa_id, pessoas!inner(nome, ativo)")
@@ -75,6 +75,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
       id: e.id,
       titulo: e.titulo,
       inicio: e.inicio,
+      cor: e.cor ?? null,
       passado: new Date(e.inicio).getTime() < agora,
       reuniao: e.convocacao_geral,
       situacao: !publicada.has(e.id) ? "vazio" : publicada.get(e.id) ? "publicada" : "rascunho",
