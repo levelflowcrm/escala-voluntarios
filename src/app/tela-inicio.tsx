@@ -75,6 +75,7 @@ export function TelaInicio({
           )}
         </div>
         <form action={sair}>
+          <Link href="/perfil" className="mr-3 text-sm text-neutral-500 underline">Perfil</Link>
           <button className="text-sm text-neutral-500 underline">Sair</button>
         </form>
       </header>
