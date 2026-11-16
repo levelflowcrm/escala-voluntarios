@@ -57,6 +57,10 @@ export default async function Inicio() {
     .eq("status", "confirmado")
     .gte("eventos.inicio", iniMes)
     .lt("eventos.inicio", fimMes);
+  const [{ data: vagas }, { data: trocas }] = await Promise.all([supabase.rpc("vagas_abertas"), supabase.rpc("minhas_trocas")]);
+  const vagasParaMim = (vagas ?? []).length;
+  const trocasRecebidas = ((trocas ?? []) as { direcao: string }[]).filter((t) => t.direcao === "recebida").length;
+
   const servidasNoMes = doMes?.length ?? 0;
 
   // Coordenador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
@@ -104,6 +108,8 @@ export default async function Inicio() {
       historico={historico}
       novosComunicados={novos ?? 0}
       servidasNoMes={servidasNoMes}
+      vagasParaMim={vagasParaMim}
+      trocasRecebidas={trocasRecebidas}
       pendencias={pendencias}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,

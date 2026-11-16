@@ -40,6 +40,8 @@ export function TelaInicio({
   novosComunicados = 0,
   servidasNoMes = 0,
   pendencias = null,
+  vagasParaMim = 0,
+  trocasRecebidas = 0,
 }: {
   nome: string;
   coordenador: boolean;
@@ -49,6 +51,8 @@ export function TelaInicio({
   novosComunicados?: number;
   servidasNoMes?: number;
   pendencias?: Pendencias | null;
+  vagasParaMim?: number;
+  trocasRecebidas?: number;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
   const proximo = proximas.find((e) => e.status !== "recusado");
@@ -72,6 +76,11 @@ export function TelaInicio({
           <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${s.classe}`}>{s.texto}</span>
         </div>
         {comResposta && <Resposta escalaId={e.id} status={e.status} />}
+        {comResposta && e.papel === "titular" && e.funcoes && (e.status === "pendente" || e.status === "confirmado") && (
+          <Link href={`/trocas/nova/${e.id}`} className="mt-2 inline-block text-sm text-violet-700 underline dark:text-violet-300">
+            Pedir troca a um colega
+          </Link>
+        )}
       </article>
     );
   };
@@ -165,6 +174,21 @@ export function TelaInicio({
             </div>
           ) : (
             <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
+          )}
+        </section>
+      )}
+
+      {(trocasRecebidas > 0 || vagasParaMim > 0) && (
+        <section className="flex flex-col gap-2">
+          {trocasRecebidas > 0 && (
+            <Link href="/trocas" className="rounded-xl bg-violet-50 px-4 py-3 text-sm dark:bg-violet-950/40">
+              🔁 {trocasRecebidas === 1 ? "Um colega pediu" : `${trocasRecebidas} colegas pediram`} para você cobrir uma escala. <strong>Responder</strong>
+            </Link>
+          )}
+          {vagasParaMim > 0 && (
+            <Link href="/vagas" className="rounded-xl bg-amber-50 px-4 py-3 text-sm dark:bg-amber-950/40">
+              🙋 {vagasParaMim === 1 ? "Há 1 vaga aberta" : `Há ${vagasParaMim} vagas abertas`} que você pode assumir. <strong>Ver vagas</strong>
+            </Link>
           )}
         </section>
       )}
