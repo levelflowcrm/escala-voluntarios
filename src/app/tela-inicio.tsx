@@ -2,7 +2,9 @@ import Link from "next/link";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
+import { IconeSugestoes, IconeTermometro } from "./icones-topo";
 import { Sino } from "./sino";
+import type { Pendencias } from "@/lib/pendencias";
 
 const PAPEL: Record<string, string> = {
   titular: "",
@@ -36,6 +38,8 @@ export function TelaInicio({
   historico,
   avisos = [],
   novosComunicados = 0,
+  servidasNoMes = 0,
+  pendencias = null,
 }: {
   nome: string;
   coordenador: boolean;
@@ -43,6 +47,8 @@ export function TelaInicio({
   historico: Linha[];
   avisos?: { id: string; titulo: string; texto: string; ministerio: string }[];
   novosComunicados?: number;
+  servidasNoMes?: number;
+  pendencias?: Pendencias | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
   const proximo = proximas.find((e) => e.status !== "recusado");
@@ -82,8 +88,12 @@ export function TelaInicio({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <Sino novos={novosComunicados} />
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            {coordenador && <IconeTermometro />}
+            <IconeSugestoes />
+            <Sino novos={novosComunicados} />
+          </div>
           <form action={sair} className="flex items-center gap-3">
             <Link href="/perfil" className="text-sm text-neutral-500 underline">Perfil</Link>
             <button className="text-sm text-neutral-500 underline">Sair</button>
@@ -108,14 +118,6 @@ export function TelaInicio({
             Voluntários
           </Link>
         )}
-        {coordenador && (
-          <Link
-            href="/termometro"
-            className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
-          >
-            Termômetro
-          </Link>
-        )}
         <Link
           href="/disponibilidade"
           className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
@@ -127,12 +129,6 @@ export function TelaInicio({
           className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
         >
           Vagas abertas
-        </Link>
-        <Link
-          href="/sugestoes"
-          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
-        >
-          Sugestões
         </Link>
       </nav>
 
@@ -157,6 +153,11 @@ export function TelaInicio({
               </>
             )}
           </p>
+          {proximo.status !== "pendente" && (
+            <a href={`/agenda/${proximo.id}`} className="self-start rounded-full bg-white/20 px-3 py-1.5 text-xs font-medium">
+              📅 Adicionar à agenda
+            </a>
+          )}
           {proximo.status === "pendente" ? (
             <div className="rounded-xl bg-white p-3 text-neutral-900">
               <p className="mb-1 text-sm font-medium">Falta você confirmar:</p>
@@ -165,6 +166,33 @@ export function TelaInicio({
           ) : (
             <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
           )}
+        </section>
+      )}
+
+      {servidasNoMes > 0 && (
+        <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+          🙌 Você serviu <strong>{servidasNoMes}</strong> {servidasNoMes === 1 ? "vez" : "vezes"} neste mês. Obrigado!
+        </p>
+      )}
+
+      {pendencias && (pendencias.vagasAbertas.length > 0 || pendencias.semResposta.length > 0) && (
+        <section className="flex flex-col gap-2 rounded-2xl border border-amber-300 p-4 dark:border-amber-800">
+          <div className="flex items-center justify-between">
+            <h2 className="font-medium">Pendências do time</h2>
+            <Link href="/montar" className="text-sm text-violet-700 underline dark:text-violet-300">Resolver</Link>
+          </div>
+          {pendencias.vagasAbertas.map((v) => (
+            <p key={`${v.eventoId}${v.funcao}`} className="text-sm">
+              <strong>Vaga aberta:</strong> {v.funcao} · <span className="capitalize">{fmtDataHora.format(new Date(v.inicio))}</span>
+              <span className="text-neutral-500"> ({v.recusou} não pode{v.motivo ? `: ${v.motivo}` : ""})</span>
+            </p>
+          ))}
+          {pendencias.semResposta.map((r) => (
+            <p key={r.id} className="text-sm">
+              <strong>Sem resposta:</strong> {r.pessoa} · {r.funcao} ·{" "}
+              <span className="capitalize">{fmtDataHora.format(new Date(r.inicio))}</span>
+            </p>
+          ))}
         </section>
       )}
 

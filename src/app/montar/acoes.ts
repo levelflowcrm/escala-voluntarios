@@ -230,3 +230,30 @@ export async function publicar(ministerioId: string, mes: string): Promise<Resul
   if (error) return { erro: traduzirErro(error) };
   return { erro: null, aviso: data.length ? `${data.length} eventos publicados.` : "Já estava tudo publicado." };
 }
+
+/** Cria um evento avulso (conferência, ensaio especial, reunião...). Só coordenador (a RLS barra os demais). */
+export async function criarEvento(
+  titulo: string,
+  dia: string,
+  hora: string,
+  convocacaoGeral: boolean,
+): Promise<Resultado> {
+  const nome = titulo.trim();
+  if (!nome) return { erro: "Dê um nome ao evento" };
+  if (nome.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || Number.isNaN(Date.parse(`${dia}T12:00:00Z`))) return { erro: "Data inválida" };
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return { erro: "Horário inválido" };
+
+  const supabase = await criarClienteServidor();
+  const { data: igrejaId } = await supabase.rpc("minha_igreja");
+  if (!igrejaId) return { erro: "Cadastro não encontrado" };
+  const inicio = inicioNoFuso(dia, hora);
+  const { data: existente } = await supabase.from("eventos").select("id").eq("titulo", nome).eq("inicio", inicio).maybeSingle();
+  if (existente) return { erro: "Esse evento já existe nesse dia e horário." };
+
+  const { error } = await supabase
+    .from("eventos")
+    .insert({ igreja_id: igrejaId, titulo: nome, inicio, convocacao_geral: convocacaoGeral });
+  revalidatePath("/montar");
+  return error ? { erro: traduzirErro(error) } : { erro: null, aviso: "Evento criado. Ele aparece no mês correspondente." };
+}
