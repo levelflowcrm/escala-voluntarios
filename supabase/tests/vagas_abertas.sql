@@ -65,7 +65,8 @@ begin
     if sqlerrm like 'FALHOU%' then raise; end if;
   end;
 
-  -- Limpeza
+  -- Limpeza (volta a ser o servidor, sem usuário logado)
+  perform set_config('request.jwt.claim.sub', '', true);
   update pessoas set auth_user_id = null where id in (a, b, c);
   delete from eventos where id = ev;
   raise notice 'Vagas abertas: OK';

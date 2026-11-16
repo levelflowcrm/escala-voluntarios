@@ -85,6 +85,7 @@ begin
     if sqlerrm like 'FALHOU%' then raise; end if;
   end;
 
+  perform set_config('request.jwt.claim.sub', '', true);
   update pessoas set auth_user_id = null where id = p;
   raise notice 'Resposta de escala: OK';
 end $$;

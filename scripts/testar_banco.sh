@@ -20,4 +20,5 @@ $PSQL -f supabase/tests/regras.sql
 $PSQL -f supabase/tests/seguranca.sql
 $PSQL -f supabase/tests/vagas_abertas.sql
 $PSQL -f supabase/tests/comunicados.sql
+$PSQL -f supabase/tests/protege_pessoas.sql
 echo "OK: migrações, seed e testes passaram"
