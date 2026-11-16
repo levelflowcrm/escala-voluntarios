@@ -30,3 +30,14 @@ export async function apagar(id: string): Promise<{ erro: string | null }> {
   atualizar();
   return { erro: null };
 }
+
+/** Zera o sininho: marca que a pessoa viu os comunicados até agora. */
+export async function marcarVistos(): Promise<void> {
+  const supabase = await criarClienteServidor();
+  const { data: eu } = await supabase.rpc("minha_pessoa");
+  if (!eu) return;
+  await supabase
+    .from("leituras_comunicados")
+    .upsert({ pessoa_id: eu, visto_em: new Date().toISOString() }, { onConflict: "pessoa_id" });
+  revalidatePath("/");
+}

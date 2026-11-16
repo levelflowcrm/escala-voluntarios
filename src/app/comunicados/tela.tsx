@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
-import { apagar, publicar } from "./acoes";
+import { apagar, marcarVistos, publicar } from "./acoes";
 
 export type Comunicado = { id: string; titulo: string; texto: string; criadoEm: string; ministerio: string; autor: string };
 
@@ -51,10 +51,16 @@ function Formulario({ ministerios }: { ministerios: { id: string; nome: string }
 export function TelaComunicados({
   comunicados,
   ministerios,
+  vistoEm,
 }: {
   comunicados: Comunicado[];
   ministerios: { id: string; nome: string }[];
+  vistoEm: string | null;
 }) {
+  // Ao abrir a tela, o sininho da tela inicial zera; o "Novo" abaixo usa a visita anterior.
+  useEffect(() => {
+    void marcarVistos();
+  }, []);
   const [pendente, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   return (
@@ -65,7 +71,12 @@ export function TelaComunicados({
       {comunicados.length === 0 && <p className="text-neutral-500">Nenhum comunicado por enquanto.</p>}
       {comunicados.map((c) => (
         <article key={c.id} className="flex flex-col gap-1 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-          <p className="font-medium">{c.titulo}</p>
+          <p className="font-medium">
+            {c.titulo}
+            {vistoEm && c.criadoEm > vistoEm && (
+              <span className="ml-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">Novo</span>
+            )}
+          </p>
           <p className="whitespace-pre-line">{c.texto}</p>
           <p className="text-xs text-neutral-500">
             {c.ministerio}{c.autor && ` · ${c.autor}`} · {fmtDataHora.format(new Date(c.criadoEm))}

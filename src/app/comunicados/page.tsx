@@ -7,7 +7,7 @@ export default async function Comunicados() {
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const [{ data: lista }, { data: meus }] = await Promise.all([
+  const [{ data: lista }, { data: meus }, { data: leitura }] = await Promise.all([
     supabase
       .from("comunicados")
       .select("id, titulo, texto, criado_em, ministerios!inner(nome), pessoas(nome)")
@@ -18,6 +18,7 @@ export default async function Comunicados() {
       .select("ministerio_id, ministerios!inner(nome)")
       .eq("pessoa_id", eu)
       .eq("papel", "coordenador"),
+    supabase.from("leituras_comunicados").select("visto_em").eq("pessoa_id", eu).maybeSingle(),
   ]);
 
   const comunicados: Comunicado[] = (lista ?? []).map((c) => ({
@@ -32,5 +33,5 @@ export default async function Comunicados() {
     id: m.ministerio_id as string,
     nome: (m.ministerios as unknown as { nome: string }).nome,
   }));
-  return <TelaComunicados comunicados={comunicados} ministerios={ministerios} />;
+  return <TelaComunicados comunicados={comunicados} ministerios={ministerios} vistoEm={leitura?.visto_em ?? new Date(Date.now() - 14 * 86_400_000).toISOString()} />;
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { fmtDataHora } from "@/lib/datas";
+import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
+import { Sino } from "./sino";
 
 const PAPEL: Record<string, string> = {
   titular: "",
@@ -34,14 +35,19 @@ export function TelaInicio({
   proximas,
   historico,
   avisos = [],
+  novosComunicados = 0,
 }: {
   nome: string;
   coordenador: boolean;
   proximas: Linha[];
   historico: Linha[];
   avisos?: { id: string; titulo: string; texto: string; ministerio: string }[];
+  novosComunicados?: number;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
+  const proximo = proximas.find((e) => e.status !== "recusado");
+  const faltam = proximo ? diasAte(proximo.eventos.inicio) : 0;
+  const quando = faltam <= 0 ? "Hoje" : faltam === 1 ? "Amanhã" : `Em ${faltam} dias`;
 
   const cartao = (e: Linha, comResposta: boolean) => {
     const s = STATUS[e.status];
@@ -76,10 +82,13 @@ export function TelaInicio({
             </p>
           )}
         </div>
-        <form action={sair}>
-          <Link href="/perfil" className="mr-3 text-sm text-neutral-500 underline">Perfil</Link>
-          <button className="text-sm text-neutral-500 underline">Sair</button>
-        </form>
+        <div className="flex items-center gap-3">
+          <Sino novos={novosComunicados} />
+          <form action={sair} className="flex items-center gap-3">
+            <Link href="/perfil" className="text-sm text-neutral-500 underline">Perfil</Link>
+            <button className="text-sm text-neutral-500 underline">Sair</button>
+          </form>
+        </div>
       </header>
 
       <nav className="flex flex-wrap gap-2">
@@ -120,18 +129,44 @@ export function TelaInicio({
           Vagas abertas
         </Link>
         <Link
-          href="/comunicados"
-          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
-        >
-          Comunicados
-        </Link>
-        <Link
           href="/sugestoes"
           className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
         >
           Sugestões
         </Link>
       </nav>
+
+      {proximo && (
+        <section className="flex flex-col gap-3 rounded-2xl bg-violet-600 p-5 text-white">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium text-violet-100">Próximo evento</h2>
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-xs font-semibold">{quando}</span>
+          </div>
+          <div>
+            <p className="text-lg font-semibold">{proximo.eventos.titulo}</p>
+            <p className="text-violet-100">{fmtDataHora.format(new Date(proximo.eventos.inicio))}</p>
+          </div>
+          <p className="rounded-xl bg-white/15 px-3 py-2 text-sm">
+            {proximo.papel === "responsavel_dia" ? (
+              <>Você é o <strong>responsável do dia</strong> em <strong>{proximo.ministerios?.nome}</strong></>
+            ) : (
+              <>
+                Você serve nesse dia em <strong>{proximo.funcoes?.nome ?? proximo.ministerios?.nome}</strong>
+                {proximo.funcoes && proximo.ministerios && <> · {proximo.ministerios.nome}</>}
+                {PAPEL[proximo.papel] && ` (${PAPEL[proximo.papel]})`}
+              </>
+            )}
+          </p>
+          {proximo.status === "pendente" ? (
+            <div className="rounded-xl bg-white p-3 text-neutral-900">
+              <p className="mb-1 text-sm font-medium">Falta você confirmar:</p>
+              <Resposta escalaId={proximo.id} status={proximo.status} />
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
+          )}
+        </section>
+      )}
 
       {avisos.length > 0 && (
         <section className="flex flex-col gap-2">
