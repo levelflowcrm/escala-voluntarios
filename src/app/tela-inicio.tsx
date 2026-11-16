@@ -2,7 +2,7 @@ import Link from "next/link";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeAgenda, IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { IconeAgenda, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 
@@ -34,6 +34,7 @@ export type Linha = {
 export function TelaInicio({
   nome,
   coordenador,
+  admin = false,
   proximas,
   historico,
   avisos = [],
@@ -45,6 +46,7 @@ export function TelaInicio({
 }: {
   nome: string;
   coordenador: boolean;
+  admin?: boolean;
   proximas: Linha[];
   historico: Linha[];
   avisos?: { id: string; titulo: string; texto: string; ministerio: string }[];
@@ -99,6 +101,7 @@ export function TelaInicio({
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex items-center gap-2">
+            {admin && <IconePermissoes />}
             <IconeAgenda />
             {coordenador && <IconeTermometro />}
             <IconeSugestoes />

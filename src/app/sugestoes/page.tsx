@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { TelaSugestoes, type Sugestao } from "./tela";
 
@@ -21,7 +22,7 @@ export default async function Sugestoes() {
     nome: (m.ministerios as unknown as { nome: string }).nome,
     coordenador: m.papel === "coordenador",
   }));
-  const coordena = new Set(ministerios.filter((m) => m.coordenador).map((m) => m.id));
+  const coordena = new Set((await ministeriosQueCoordeno(supabase, eu)).map((m) => m.id));
 
   const todas: Sugestao[] = (lista ?? []).map((s) => ({
     id: s.id,
