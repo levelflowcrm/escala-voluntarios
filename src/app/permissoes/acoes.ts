@@ -13,6 +13,10 @@ async function chamar(fn: string, args: Record<string, unknown>): Promise<R> {
   return error ? { erro: error.message } : {};
 }
 
-export const definirAdmin = (pessoa: string, admin: boolean) => chamar("definir_admin", { p_pessoa: pessoa, p_admin: admin });
-export const definirCoordenador = (pessoa: string, ministerio: string, coordenador: boolean) =>
-  chamar("definir_coordenador", { p_pessoa: pessoa, p_ministerio: ministerio, p_coordenador: coordenador });
+export async function definirAdmin(pessoa: string, admin: boolean): Promise<R> {
+  return chamar("definir_admin", { p_pessoa: pessoa, p_admin: admin });
+}
+
+export async function definirCoordenador(pessoa: string, ministerio: string, coordenador: boolean): Promise<R> {
+  return chamar("definir_coordenador", { p_pessoa: pessoa, p_ministerio: ministerio, p_coordenador: coordenador });
+}
