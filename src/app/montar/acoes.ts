@@ -120,6 +120,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
     supabase
       .from("eventos")
       .select("id, inicio, intensivo, convocacao_geral")
+      .eq("so_agenda", false)
       .gte("inicio", inicio)
       .lt("inicio", fim)
       .order("inicio"),

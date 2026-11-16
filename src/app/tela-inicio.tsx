@@ -2,7 +2,7 @@ import Link from "next/link";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { IconeAgenda, IconeSugestoes, IconeTermometro } from "./icones-topo";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 
@@ -99,6 +99,7 @@ export function TelaInicio({
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="flex items-center gap-2">
+            <IconeAgenda />
             {coordenador && <IconeTermometro />}
             <IconeSugestoes />
             <Sino novos={novosComunicados} />
