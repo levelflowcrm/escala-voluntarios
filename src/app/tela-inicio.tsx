@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
@@ -92,7 +93,10 @@ export function TelaInicio({
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <header className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-neutral-500">Igreja Nasci Pra Deus</p>
+          <p className="flex items-center gap-2 text-sm text-neutral-500">
+            <Image src="/icon-192.png" alt="" width={24} height={24} className="rounded-md" />
+            Igreja Nasci Pra Deus
+          </p>
           <h1 className="text-2xl font-semibold">Olá, {nome} 👋</h1>
           {aguardando > 0 && (
             <p className="mt-1 text-sm text-amber-700 dark:text-amber-400">
