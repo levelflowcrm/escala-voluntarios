@@ -18,4 +18,5 @@ for f in supabase/migrations/*.sql; do $PSQL -f "$f"; done
 $PSQL -f supabase/seed.sql
 $PSQL -f supabase/tests/regras.sql
 $PSQL -f supabase/tests/seguranca.sql
+$PSQL -f supabase/tests/vagas_abertas.sql
 echo "OK: migrações, seed e testes passaram"
