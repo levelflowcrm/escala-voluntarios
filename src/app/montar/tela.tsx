@@ -28,7 +28,12 @@ export function TelaMontar({
         <Link href="/" className="text-sm text-neutral-500">
           ← Minhas escalas
         </Link>
-        <h1 className="text-2xl font-semibold">Montar escala</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold">Montar escala</h1>
+          <Link href="/cultos-fixos" className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-700">
+            🗓️ Cultos fixos
+          </Link>
+        </div>
         {ministerios.length > 1 && (
           <nav className="flex flex-wrap gap-2">
             {ministerios.map((m) => (
