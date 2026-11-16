@@ -38,9 +38,9 @@ SQL Editor do Supabase **antes** do merge que as usa.
 3. Publicar o app no Google: registrar culto360.com.br + DNS, criar páginas
    `/privacidade` e `/termos`, preencher Branding, trocar Site URL / Redirect
    URLs no Supabase para o domínio e clicar em Publicar app.
-4. **Lembrar o Luciano: fazer o Quiz** (combinado para depois). Também faltam
-   o WhatsApp D-1 (depende da integração SprintHub/Uazapi) e extras do
-   calendário (novo evento, "Você serviu este mês").
+4. Ficam de fora do escopo: o **Quiz** (decidido em 16/11). Pendentes: WhatsApp D-1
+   (depende da integração SprintHub/Uazapi) e extras do calendário (novo evento,
+   "Você serviu este mês").
 5. Cadastro de funções de Projeção e Iluminação e seus coordenadores.
 
 ## Pendências de segurança
