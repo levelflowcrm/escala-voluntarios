@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLICAS = ["/entrar", "/auth"];
+const PUBLICAS = ["/entrar", "/auth", "/privacidade", "/termos"];
 
 /** Renova a sessão a cada requisição e manda quem não fez login para /entrar. */
 export async function middleware(request: NextRequest) {
