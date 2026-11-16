@@ -1,18 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { TIPOS } from "@/lib/agenda-tipos";
 import { diaNoFuso, inicioNoFuso } from "@/lib/datas";
 import { gerarOcorrencias, type Repeticao, REPETICOES } from "@/lib/recorrencia";
 import { criarClienteServidor } from "@/lib/supabase/server";
-
-export const TIPOS: Record<string, string> = {
-  conferencia: "Conferência",
-  batismo: "Batismo",
-  ensaio: "Ensaio",
-  reuniao: "Reunião",
-  acao_social: "Ação social",
-  outro: "Outro",
-};
 
 type R = { erro: string | null };
 const DATA = /^\d{4}-\d{2}-\d{2}$/;

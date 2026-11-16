@@ -2,11 +2,16 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { salvarEmail } from "./acoes";
+import { salvarEmail, type NivelHab } from "./acoes";
+import { Habilidades, type AreaFuncoes } from "./habilidades";
 
 export type Voluntario = { id: string; nome: string; email: string; conectado: boolean };
 
-function Linha({ v }: { v: Voluntario }) {
+function Linha({ v, areas, habilidades }: { v: Voluntario; areas: AreaFuncoes[]; habilidades: Record<string, NivelHab> }) {
+  const [aberto, setAberto] = useState(false);
+  const resumo = areas
+    .map((a) => ({ nome: a.nome, n: a.funcoes.filter((f) => habilidades[f.id]).length }))
+    .filter((a) => a.n > 0);
   const [email, setEmail] = useState(v.email);
   const [erro, setErro] = useState<string | null>(null);
   const [salvo, setSalvo] = useState(false);
@@ -54,11 +59,27 @@ function Linha({ v }: { v: Voluntario }) {
       </div>
       {erro && <p className="text-sm text-red-600">{erro}</p>}
       {salvo && !erro && <p className="text-sm text-emerald-700 dark:text-emerald-400">Salvo ✓</p>}
+      <button onClick={() => setAberto(!aberto)} className="flex items-center justify-between text-left text-sm text-violet-700 dark:text-violet-300">
+        <span>
+          Habilidades
+          {resumo.length > 0 && <span className="text-neutral-500"> · {resumo.map((a) => `${a.nome} (${a.n})`).join(" · ")}</span>}
+        </span>
+        <span>{aberto ? "▲" : "▼"}</span>
+      </button>
+      {aberto && <Habilidades pessoaId={v.id} areas={areas} inicial={habilidades} />}
     </article>
   );
 }
 
-export function TelaVoluntarios({ voluntarios }: { voluntarios: Voluntario[] }) {
+export function TelaVoluntarios({
+  voluntarios,
+  areas,
+  habilidades,
+}: {
+  voluntarios: Voluntario[];
+  areas: AreaFuncoes[];
+  habilidades: Record<string, Record<string, NivelHab>>;
+}) {
   const [busca, setBusca] = useState("");
   const filtrados = voluntarios.filter((v) => v.nome.toLowerCase().includes(busca.toLowerCase()));
   const conectados = voluntarios.filter((v) => v.conectado).length;
@@ -67,7 +88,7 @@ export function TelaVoluntarios({ voluntarios }: { voluntarios: Voluntario[] }) 
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Voluntários</h1>
       <p className="text-sm text-neutral-500">
-        Cadastre o e-mail Google de cada voluntário. No primeiro login com esse e-mail, a pessoa é vinculada à escala
+        Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir). No primeiro login com esse e-mail, a pessoa é vinculada à escala
         automaticamente. {conectados} de {voluntarios.length} já entraram.
       </p>
       <input
@@ -77,7 +98,7 @@ export function TelaVoluntarios({ voluntarios }: { voluntarios: Voluntario[] }) 
         className="h-11 rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700"
       />
       {filtrados.map((v) => (
-        <Linha key={v.id} v={v} />
+        <Linha key={v.id} v={v} areas={areas} habilidades={habilidades[v.id] ?? {}} />
       ))}
       {filtrados.length === 0 && <p className="text-neutral-500">Ninguém encontrado.</p>}
     </main>

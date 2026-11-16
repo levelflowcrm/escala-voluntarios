@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
+import { TIPOS } from "@/lib/agenda-tipos";
 import { REPETICOES } from "@/lib/recorrencia";
-import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, TIPOS, type Alcance, type DadosEvento } from "./acoes";
+import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type Alcance, type DadosEvento } from "./acoes";
 
 export type EventoAgenda = {
   id: string;

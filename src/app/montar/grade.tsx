@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
-import { definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
+import { criarAutomatico, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
 import { NovoEvento } from "./novo-evento";
 
 export type EventoGrade = {
@@ -66,6 +66,16 @@ export function Grade({
 
   return (
     <div className="flex flex-col gap-4">
+      <button
+        disabled={ocupado}
+        onClick={() => {
+          if (confirm("Criar automático: cria os cultos do mês e preenche as vagas vazias respeitando disponibilidade, conflitos com outros ministérios e a divisão da carga. Nada é publicado. Continuar?"))
+            rodar(() => criarAutomatico(ministerioId, mes));
+        }}
+        className={`${botao} w-full bg-violet-600 text-white`}
+      >
+        ✨ Criar automático
+      </button>
       <div className="flex flex-wrap gap-2">
         <button disabled={ocupado} onClick={() => rodar(() => gerarCultos(mes))} className={`${botao} border border-neutral-300 dark:border-neutral-700`}>
           Criar cultos fixos do mês
