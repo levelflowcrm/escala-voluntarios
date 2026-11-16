@@ -79,14 +79,22 @@ export function TelaInicio({
         </form>
       </header>
 
-      {coordenador && (
+      <nav className="flex gap-2">
+        {coordenador && (
+          <Link
+            href="/montar"
+            className="flex h-12 flex-1 items-center justify-center rounded-xl bg-violet-600 font-medium text-white"
+          >
+            Montar escala
+          </Link>
+        )}
         <Link
-          href="/montar"
-          className="flex h-12 items-center justify-center rounded-xl bg-violet-600 font-medium text-white"
+          href="/disponibilidade"
+          className="flex h-12 flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
         >
-          Montar escala
+          Disponibilidade
         </Link>
-      )}
+      </nav>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Minhas próximas escalas</h2>

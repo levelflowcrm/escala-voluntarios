@@ -163,3 +163,27 @@ reset role;
 select set_config('request.jwt.claim.sub', '', false);
 delete from eventos where titulo in ('Teste futuro', 'Teste rascunho');
 update pessoas set auth_user_id = null where nome = 'Josy';
+
+-- 6) Disponibilidade: cada um mexe só na sua
+update pessoas set auth_user_id = '00000000-0000-0000-0000-00000000a001' where nome = 'Josy';
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000a001', false);
+do $$
+declare ok boolean := false; n int;
+begin
+  insert into indisponibilidades (pessoa_id, dia_semana, periodo, ordem_no_mes) values (minha_pessoa(), 0, 'manha', 1);
+  insert into bloqueios (pessoa_id, inicio, fim, motivo) values (minha_pessoa(), '2026-12-10', '2026-12-20', 'viagem');
+  begin
+    insert into bloqueios (pessoa_id, inicio, fim) select id, '2026-12-10', '2026-12-20' from pessoas where nome = 'Thamires';
+  exception when insufficient_privilege then ok := true; end;
+  if not ok then raise exception 'FALHOU: voluntário criou ausência de outra pessoa'; end if;
+  delete from indisponibilidades where pessoa_id <> minha_pessoa();
+  get diagnostics n = row_count;
+  if n > 0 then raise exception 'FALHOU: apagou disponibilidade de outra pessoa'; end if;
+  delete from indisponibilidades where pessoa_id = minha_pessoa();
+  delete from bloqueios where pessoa_id = minha_pessoa();
+  raise notice 'Disponibilidade: OK';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+update pessoas set auth_user_id = null where nome = 'Josy';

@@ -46,8 +46,10 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
    publicado: entrar como Luciano, abrir Montar escala → dezembro → Criar
    cultos fixos → Sugerir → Publicar; depois entrar como um voluntário e
    Confirmar / Não posso.
-8. Próximas ideias: tela de disponibilidade (voluntário marca quando não
-   pode), aviso por WhatsApp/e-mail ao publicar, cadastro de funções de
+8. ~~Tela **Minha disponibilidade**~~ feita (turnos dos cultos fixos com
+   Posso / Às vezes (1º–5º) / Não posso, e viagens/ausências por período).
+9. Próximas ideias: aviso por WhatsApp/e-mail ao publicar a escala,
+   coordenador ver a disponibilidade de todos, cadastro de funções de
    Projeção e Iluminação.
 
 ## Pendências com o coordenador
