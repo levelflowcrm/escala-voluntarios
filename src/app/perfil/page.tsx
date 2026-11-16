@@ -10,7 +10,7 @@ export default async function Perfil() {
   const [{ data: p }, { data: mins }, { data: habs }] = await Promise.all([
     supabase.rpc("meus_dados").single<{ nome: string; nome_completo: string | null; email: string | null; celular: string | null; aniversario: string | null }>(),
     supabase.from("membros_ministerio").select("papel, ministerios!inner(nome)").eq("pessoa_id", eu),
-    supabase.from("habilitacoes").select("nivel, funcoes!inner(nome)").eq("pessoa_id", eu),
+    supabase.from("habilitacoes").select("nivel, funcoes!inner(nome, ministerios!inner(nome))").eq("pessoa_id", eu),
   ]);
   if (!p) redirect("/");
 
@@ -24,7 +24,10 @@ export default async function Perfil() {
         coordenador: m.papel === "coordenador",
       }))}
       funcoes={(habs ?? [])
-        .map((h) => ({ nome: (h.funcoes as unknown as { nome: string }).nome, apto: h.nivel === "apto" }))
+        .map((h) => {
+          const f = h.funcoes as unknown as { nome: string; ministerios: { nome: string } };
+          return { nome: f.nome, area: f.ministerios.nome, apto: h.nivel === "apto" };
+        })
         .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))}
     />
   );

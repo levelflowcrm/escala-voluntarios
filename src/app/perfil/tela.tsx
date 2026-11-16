@@ -18,7 +18,7 @@ export function TelaPerfil({
   email: string;
   inicial: DadosPerfil;
   ministerios: { nome: string; coordenador: boolean }[];
-  funcoes: { nome: string; apto: boolean }[];
+  funcoes: { nome: string; area: string; apto: boolean }[];
 }) {
   const [d, setD] = useState(inicial);
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
@@ -68,11 +68,14 @@ export function TelaPerfil({
         {ministerios.map((m) => (
           <p key={m.nome}>{m.nome}{m.coordenador && <span className="ml-2 text-xs text-violet-600">coordenador(a)</span>}</p>
         ))}
-        {funcoes.length > 0 && (
-          <p className="text-sm text-neutral-500">
-            Funções: {funcoes.map((f) => (f.apto ? f.nome : `${f.nome} (aprendiz)`)).join(", ")}
+        {funcoes.length > 0 && <h3 className="mt-2 text-sm font-medium text-neutral-500">Minhas habilidades</h3>}
+        {[...new Set(funcoes.map((f) => f.area))].map((area) => (
+          <p key={area} className="text-sm text-neutral-500">
+            <strong className="text-neutral-700 dark:text-neutral-300">{area}:</strong>{" "}
+            {funcoes.filter((f) => f.area === area).map((f) => (f.apto ? f.nome : `${f.nome} (aprendiz)`)).join(", ")}
           </p>
-        )}
+        ))}
+        {funcoes.length > 0 && <p className="text-xs text-neutral-400">As habilidades são definidas pelo seu coordenador.</p>}
       </section>
     </main>
   );
