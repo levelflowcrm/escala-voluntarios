@@ -12,6 +12,8 @@ begin
   insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (coord, tm, 'coordenador')
     on conflict (pessoa_id, ministerio_id) do update set papel = 'coordenador';
   delete from membros_ministerio where pessoa_id = vol and papel = 'coordenador';
+  insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (vol, tm, 'voluntario')
+    on conflict (pessoa_id, ministerio_id) do update set papel = 'voluntario';
   perform set_config('test.vol', u1::text, false);
   perform set_config('test.coord', u2::text, false);
 end $$;
@@ -44,7 +46,7 @@ select set_config('request.jwt.claim.sub', current_setting('test.coord'), false)
 do $$
 begin
   update pessoas set email = 'josy@teste.com' where nome = 'Josy';
-  if not exists (select 1 from pessoas where nome = 'Josy' and email = 'josy@teste.com') then
+  if not exists (select 1 from dados_do_time() where nome = 'Josy' and email = 'josy@teste.com') then
     raise exception 'FALHOU: coordenador não conseguiu editar o e-mail';
   end if;
 end $$;
