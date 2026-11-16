@@ -23,4 +23,5 @@ $PSQL -f supabase/tests/comunicados.sql
 $PSQL -f supabase/tests/protege_pessoas.sql
 $PSQL -f supabase/tests/sugestoes.sql
 $PSQL -f supabase/tests/leitura_comunicados.sql
+$PSQL -f supabase/tests/contatos_privados.sql
 echo "OK: migrações, seed e testes passaram"
