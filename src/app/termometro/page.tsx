@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { mesAtual } from "@/lib/datas";
 import { aniversariantesDoMes, classificarCarga, type Carga } from "@/lib/termometro";
+import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { TelaTermometro } from "./tela";
 
@@ -9,12 +10,7 @@ export default async function Termometro() {
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const { data: meus } = await supabase
-    .from("membros_ministerio")
-    .select("ministerio_id")
-    .eq("pessoa_id", eu)
-    .eq("papel", "coordenador");
-  const ids = (meus ?? []).map((m) => m.ministerio_id as string);
+  const ids = await ministeriosQueCoordeno(supabase, eu);
   if (ids.length === 0) redirect("/");
 
   const { data: membros } = await supabase.rpc("dados_do_time");

@@ -13,9 +13,10 @@ export default async function Inicio() {
 
   const agora = new Date().toISOString();
   const quinzeDias = new Date(Date.now() - 14 * 86_400_000).toISOString();
-  const [{ data: pessoa }, { data: coordenador }, { data: futuras }, { data: passadas }, { data: avisos }, { data: leitura }] = await Promise.all([
+  const [{ data: pessoa }, { data: coordenador }, { data: admin }, { data: futuras }, { data: passadas }, { data: avisos }, { data: leitura }] = await Promise.all([
     supabase.from("pessoas").select("nome").eq("id", pessoaId).single(),
     supabase.rpc("sou_coordenador_algum"),
+    supabase.rpc("sou_admin"),
     supabase
       .from("escalas")
       .select(CAMPOS)
@@ -104,6 +105,7 @@ export default async function Inicio() {
     <TelaInicio
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
+      admin={!!admin}
       proximas={proximas}
       historico={historico}
       novosComunicados={novos ?? 0}

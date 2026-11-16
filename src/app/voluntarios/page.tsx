@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { TelaVoluntarios, type Voluntario } from "./tela";
 
@@ -7,12 +8,7 @@ export default async function Voluntarios() {
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const { data: meus } = await supabase
-    .from("membros_ministerio")
-    .select("ministerio_id")
-    .eq("pessoa_id", eu)
-    .eq("papel", "coordenador");
-  const ids = (meus ?? []).map((m) => m.ministerio_id as string);
+  const ids = await ministeriosQueCoordeno(supabase, eu);
   if (ids.length === 0) redirect("/");
 
   const { data } = await supabase.rpc("dados_do_time");

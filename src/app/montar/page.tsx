@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { limitesMes, mesAtual, mesValido } from "@/lib/datas";
+import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { type EventoGrade } from "./grade";
 import { TelaMontar } from "./tela";
@@ -10,14 +11,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const { data: meus } = await supabase
-    .from("membros_ministerio")
-    .select("ministerio_id, ministerios!inner(nome)")
-    .eq("pessoa_id", eu)
-    .eq("papel", "coordenador");
-  const ministerios = (meus ?? [])
-    .map((m) => ({ id: m.ministerio_id as string, nome: (m.ministerios as unknown as { nome: string }).nome }))
-    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  const ministerios = await ministeriosQueCoordeno(supabase, eu);
   if (ministerios.length === 0) redirect("/");
 
   const ministerio = ministerios.find((m) => m.id === params.min) ?? ministerios[0];
