@@ -15,8 +15,8 @@ export const CORES = [
 export type TemaId = (typeof TEMAS)[number]["id"];
 export type CorId = (typeof CORES)[number]["id"];
 
-export const CHAVE_TEMA = "culto360-tema";
-export const CHAVE_COR = "culto360-cor";
+export const CHAVE_TEMA = "maisconectados-tema";
+export const CHAVE_COR = "maisconectados-cor";
 
 /** Aplica tema e cor no <html>. Usado pelo script inicial (sem piscar) e pela tela de perfil. */
 export function aplicarAparencia(tema: string, cor: string) {

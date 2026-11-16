@@ -14,10 +14,10 @@ export function montarIcs(e: {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Culto360//Escala//PT-BR",
+    "PRODID:-//MaisConectados//Escala//PT-BR",
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
-    `UID:${e.id}@culto360`,
+    `UID:${e.id}@maisconectados`,
     `DTSTAMP:${fmt(e.agora ?? new Date())}`,
     `DTSTART:${fmt(ini)}`,
     `DTEND:${fmt(fim)}`,

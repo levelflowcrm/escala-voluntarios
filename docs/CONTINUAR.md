@@ -1,6 +1,6 @@
 # Onde paramos (16/11/2026)
 
-Resumo para retomar o projeto numa nova sessão. O app se chama **Culto360**
+Resumo para retomar o projeto numa nova sessão. O app se chama **Mais Conectados** (antes "Culto360"; renomeado em 16/11/2026 porque o perfil @culto360 do Instagram já estava ocupado)
 (piloto: Igreja Nasci Pra Deus, ministério de Transmissão).
 
 ## Contas e serviços
@@ -12,7 +12,7 @@ Resumo para retomar o projeto numa nova sessão. O app se chama **Culto360**
 | Gmail do projeto | levelflowcrm@gmail.com |
 | Vercel | no ar (time `levelflowcrm-9108`), deploy automático a cada merge na `main` |
 | Login com Google | funcionando (Google Cloud em modo **Teste**; cada voluntário precisa ser adicionado como usuário de teste, limite de 100) |
-| Domínio culto360.com.br | adicionado na Vercel; falta registrar e apontar o DNS (registro A `@` → 216.198.79.1) |
+| Domínio | novo domínio ainda a definir/registrar (conferir maisconectados.com.br, Instagram e INPI); o antigo culto360.com.br foi adicionado na Vercel e deve ser removido. Depois: apontar o DNS (registro A `@` → 216.198.79.1) |
 
 ## O que está aplicado no Supabase
 
@@ -35,7 +35,7 @@ SQL Editor do Supabase **antes** do merge que as usa.
    usuários de teste no Google Cloud.
 2. Testar o fluxo completo no celular: Montar escala → Sugerir → Publicar →
    voluntário Confirmar / Não posso → outro voluntário assumir em Vagas abertas.
-3. Publicar o app no Google: registrar culto360.com.br + DNS, criar páginas
+3. Publicar o app no Google: registrar o novo domínio + DNS, criar páginas
    `/privacidade` e `/termos`, preencher Branding, trocar Site URL / Redirect
    URLs no Supabase para o domínio e clicar em Publicar app.
 4. Ficam de fora do escopo: o **Quiz** (decidido em 16/11). Pendentes: WhatsApp D-1
