@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
 import { TIPOS } from "@/lib/agenda-tipos";
-import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type DadosEvento } from "./acoes";
+import { REPETICOES } from "@/lib/recorrencia";
+import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type Alcance, type DadosEvento } from "./acoes";
 
 export type EventoAgenda = {
   id: string;
@@ -13,6 +14,7 @@ export type EventoAgenda = {
   local: string | null;
   observacao: string | null;
   tipo_agenda: string | null;
+  serie_id: string | null;
 };
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
@@ -20,7 +22,7 @@ const FUSO = "America/Sao_Paulo";
 const diaFmt = new Intl.DateTimeFormat("en-CA", { timeZone: FUSO });
 const horaFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
-const vazio: DadosEvento = { titulo: "", tipo: "conferencia", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "" };
+const vazio: DadosEvento = { titulo: "", tipo: "conferencia", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "" };
 
 function doEvento(e: EventoAgenda): DadosEvento {
   const ini = new Date(e.inicio);
@@ -42,14 +44,19 @@ function Formulario({
   rotulo,
   aoEnviar,
   aoFechar,
+  emSerie = false,
+  permiteRepetir = false,
 }: {
   inicial: DadosEvento;
   rotulo: string;
-  aoEnviar: (d: DadosEvento) => Promise<{ erro: string | null }>;
+  emSerie?: boolean;
+  permiteRepetir?: boolean;
+  aoEnviar: (d: DadosEvento, alcance: Alcance) => Promise<{ erro: string | null }>;
   aoFechar: () => void;
 }) {
   const [d, setD] = useState(inicial);
   const [erro, setErro] = useState<string | null>(null);
+  const [alcance, setAlcance] = useState<Alcance>("este");
   const [ocupado, iniciar] = useTransition();
   const mudar = (k: keyof DadosEvento) => (ev: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setD({ ...d, [k]: ev.target.value });
@@ -74,13 +81,34 @@ function Formulario({
       </div>
       <input className={campo} placeholder="Local (opcional)" maxLength={120} value={d.local} onChange={mudar("local")} />
       <textarea className={`${campo} h-20 py-2`} placeholder="Descrição (opcional)" maxLength={1000} value={d.descricao} onChange={mudar("descricao")} />
+      {permiteRepetir && (
+        <>
+          <select className={campo} value={d.repeticao} onChange={mudar("repeticao")}>
+            {Object.entries(REPETICOES).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+          {d.repeticao !== "nenhuma" && (
+            <label className="flex flex-col gap-1 text-xs text-neutral-500">
+              Repete até
+              <input className={campo} type="date" min={d.dia} value={d.ate} onChange={mudar("ate")} />
+            </label>
+          )}
+        </>
+      )}
+      {emSerie && (
+        <select className={campo} value={alcance} onChange={(e) => setAlcance(e.target.value as Alcance)}>
+          <option value="este">Aplicar só a este evento</option>
+          <option value="proximos">Aplicar a este e aos próximos da série</option>
+        </select>
+      )}
       {erro && <p className="text-sm text-red-600">{erro}</p>}
       <div className="flex gap-2">
         <button
           disabled={ocupado}
           onClick={() =>
             iniciar(async () => {
-              const r = await aoEnviar(d);
+              const r = await aoEnviar(d, alcance);
               setErro(r.erro);
               if (!r.erro) aoFechar();
             })
@@ -111,7 +139,7 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
         </button>
       )}
       {criando && (
-        <Formulario inicial={vazio} rotulo="Criar evento" aoEnviar={criarEventoAgenda} aoFechar={() => setCriando(false)} />
+        <Formulario inicial={vazio} rotulo="Criar evento" permiteRepetir aoEnviar={(d) => criarEventoAgenda(d)} aoFechar={() => setCriando(false)} />
       )}
       {erro && <p className="text-sm text-red-600">{erro}</p>}
       {eventos.length === 0 && <p className="text-neutral-500">Nenhum evento na agenda por enquanto.</p>}
@@ -121,7 +149,8 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
             key={e.id}
             inicial={doEvento(e)}
             rotulo="Salvar"
-            aoEnviar={(d) => editarEventoAgenda(e.id, d)}
+            emSerie={!!e.serie_id}
+            aoEnviar={(d, alcance) => editarEventoAgenda(e.id, d, alcance)}
             aoFechar={() => setEditando(null)}
           />
         ) : (
@@ -146,8 +175,10 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
                   <button
                     disabled={ocupado}
                     onClick={() => {
-                      if (confirm(`Apagar “${e.titulo}”? Isso não pode ser desfeito.`))
-                        iniciar(async () => setErro((await apagarEventoAgenda(e.id)).erro));
+                      const todos = !!e.serie_id && confirm(`“${e.titulo}” se repete. OK = apagar este e os próximos da série. Cancelar = escolher só este.`);
+                      const alcance: Alcance = todos ? "proximos" : "este";
+                      if (todos || confirm(`Apagar só este evento (“${e.titulo}”)? Isso não pode ser desfeito.`))
+                        iniciar(async () => setErro((await apagarEventoAgenda(e.id, alcance)).erro));
                     }}
                     className="text-red-600 underline"
                   >
