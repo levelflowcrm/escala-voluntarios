@@ -134,7 +134,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
     .map((m) => m.pessoa_id);
   const desde = new Date(new Date(inicio).getTime() - 90 * DIA_MS).toISOString();
 
-  const [{ data: escalasMes }, { data: habs }, { data: indisp }, { data: bloq }, { data: anteriores }, { data: prefs }] =
+  const [{ data: escalasMes }, { data: habs }, { data: indisp }, { data: bloq }, { data: anteriores }, { data: prefs }, { data: ocupacoes }] =
     await Promise.all([
       supabase.from("escalas").select("evento_id, ministerio_id, funcao_id, pessoa_id, papel").in("evento_id", eventosIds).in("status", ATIVOS),
       supabase.from("habilitacoes").select("pessoa_id, funcao_id").eq("nivel", "apto").in("funcao_id", funcoes.map((f) => f.id)),
@@ -142,12 +142,14 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
       supabase.from("bloqueios").select("pessoa_id, inicio, fim").in("pessoa_id", pessoaIds),
       supabase
         .from("escalas")
-        .select("pessoa_id, eventos!inner(inicio)")
+        .select("pessoa_id, funcao_id, eventos!inner(inicio)")
         .in("pessoa_id", pessoaIds)
         .in("status", ATIVOS)
         .gte("eventos.inicio", desde)
         .lt("eventos.inicio", inicio),
       supabase.from("preferencias").select("pessoa_id, limite_mensal").in("pessoa_id", pessoaIds),
+      // Quem já está ocupado em qualquer ministério (inclusive rascunhos que não enxergamos)
+      supabase.rpc("ocupacoes_do_periodo", { p_inicio: inicio, p_fim: fim }),
     ]);
 
   // Eventos que entram: futuros, não são reunião geral e não têm responsável do dia neste ministério
@@ -169,6 +171,10 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
       .map((i) => ({ diaSemana: i.dia_semana, periodo: i.periodo, ordemNoMes: i.ordem_no_mes })),
     bloqueios: (bloq ?? []).filter((b) => b.pessoa_id === id).map((b) => ({ inicio: b.inicio, fim: b.fim })),
     limitePorMes: (prefs ?? []).find((p) => p.pessoa_id === id)?.limite_mensal ?? null,
+    // Perfil: onde a pessoa mais serviu nos últimos 90 dias
+    afinidade: (anteriores ?? [])
+      .filter((a) => a.pessoa_id === id && a.funcao_id)
+      .reduce<Record<string, number>>((acc, a) => ({ ...acc, [a.funcao_id as string]: (acc[a.funcao_id as string] ?? 0) + 1 }), {}),
     historico: (anteriores ?? [])
       .filter((a) => a.pessoa_id === id)
       .map((a) => (a.eventos as unknown as { inicio: string }).inicio),
@@ -180,6 +186,10 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
     pessoaId: e.pessoa_id,
     funcaoId: e.ministerio_id === ministerioId && e.papel === "titular" ? e.funcao_id : null,
   }));
+  const jaContados = new Set(existentes.map((e) => `${e.eventoId}|${e.pessoaId}`));
+  for (const o of (ocupacoes ?? []) as { evento_id: string; pessoa_id: string }[]) {
+    if (!jaContados.has(`${o.evento_id}|${o.pessoa_id}`)) existentes.push({ eventoId: o.evento_id, pessoaId: o.pessoa_id, funcaoId: null });
+  }
 
   const { atribuicoes, vagasSemCandidato } = sugerirEscala(
     alvo.map((e) => ({ id: e.id, inicio: e.inicio, intensivo: e.intensivo })),
@@ -206,7 +216,9 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
   }
 
   revalidatePath("/montar");
+  const comAlerta = atribuicoes.filter((a) => a.alertas.length > 0).length;
   const partes = [`${atribuicoes.length - falhas} vagas preenchidas`];
+  if (comAlerta) partes.push(`${comAlerta} com alerta (ex.: serviu há poucos dias)`);
   if (vagasSemCandidato.length) partes.push(`${vagasSemCandidato.length} sem ninguém disponível`);
   if (falhas) partes.push(`${falhas} não entraram por conflito com outro ministério`);
   return { erro: null, aviso: partes.join(", ") + "." };
@@ -259,4 +271,16 @@ export async function criarEvento(
     .insert({ igreja_id: igrejaId, titulo: nome, inicio, convocacao_geral: convocacaoGeral });
   revalidatePath("/montar");
   return error ? { erro: traduzirErro(error) } : { erro: null, aviso: "Evento criado. Ele aparece no mês correspondente." };
+}
+
+/** "Criar automático": cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */
+export async function criarAutomatico(ministerioId: string, mes: string): Promise<Resultado> {
+  const cultos = await gerarCultos(mes);
+  if (cultos.erro) return cultos;
+  const escala = await sugerir(ministerioId, mes);
+  if (escala.erro) return escala;
+  return {
+    erro: null,
+    aviso: `${cultos.aviso ?? ""} ${escala.aviso ?? ""} A escala está em rascunho: revise e toque em Publicar.`.trim(),
+  };
 }

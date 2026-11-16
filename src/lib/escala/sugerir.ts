@@ -53,6 +53,8 @@ export interface VoluntarioEntrada {
   bloqueios?: Bloqueio[];
   /** Preferência da pessoa: máximo de serviços por mês (nulo = sem limite) */
   limitePorMes?: number | null;
+  /** Quantas vezes serviu em cada função (afinidade): desempata a favor de quem já domina a função */
+  afinidade?: Record<string, number>;
   /** Datas/horas de serviços já realizados ou já escalados fora desta sugestão */
   historico?: (string | Date)[];
 }
@@ -203,6 +205,7 @@ export function sugerirEscala(
         const ultimo = lista.reduce((max, s) => (s.ms < d.ms ? Math.max(max, s.ms) : max), 0);
 
         let pontos = noMes * 100 + ult90 * 5;
+        pontos -= Math.min(v.afinidade?.[f.id] ?? 0, 6) * 5; // até -30: perfil pesa menos que a divisão da carga
         if (mesmoDia && !evento.intensivo) pontos += 1000;
         if (dist < 7) pontos += Math.round((7 - dist) * 20);
 
