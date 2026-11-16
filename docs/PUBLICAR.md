@@ -68,7 +68,7 @@ Nunca use a chave **service_role** / **secret** no app.
    *Adjust GitHub App Permissions* e libere o repositório.
 3. Em **Environment Variables**, adicione as duas do passo 3.
 4. Clique em **Deploy** e espere ~2 minutos.
-5. Anote o endereço gerado (algo como `https://escala-voluntarios.vercel.app`).
+5. Anote o endereço gerado. O domínio próprio (`https://maisconectados.com.br`) entra em **Settings → Domains**; no Registro.br, em *Configurar endereçamento*, aponte o IP que a Vercel mostrar (hoje `216.198.79.1`).
 
 Daqui pra frente, todo PR juntado no `main` publica sozinho.
 
@@ -78,9 +78,9 @@ Daqui pra frente, todo PR juntado no `main` publica sozinho.
 
 Supabase → **Authentication** → **URL Configuration**:
 
-- **Site URL**: o endereço da Vercel (ex.: `https://escala-voluntarios.vercel.app`)
+- **Site URL**: o domínio do app (hoje `https://maisconectados.com.br`)
 - **Redirect URLs** → *Add URL*, uma de cada vez:
-  - `https://escala-voluntarios.vercel.app/**`
+  - `https://maisconectados.com.br/**`
   - `http://localhost:3000/**`
 
 **Save**.
@@ -97,7 +97,7 @@ o caminho mais simples é o **Google**.
 
 1. Crie um projeto: **escala-voluntarios**.
 2. **APIs e serviços → Tela de consentimento OAuth** (ou *Google Auth Platform*):
-   tipo **Externo**, nome do app "Escala de Voluntários", seu e-mail de
+   tipo **Externo**, nome do app "Mais Conectados", seu e-mail de
    suporte → salvar. Em **Público-alvo**, clique em **Publicar app** (senão só
    os e-mails de teste conseguem entrar).
 3. **Credenciais → Criar credenciais → ID do cliente OAuth**:

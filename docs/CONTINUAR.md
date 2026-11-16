@@ -11,8 +11,8 @@ Resumo para retomar o projeto numa nova sessão. O app se chama **Mais Conectado
 | Supabase | projeto `escala-voluntarios`, ID `oceyznlmglxhzzcenzjt`, região us-west-2 |
 | Gmail do projeto | levelflowcrm@gmail.com |
 | Vercel | no ar (time `levelflowcrm-9108`), deploy automático a cada merge na `main` |
-| Login com Google | funcionando (Google Cloud em modo **Teste**; cada voluntário precisa ser adicionado como usuário de teste, limite de 100) |
-| Domínio | novo domínio ainda a definir/registrar (conferir maisconectados.com.br, Instagram e INPI); o antigo culto360.com.br foi adicionado na Vercel e deve ser removido. Depois: apontar o DNS (registro A `@` → 216.198.79.1) |
+| Login com Google | funcionando; app **Em produção** no Google Cloud (projeto interno "Culto360", nome exibido "Mais Conectados"), sem necessidade de usuários de teste |
+| Domínio | **maisconectados.com.br** (Registro.br, DNS do próprio Registro.br: A `@` → 216.198.79.1), ligado à Vercel com HTTPS; Supabase Site URL e Redirect URLs já usam o domínio; endereço provisório `escala-voluntarios-peach.vercel.app` segue válido. `www` ainda não configurado |
 
 ## O que está aplicado no Supabase
 
@@ -31,13 +31,11 @@ SQL Editor do Supabase **antes** do merge que as usa.
 
 ## Próximos passos
 
-1. Cadastrar os e-mails dos voluntários (tela Voluntários) e adicioná-los como
-   usuários de teste no Google Cloud.
+1. Cadastrar os e-mails dos voluntários (tela Voluntários); o Google já está em produção.
 2. Testar o fluxo completo no celular: Montar escala → Sugerir → Publicar →
    voluntário Confirmar / Não posso → outro voluntário assumir em Vagas abertas.
-3. Publicar o app no Google: registrar o novo domínio + DNS, criar páginas
-   `/privacidade` e `/termos`, preencher Branding, trocar Site URL / Redirect
-   URLs no Supabase para o domínio e clicar em Publicar app.
+3. (feito em 16/11) Domínio, DNS, Branding, Site URL e Publicar app no Google.
+   Falta: app instalável (PWA) e decidir sobre o login por e-mail (ver abaixo).
 4. Ficam de fora do escopo: o **Quiz** (decidido em 16/11). Pendentes: WhatsApp D-1
    (depende da integração SprintHub/Uazapi) e extras do calendário (novo evento,
    "Você serviu este mês").
@@ -47,6 +45,11 @@ SQL Editor do Supabase **antes** do merge que as usa.
 
 - Revogar o token `sbp_fc48...` colado no chat antes
   (https://supabase.com/dashboard/account/tokens).
-- A política `propria` em `pessoas` deixa o voluntário alterar qualquer coluna
-  da própria linha (inclusive `igreja_id`/`email`) se falar direto com a API.
-  Corrigir com um gatilho que bloqueie essas colunas para não-coordenadores.
+- Quem não é voluntário cadastrado consegue criar uma conta de login (fica vazia,
+  cai em "Quase lá!" e não enxerga nada: RLS por `minha_igreja()`). Para barrar
+  até isso, desligar novos cadastros no Supabase (Authentication → Sign In /
+  Providers → "Allow new users to sign up"), validando antes que o Google continua entrando.
+- Login por link de e-mail: o e-mail padrão do Supabase só envia para a equipe do
+  projeto e com limite baixo. Para voluntários, configurar SMTP próprio ou
+  esconder essa opção e deixar só o Google.
+- A proteção de colunas de `pessoas` já existe (migração `20261116000003`, teste `protege_pessoas.sql`).
