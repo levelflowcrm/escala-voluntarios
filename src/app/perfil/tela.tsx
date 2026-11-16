@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { salvarPerfil, type DadosPerfil } from "./acoes";
+import { Aparencia } from "./aparencia";
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 
@@ -58,6 +59,8 @@ export function TelaPerfil({
         {pendente ? "Salvando…" : "Salvar"}
       </button>
       {msg && <p className={`text-sm ${msg.ok ? "text-emerald-700 dark:text-emerald-400" : "text-red-600"}`}>{msg.texto}</p>}
+
+      <Aparencia />
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Onde eu sirvo</h2>

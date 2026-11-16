@@ -9,9 +9,9 @@ describe("turnos", () => {
   });
   it("turnos dos cultos fixos, de quarta a domingo", () => {
     const t = turnosDosCultos([
-      { nome: "Dmg Noite", dia_semana: 0, hora: "18:30:00" },
-      { nome: "Qrta", dia_semana: 3, hora: "19:30:00" },
-      { nome: "Dmg Manhã", dia_semana: 0, hora: "09:00:00" },
+      { nome: "Domingo Noite", dia_semana: 0, hora: "18:30:00" },
+      { nome: "Quarta", dia_semana: 3, hora: "19:30:00" },
+      { nome: "Domingo Manhã", dia_semana: 0, hora: "09:00:00" },
       { nome: "Especial", dia_semana: null, hora: null },
     ]);
     expect(t.map(nomeTurno)).toEqual(["Quarta à noite", "Domingo de manhã", "Domingo à noite"]);
