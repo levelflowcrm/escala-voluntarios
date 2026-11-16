@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
 import { definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
+import { NovoEvento } from "./novo-evento";
 
 export type EventoGrade = {
   id: string;
@@ -69,6 +70,7 @@ export function Grade({
         <button disabled={ocupado} onClick={() => rodar(() => gerarCultos(mes))} className={`${botao} border border-neutral-300 dark:border-neutral-700`}>
           Criar cultos fixos do mês
         </button>
+        <NovoEvento rodar={rodar} />
         <button
           disabled={ocupado || vagasAbertas === 0}
           onClick={() => rodar(() => sugerir(ministerioId, mes))}

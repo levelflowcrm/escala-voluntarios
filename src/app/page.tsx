@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
+import { limitesMes, mesAtual } from "@/lib/datas";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
 const CAMPOS = "id, papel, status, motivo, eventos!inner(titulo, inicio), funcoes(nome), ministerios(nome)";
@@ -46,6 +48,48 @@ export default async function Inicio() {
     .gt("criado_em", desde)
     .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
 
+  // Quantas vezes servi neste mês (confirmadas, já realizadas ou não).
+  const { inicio: iniMes, fim: fimMes } = limitesMes(mesAtual());
+  const { data: doMes } = await supabase
+    .from("escalas")
+    .select("id, eventos!inner(inicio)")
+    .eq("pessoa_id", pessoaId)
+    .eq("status", "confirmado")
+    .gte("eventos.inicio", iniMes)
+    .lt("eventos.inicio", fimMes);
+  const servidasNoMes = doMes?.length ?? 0;
+
+  // Coordenador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
+  let pendencias = null;
+  if (coordenador) {
+    const limite = new Date(Date.now() + 30 * 86_400_000).toISOString();
+    const [{ data: esc }, { data: sit }] = await Promise.all([
+      supabase
+        .from("escalas")
+        .select("id, evento_id, funcao_id, papel, status, motivo, pessoas(nome), funcoes(nome), eventos!inner(titulo, inicio)")
+        .gte("eventos.inicio", agora)
+        .lt("eventos.inicio", limite)
+        .in("status", ["pendente", "confirmado", "recusado"]),
+      supabase.from("escalas_ministerio").select("evento_id").eq("publicada", true),
+    ]);
+    const lista: EscalaPend[] = (esc ?? []).map((e) => {
+      const ev = e.eventos as unknown as { titulo: string; inicio: string };
+      return {
+        id: e.id,
+        eventoId: e.evento_id,
+        funcaoId: e.funcao_id,
+        papel: e.papel,
+        status: e.status,
+        motivo: e.motivo,
+        pessoa: (e.pessoas as unknown as { nome: string } | null)?.nome ?? "",
+        funcao: (e.funcoes as unknown as { nome: string } | null)?.nome ?? "",
+        evento: ev.titulo,
+        inicio: ev.inicio,
+      };
+    });
+    pendencias = calcularPendencias(lista, new Set((sit ?? []).map((x) => x.evento_id)), new Date());
+  }
+
   // A ordenação por tabela relacionada não ordena as linhas principais; ordena aqui.
   const porData = (lista: Linha[], sentido: 1 | -1) =>
     lista.sort((a, b) => sentido * (+new Date(a.eventos.inicio) - +new Date(b.eventos.inicio)));
@@ -59,6 +103,8 @@ export default async function Inicio() {
       proximas={proximas}
       historico={historico}
       novosComunicados={novos ?? 0}
+      servidasNoMes={servidasNoMes}
+      pendencias={pendencias}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,
         titulo: a.titulo,
