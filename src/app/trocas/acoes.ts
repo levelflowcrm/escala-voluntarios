@@ -13,6 +13,12 @@ async function chamar(fn: string, args: Record<string, unknown>): Promise<R> {
   return error ? { erro: error.message } : {};
 }
 
-export const pedirTroca = (escala: string, colega: string) => chamar("pedir_troca", { p_escala: escala, p_colega: colega });
-export const responderTroca = (troca: string, aceitar: boolean) => chamar("responder_troca", { p_troca: troca, p_aceitar: aceitar });
-export const cancelarTroca = (troca: string) => chamar("cancelar_troca", { p_troca: troca });
+export async function pedirTroca(escala: string, colega: string): Promise<R> {
+  return chamar("pedir_troca", { p_escala: escala, p_colega: colega });
+}
+export async function responderTroca(troca: string, aceitar: boolean): Promise<R> {
+  return chamar("responder_troca", { p_troca: troca, p_aceitar: aceitar });
+}
+export async function cancelarTroca(troca: string): Promise<R> {
+  return chamar("cancelar_troca", { p_troca: troca });
+}
