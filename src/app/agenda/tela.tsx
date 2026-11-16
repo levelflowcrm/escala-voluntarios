@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
 import { TIPOS } from "@/lib/agenda-tipos";
+import { CORES, corDoEvento } from "@/lib/cores-evento";
 import { REPETICOES } from "@/lib/recorrencia";
 import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type Alcance, type DadosEvento } from "./acoes";
 
@@ -14,6 +15,7 @@ export type EventoAgenda = {
   local: string | null;
   observacao: string | null;
   tipo_agenda: string | null;
+  cor: string | null;
   serie_id: string | null;
 };
 
@@ -22,7 +24,7 @@ const FUSO = "America/Sao_Paulo";
 const diaFmt = new Intl.DateTimeFormat("en-CA", { timeZone: FUSO });
 const horaFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
-const vazio: DadosEvento = { titulo: "", tipo: "conferencia", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "" };
+const vazio: DadosEvento = { titulo: "", tipo: "conferencia", cor: "", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "" };
 
 function doEvento(e: EventoAgenda): DadosEvento {
   const ini = new Date(e.inicio);
@@ -30,6 +32,7 @@ function doEvento(e: EventoAgenda): DadosEvento {
   return {
     titulo: e.titulo,
     tipo: e.tipo_agenda ?? "outro",
+    cor: e.cor ?? "",
     dia: diaFmt.format(ini),
     hora: horaFmt.format(ini),
     diaFim: fim ? diaFmt.format(fim) : "",
@@ -69,6 +72,31 @@ function Formulario({
           <option key={k} value={k}>{v}</option>
         ))}
       </select>
+      <fieldset className="flex flex-col gap-1">
+        <legend className="text-xs text-neutral-500">Cor do evento (para dar destaque)</legend>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setD({ ...d, cor: "" })}
+            aria-pressed={!d.cor}
+            className={`h-9 rounded-full border px-3 text-xs ${!d.cor ? "border-violet-600 font-medium" : "border-neutral-300 dark:border-neutral-700"}`}
+          >
+            Automática
+          </button>
+          {Object.entries(CORES).map(([k, c]) => (
+            <button
+              key={k}
+              type="button"
+              title={c.nome}
+              aria-label={c.nome}
+              aria-pressed={d.cor === k}
+              onClick={() => setD({ ...d, cor: k })}
+              className={`h-9 w-9 rounded-full border-2 ${c.bolinha} ${d.cor === k ? "ring-2 ring-violet-600 ring-offset-2 dark:ring-offset-neutral-900" : ""}`}
+            />
+          ))}
+        </div>
+        {d.tipo === "locacao" && !d.cor && <p className="text-xs text-neutral-500">Locações saem em pêssego por padrão.</p>}
+      </fieldset>
       <p className="text-xs text-neutral-500">Início</p>
       <div className="flex gap-2">
         <input className={campo} type="date" value={d.dia} onChange={mudar("dia")} />
@@ -154,11 +182,17 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
             aoFechar={() => setEditando(null)}
           />
         ) : (
-          <article key={e.id} className="flex flex-col gap-1 rounded-xl border border-neutral-300 p-4 dark:border-neutral-700">
+          <article
+            key={e.id}
+            className={`flex flex-col gap-1 rounded-xl border p-4 ${(() => {
+              const c = corDoEvento(e.tipo_agenda, e.cor);
+              return c ? CORES[c].card : "border-neutral-300 dark:border-neutral-700";
+            })()}`}
+          >
             <div className="flex items-start justify-between gap-2">
               <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
               {e.tipo_agenda && (
-                <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-800 dark:bg-violet-950 dark:text-violet-300">
+                <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-black/30 dark:text-neutral-200">
                   {TIPOS[e.tipo_agenda]}
                 </span>
               )}

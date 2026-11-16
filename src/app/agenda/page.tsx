@@ -13,7 +13,7 @@ export default async function Agenda() {
   const ontem = new Date(Date.now() - 86_400_000).toISOString();
   const { data } = await supabase
     .from("eventos")
-    .select("id, titulo, inicio, fim, local, observacao, tipo_agenda, serie_id")
+    .select("id, titulo, inicio, fim, local, observacao, tipo_agenda, cor, serie_id")
     .eq("so_agenda", true)
     .gte("inicio", ontem)
     .order("inicio");

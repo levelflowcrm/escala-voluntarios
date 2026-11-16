@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { TIPOS } from "@/lib/agenda-tipos";
+import { CORES } from "@/lib/cores-evento";
 import { diaNoFuso, inicioNoFuso } from "@/lib/datas";
 import { gerarOcorrencias, type Repeticao, REPETICOES } from "@/lib/recorrencia";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -13,6 +14,8 @@ const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
 export type DadosEvento = {
   titulo: string;
   tipo: string;
+  /** chave da paleta (CORES); vazio = padrão do tipo */
+  cor?: string;
   dia: string;
   hora: string;
   diaFim: string;
@@ -30,6 +33,7 @@ function validar(d: DadosEvento) {
   if (!titulo) return { erro: "Dê um nome ao evento" } as const;
   if (titulo.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" } as const;
   if (!TIPOS[d.tipo]) return { erro: "Escolha o tipo do evento" } as const;
+  if (d.cor && !CORES[d.cor]) return { erro: "Cor inválida" } as const;
   if (!DATA.test(d.dia) || !HORA.test(d.hora)) return { erro: "Informe data e hora de início" } as const;
   const inicio = inicioNoFuso(d.dia, d.hora);
   let fim: string | null = null;
@@ -41,7 +45,7 @@ function validar(d: DadosEvento) {
   }
   const local = d.local.trim().slice(0, 120) || null;
   const observacao = d.descricao.trim().slice(0, 1000) || null;
-  return { erro: null, ok: { titulo, tipo_agenda: d.tipo, inicio, fim, local, observacao } } as const;
+  return { erro: null, ok: { titulo, tipo_agenda: d.tipo, cor: d.cor || null, inicio, fim, local, observacao } } as const;
 }
 
 /** Cria evento de agenda (com repetição opcional). Só administrador (a RLS barra os demais). */

@@ -4,5 +4,6 @@ export const TIPOS: Record<string, string> = {
   ensaio: "Ensaio",
   reuniao: "Reunião",
   acao_social: "Ação social",
+  locacao: "Locação (evento extra)",
   outro: "Outro",
 };
