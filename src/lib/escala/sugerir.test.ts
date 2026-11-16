@@ -106,4 +106,15 @@ describe("sugerirEscala", () => {
     expect(r.atribuicoes).toHaveLength(2);
     expect(r.vagasSemCandidato).toHaveLength(1);
   });
+
+  it("respeita o limite mensal da preferência da pessoa", () => {
+    const vs: VoluntarioEntrada[] = [
+      { id: "a", nome: "Ana", funcoesAptas: ["dtv"], limitePorMes: 1 },
+      { id: "b", nome: "Bia", funcoesAptas: ["dtv"] },
+    ];
+    const r = sugerirEscala([domManha, qua, dom13], [funcoes[0]], vs, [], opcoes);
+    const daAna = r.atribuicoes.filter((a) => a.pessoaId === "a").length;
+    expect(daAna).toBeLessThanOrEqual(1);
+    expect(r.atribuicoes).toHaveLength(3);
+  });
 });

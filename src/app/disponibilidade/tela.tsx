@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import type { Periodo } from "@/lib/escala/sugerir";
 import { nomeTurno } from "@/lib/turnos";
+import { Preferencias } from "./preferencias";
 import { adicionarBloqueio, removerBloqueio, salvarTurno } from "./acoes";
 
 export type RegraTurno = "sempre" | "nunca" | number[];
@@ -80,10 +81,14 @@ export function TelaDisponibilidade({
   turnos,
   bloqueios,
   hoje,
+  limite,
+  observacao,
 }: {
   turnos: { diaSemana: number; periodo: Periodo; cultos: string[]; regra: RegraTurno }[];
   bloqueios: { id: string; inicio: string; fim: string; motivo: string | null }[];
   hoje: string;
+  limite: number | null;
+  observacao: string;
 }) {
   const [ocupado, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
@@ -118,6 +123,8 @@ export function TelaDisponibilidade({
           <CartaoTurno key={`${t.diaSemana}|${t.periodo}`} turno={t} ocupado={ocupado} rodar={rodar} />
         ))}
       </section>
+
+      <Preferencias limite={limite} observacao={observacao} />
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Viagens e ausências</h2>
