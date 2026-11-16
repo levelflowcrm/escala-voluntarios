@@ -1,15 +1,15 @@
 import Link from "next/link";
 
-export const metadata = { title: "Termos de Uso · Culto360" };
+export const metadata = { title: "Termos de Uso · Mais Conectados" };
 
 export default function Termos() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-4 px-4 py-10 leading-relaxed">
       <Link href="/entrar" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-3xl font-semibold">Termos de Uso</h1>
-      <p className="text-sm text-neutral-500">Culto360 · Última atualização: 16/11/2026</p>
+      <p className="text-sm text-neutral-500">Mais Conectados · Última atualização: 16/11/2026</p>
 
-      <h2 className="mt-4 text-xl font-semibold">1. O que é o Culto360</h2>
+      <h2 className="mt-4 text-xl font-semibold">1. O que é o Mais Conectados</h2>
       <p>
         Aplicativo para organizar a escala de voluntários de igrejas: montar escalas, confirmar presença, informar
         disponibilidade, assumir vagas abertas e receber comunicados dos ministérios.

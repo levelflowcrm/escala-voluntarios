@@ -24,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     id: e.id,
     titulo: `Servir: ${ev.titulo}${funcao ? ` · ${funcao}` : ""}`,
     inicio: ev.inicio,
-    descricao: [ministerio && `Ministério: ${ministerio}`, funcao && `Função: ${funcao}`, "Escala pelo Culto360"].filter(Boolean).join("\n"),
+    descricao: [ministerio && `Ministério: ${ministerio}`, funcao && `Função: ${funcao}`, "Escala pelo Mais Conectados"].filter(Boolean).join("\n"),
   });
   return new NextResponse(ics, {
     headers: {

@@ -1,16 +1,16 @@
 import Link from "next/link";
 
-export const metadata = { title: "Política de Privacidade · Culto360" };
+export const metadata = { title: "Política de Privacidade · Mais Conectados" };
 
 export default function Privacidade() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col gap-4 px-4 py-10 leading-relaxed">
       <Link href="/entrar" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-3xl font-semibold">Política de Privacidade</h1>
-      <p className="text-sm text-neutral-500">Culto360 · Última atualização: 16/11/2026</p>
+      <p className="text-sm text-neutral-500">Mais Conectados · Última atualização: 16/11/2026</p>
 
       <p>
-        O Culto360 é um aplicativo de escala de voluntários para igrejas. Esta política explica quais dados usamos, para
+        O Mais Conectados é um aplicativo de escala de voluntários para igrejas. Esta política explica quais dados usamos, para
         quê, e como você pode exercer seus direitos, conforme a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).
       </p>
 
