@@ -79,7 +79,7 @@ export function TelaInicio({
         </form>
       </header>
 
-      <nav className="flex gap-2">
+      <nav className="flex flex-wrap gap-2">
         {coordenador && (
           <Link
             href="/montar"
@@ -90,9 +90,15 @@ export function TelaInicio({
         )}
         <Link
           href="/disponibilidade"
-          className="flex h-12 flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
         >
           Disponibilidade
+        </Link>
+        <Link
+          href="/vagas"
+          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+        >
+          Vagas abertas
         </Link>
       </nav>
 
