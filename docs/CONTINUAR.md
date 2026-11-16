@@ -1,4 +1,4 @@
-# Onde paramos (06/11/2026, 2ª sessão)
+# Onde paramos (16/11/2026)
 
 Resumo para retomar o projeto numa nova sessão.
 
@@ -25,15 +25,15 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
 
 ## Pull requests
 
-- #1 Base do app — **juntado**
-- #2 Correção de segurança — falta Ready for review + Merge
-- #3 Login (e-mail e Google) — depende do #2; falta Ready for review + Merge
-- Telas Montar escala / Minhas escalas — depende do #3 (branch `claude/eager-bell-uq0guc`)
+- #1 Base do app, #2 Correção de segurança, #3 Login e #4 Telas Montar
+  escala / Minhas escalas: **todos juntados no `main`** (16/11).
+- Prints das telas (dados de exemplo) em `docs/telas/`.
 
 ## Próximos passos
 
-1. Rodar `vincular_conta.sql` no Supabase.
-2. Juntar #2 e depois #3.
+1. Rodar no SQL Editor do Supabase, nesta ordem: `20261106000002_vincular_conta.sql`
+   e `20261106000003_responder_escala.sql`. **Sem eles o login não funciona.**
+2. ~~Juntar os PRs~~ feito.
 3. Cadastrar o e-mail do coordenador (Luciano) em `pessoas.email`.
 4. Criar o projeto na Vercel (entrar com GitHub), importar o repositório e
    configurar `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
@@ -53,5 +53,7 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
 ## Pendências com o coordenador
 
 - Coordenadores e funções de Projeção e Iluminação.
-- Revogar o token `sbp_fc48...` que foi colado no chat
+- Revogar o token `sbp_fc48...` que foi colado no chat (em 16/11 a leitura
+  do banco por este ambiente já respondeu "token inválido": provavelmente
+  revogado; para conferir o banco daqui é preciso reconectar o Supabase)
   (https://supabase.com/dashboard/account/tokens).
