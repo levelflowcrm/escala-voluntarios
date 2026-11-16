@@ -117,4 +117,14 @@ describe("sugerirEscala", () => {
     expect(daAna).toBeLessThanOrEqual(1);
     expect(r.atribuicoes).toHaveLength(3);
   });
+
+  it("prefere quem já tem mais prática na função, sem quebrar a divisão da carga", () => {
+    const vs: VoluntarioEntrada[] = [
+      { id: "a", nome: "Ana", funcoesAptas: ["dtv", "black"], afinidade: { dtv: 5 } },
+      { id: "b", nome: "Bia", funcoesAptas: ["dtv", "black"], afinidade: { black: 5 } },
+    ];
+    const r = sugerirEscala([dom13], [funcoes[0], funcoes[1]], vs, [], opcoes);
+    expect(r.atribuicoes.find((a) => a.funcaoId === "dtv")?.pessoaId).toBe("a");
+    expect(r.atribuicoes.find((a) => a.funcaoId === "black")?.pessoaId).toBe("b");
+  });
 });
