@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { CORES } from "@/lib/cores-evento";
-import { diasDaSemanaNoMes, FUSO, inicioNoFuso, limitesMes, mesValido } from "@/lib/datas";
+import { emPausa, type Pausa } from "@/lib/cultos";
+import { diaNoFuso, diasDaSemanaNoMes, FUSO, inicioNoFuso, limitesMes, mesValido } from "@/lib/datas";
 import { sugerirEscala, type VoluntarioEntrada } from "@/lib/escala/sugerir";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -88,19 +89,20 @@ export async function gerarCultos(mes: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
   const { inicio, fim } = limitesMes(mes);
 
-  const [{ data: igrejaId }, { data: tipos }, { data: existentes }] = await Promise.all([
+  const [{ data: igrejaId }, { data: tipos }, { data: existentes }, { data: pausas }] = await Promise.all([
     supabase.rpc("minha_igreja"),
     supabase.from("tipos_evento").select("id, nome, dia_semana, hora").eq("ativo", true).not("dia_semana", "is", null),
-    supabase.from("eventos").select("tipo_evento_id, inicio").gte("inicio", inicio).lt("inicio", fim),
+    supabase.from("eventos").select("tipo_evento_id, inicio, ocorrencia").gte("inicio", inicio).lt("inicio", fim),
+    supabase.from("pausas_cultos").select("tipo_evento_id, de, ate").gte("ate", `${mes}-01`),
   ]);
   if (!igrejaId) return { erro: "Cadastro não encontrado" };
 
-  const jaTem = new Set((existentes ?? []).map((e) => `${e.tipo_evento_id}|${new Date(e.inicio).getTime()}`));
+  // Um culto fixo "já existe" no dia para o qual foi gerado, mesmo que depois tenha mudado de horário.
+  const jaTem = new Set((existentes ?? []).map((e) => `${e.tipo_evento_id}|${e.ocorrencia ?? diaNoFuso(new Date(e.inicio))}`));
   const novos = (tipos ?? []).flatMap((t) =>
     diasDaSemanaNoMes(mes, t.dia_semana!)
-      .map((dia) => inicioNoFuso(dia, t.hora ?? "19:00"))
-      .filter((ini) => !jaTem.has(`${t.id}|${new Date(ini).getTime()}`))
-      .map((ini) => ({ igreja_id: igrejaId, tipo_evento_id: t.id, titulo: t.nome, inicio: ini })),
+      .filter((dia) => !jaTem.has(`${t.id}|${dia}`) && !emPausa(dia, t.id, (pausas ?? []) as Pausa[]))
+      .map((dia) => ({ igreja_id: igrejaId, tipo_evento_id: t.id, titulo: t.nome, inicio: inicioNoFuso(dia, t.hora ?? "19:00"), ocorrencia: dia })),
   );
 
   if (novos.length === 0) return { erro: null, aviso: "Os cultos fixos do mês já estavam criados." };
@@ -285,6 +287,44 @@ export async function definirCorEvento(eventoId: string, cor: string): Promise<R
   revalidatePath("/");
   if (error || !data?.length) return { erro: "Sem permissão para alterar a cor desse evento" };
   return { erro: null };
+}
+
+/** Muda o dia/horário de UM culto (os demais cultos fixos não mudam). Só coordenador (a RLS barra os demais). */
+export async function alterarCulto(eventoId: string, dia: string, hora: string): Promise<Resultado> {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || Number.isNaN(Date.parse(`${dia}T12:00:00Z`))) return { erro: "Data inválida" };
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return { erro: "Horário inválido" };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase
+    .from("eventos")
+    .update({ inicio: inicioNoFuso(dia, hora) })
+    .eq("id", eventoId)
+    .eq("so_agenda", false)
+    .select("id");
+  revalidatePath("/montar");
+  revalidatePath("/");
+  if (error || !data?.length) return { erro: "Não foi possível alterar esse culto (sem permissão ou não encontrado)." };
+  return { erro: null, aviso: "Culto atualizado. Quem já estava escalado continua escalado nele." };
+}
+
+/**
+ * Cancela UM culto: remove o evento (e as escalas dele) e, se for culto fixo, registra uma pausa de um dia
+ * para o gerador não recriá-lo. Só coordenador.
+ */
+export async function cancelarCulto(eventoId: string, motivo: string): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { data: ev } = await supabase.from("eventos").select("id, igreja_id, tipo_evento_id, inicio, ocorrencia").eq("id", eventoId).eq("so_agenda", false).maybeSingle();
+  if (!ev) return { erro: "Culto não encontrado ou sem permissão." };
+  if (ev.tipo_evento_id) {
+    const dia = ev.ocorrencia ?? diaNoFuso(new Date(ev.inicio));
+    const { error: erroPausa } = await supabase
+      .from("pausas_cultos")
+      .insert({ igreja_id: ev.igreja_id, tipo_evento_id: ev.tipo_evento_id, de: dia, ate: dia, motivo: motivo.trim().slice(0, 200) || null });
+    if (erroPausa) return { erro: "Não foi possível cancelar agora." };
+  }
+  const { error } = await supabase.from("eventos").delete().eq("id", eventoId);
+  revalidatePath("/montar");
+  revalidatePath("/");
+  return error ? { erro: "Não foi possível cancelar agora." } : { erro: null, aviso: "Culto cancelado. Para voltar atrás, remova a pausa em Cultos fixos e gere os cultos do mês." };
 }
 
 /** "Criar automático": cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */

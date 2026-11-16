@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { CORES } from "@/lib/cores-evento";
-import { fmtDataHora } from "@/lib/datas";
+import { diaNoFuso, fmtDataHora } from "@/lib/datas";
 import { SeletorCor } from "../seletor-cor";
-import { criarAutomatico, definirCorEvento, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
+import { alterarCulto, cancelarCulto, criarAutomatico, definirCorEvento, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
 import { NovoEvento } from "./novo-evento";
 
 export type EventoGrade = {
@@ -52,6 +52,8 @@ export function Grade({
   const [mensagem, setMensagem] = useState<{ tipo: "erro" | "ok"; texto: string } | null>(null);
   const [mostrarPassados, setMostrarPassados] = useState(false);
   const [corAberta, setCorAberta] = useState<string | null>(null);
+  const [alterando, setAlterando] = useState<{ id: string; dia: string; hora: string } | null>(null);
+  const horaFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
   const rodar = (acao: () => Promise<{ erro: string | null; aviso?: string }>) =>
     iniciar(async () => {
@@ -129,12 +131,53 @@ export function Grade({
               <div>
                 <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
                 <p className="text-sm text-neutral-500">{e.titulo}</p>
-                <button onClick={() => setCorAberta(corAberta === e.id ? null : e.id)} className="mt-1 text-xs text-neutral-500 underline">
-                  🎨 Cor
-                </button>
+                <div className="mt-1 flex flex-wrap gap-3 text-xs text-neutral-500">
+                  <button onClick={() => setCorAberta(corAberta === e.id ? null : e.id)} className="underline">🎨 Cor</button>
+                  <button
+                    onClick={() => setAlterando({ id: e.id, dia: diaNoFuso(new Date(e.inicio)), hora: horaFmt.format(new Date(e.inicio)) })}
+                    className="underline"
+                  >
+                    ✏️ Alterar dia/horário
+                  </button>
+                  <button
+                    disabled={ocupado}
+                    onClick={() => {
+                      const escalados = e.vagas.filter((v) => v.pessoaId).length;
+                      const aviso = escalados > 0 ? ` ${escalados} pessoa(s) escalada(s) neste ministério serão tiradas dele.` : "";
+                      const motivo = prompt(`Cancelar “${e.titulo}”?${aviso} Motivo (opcional):`);
+                      if (motivo !== null) rodar(() => cancelarCulto(e.id, motivo));
+                    }}
+                    className="text-red-600 underline"
+                  >
+                    Cancelar culto
+                  </button>
+                </div>
               </div>
               <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${sit.c}`}>{sit.t}</span>
             </div>
+
+            {alterando?.id === e.id && (
+              <div className="mb-3 flex flex-col gap-2 rounded-lg border border-violet-300 p-3 dark:border-violet-800">
+                <p className="text-xs text-neutral-500">Vale só para este culto. Quem já está escalado continua escalado.</p>
+                <div className="flex gap-2">
+                  <input type="date" value={alterando.dia} onChange={(ev) => setAlterando({ ...alterando, dia: ev.target.value })} className="h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700" />
+                  <input type="time" value={alterando.hora} onChange={(ev) => setAlterando({ ...alterando, hora: ev.target.value })} className="h-11 max-w-32 rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700" />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    disabled={ocupado}
+                    onClick={() => {
+                      rodar(() => alterarCulto(e.id, alterando.dia, alterando.hora));
+                      setAlterando(null);
+                    }}
+                    className="h-10 flex-1 rounded-lg bg-violet-600 text-sm font-medium text-white"
+                  >
+                    Salvar
+                  </button>
+                  <button onClick={() => setAlterando(null)} className="h-10 rounded-lg border border-neutral-300 px-4 text-sm dark:border-neutral-700">Cancelar</button>
+                </div>
+              </div>
+            )}
 
             {corAberta === e.id && (
               <div className="mb-3">
