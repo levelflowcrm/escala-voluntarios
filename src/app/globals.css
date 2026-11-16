@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+/* O modo escuro agora é uma classe no <html> (escolha do voluntário em Meu perfil). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -12,15 +21,26 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Cor de destaque: o app usa a paleta "violet"; cada cor troca os tons usados. */
+html[data-cor="azul"] {
+  --color-violet-50: #eff6ff; --color-violet-300: #93c5fd; --color-violet-400: #60a5fa; --color-violet-500: #3b82f6;
+  --color-violet-600: #2563eb; --color-violet-700: #1d4ed8; --color-violet-800: #1e40af; --color-violet-950: #172554;
+}
+html[data-cor="verde"] {
+  --color-violet-50: #ecfdf5; --color-violet-300: #6ee7b7; --color-violet-400: #34d399; --color-violet-500: #10b981;
+  --color-violet-600: #059669; --color-violet-700: #047857; --color-violet-800: #065f46; --color-violet-950: #022c22;
+}
+html[data-cor="rosa"] {
+  --color-violet-50: #fff1f2; --color-violet-300: #fda4af; --color-violet-400: #fb7185; --color-violet-500: #f43f5e;
+  --color-violet-600: #e11d48; --color-violet-700: #be123c; --color-violet-800: #9f1239; --color-violet-950: #4c0519;
+}
+html[data-cor="laranja"] {
+  --color-violet-50: #fff7ed; --color-violet-300: #fdba74; --color-violet-400: #fb923c; --color-violet-500: #f97316;
+  --color-violet-600: #ea580c; --color-violet-700: #c2410c; --color-violet-800: #9a3412; --color-violet-950: #431407;
 }

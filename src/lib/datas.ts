@@ -2,14 +2,24 @@
 export const FUSO = "America/Sao_Paulo";
 const OFFSET = "-03:00";
 
-export const fmtDataHora = new Intl.DateTimeFormat("pt-BR", {
+const partesDataHora = new Intl.DateTimeFormat("pt-BR", {
   timeZone: FUSO,
-  weekday: "short",
+  weekday: "long",
   day: "2-digit",
   month: "2-digit",
   hour: "2-digit",
   minute: "2-digit",
+  hourCycle: "h23",
 });
+
+/** "Quarta · 19/11 · 19:30": dia da semana por extenso (sem "-feira"), nunca abreviado. */
+export const fmtDataHora = {
+  format(data: Date): string {
+    const p = Object.fromEntries(partesDataHora.formatToParts(data).map((x) => [x.type, x.value]));
+    const dia = String(p.weekday).replace(/-feira$/, "");
+    return `${dia.charAt(0).toUpperCase()}${dia.slice(1)} · ${p.day}/${p.month} · ${p.hour}:${p.minute}`;
+  },
+};
 
 export const fmtMes = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, month: "long", year: "numeric" });
 

@@ -55,9 +55,9 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 | Culto | Dia | Horário |
 |---|---|---|
-| Encontro de Vida - Qrta | Quarta | 19h30 |
-| Encontro de Vida - Dmg Manhã | Domingo | 9h |
-| Encontro de Vida - Dmg Noite | Domingo | 18h30 |
+| Encontro de Vida - Quarta | Quarta | 19h30 |
+| Encontro de Vida - Domingo Manhã | Domingo | 9h |
+| Encontro de Vida - Domingo Noite | Domingo | 18h30 |
 
 ## Cadastro
 
