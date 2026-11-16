@@ -26,4 +26,5 @@ $PSQL -f supabase/tests/leitura_comunicados.sql
 $PSQL -f supabase/tests/contatos_privados.sql
 $PSQL -f supabase/tests/trocas.sql
 $PSQL -f supabase/tests/preferencias.sql
+$PSQL -f supabase/tests/administrador.sql
 echo "OK: migrações, seed e testes passaram"

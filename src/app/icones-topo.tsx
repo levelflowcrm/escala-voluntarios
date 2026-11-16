@@ -31,3 +31,12 @@ export function IconeSugestoes() {
     </Icone>
   );
 }
+
+export function IconeAgenda() {
+  return (
+    <Icone href="/agenda" nome="Agenda da igreja">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </Icone>
+  );
+}

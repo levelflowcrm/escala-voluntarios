@@ -26,7 +26,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
 
   const [{ data: funcoes }, { data: eventos }, { data: membros }] = await Promise.all([
     supabase.from("funcoes").select("id, nome").eq("ministerio_id", ministerio.id).eq("ativo", true).order("ordem"),
-    supabase.from("eventos").select("id, titulo, inicio, convocacao_geral, intensivo").gte("inicio", inicio).lt("inicio", fim).order("inicio"),
+    supabase.from("eventos").select("id, titulo, inicio, convocacao_geral, intensivo").eq("so_agenda", false).gte("inicio", inicio).lt("inicio", fim).order("inicio"),
     supabase
       .from("membros_ministerio")
       .select("pessoa_id, pessoas!inner(nome, ativo)")
