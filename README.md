@@ -28,6 +28,7 @@ src/lib/escala/
 docs/
   REGRAS.md          regras de negócio combinadas com os coordenadores
   ROTEIRO.md         etapas do projeto
+  PUBLICAR.md        passo a passo para colocar no ar (Supabase, Vercel, Google)
 ```
 
 ## Comandos

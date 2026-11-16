@@ -31,6 +31,9 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
 
 ## Próximos passos
 
+Passo a passo detalhado para colocar no ar: **`docs/PUBLICAR.md`**.
+
+
 1. Rodar no SQL Editor do Supabase, nesta ordem: `20261106000002_vincular_conta.sql`
    e `20261106000003_responder_escala.sql`. **Sem eles o login não funciona.**
 2. ~~Juntar os PRs~~ feito.
