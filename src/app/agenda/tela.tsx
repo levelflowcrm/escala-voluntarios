@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
 import { TIPOS } from "@/lib/agenda-tipos";
 import { CORES, corDoEvento } from "@/lib/cores-evento";
+import { SeletorCor } from "../seletor-cor";
 import { REPETICOES } from "@/lib/recorrencia";
 import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type Alcance, type DadosEvento } from "./acoes";
 
@@ -72,31 +73,8 @@ function Formulario({
           <option key={k} value={k}>{v}</option>
         ))}
       </select>
-      <fieldset className="flex flex-col gap-1">
-        <legend className="text-xs text-neutral-500">Cor do evento (para dar destaque)</legend>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setD({ ...d, cor: "" })}
-            aria-pressed={!d.cor}
-            className={`h-9 rounded-full border px-3 text-xs ${!d.cor ? "border-violet-600 font-medium" : "border-neutral-300 dark:border-neutral-700"}`}
-          >
-            Automática
-          </button>
-          {Object.entries(CORES).map(([k, c]) => (
-            <button
-              key={k}
-              type="button"
-              title={c.nome}
-              aria-label={c.nome}
-              aria-pressed={d.cor === k}
-              onClick={() => setD({ ...d, cor: k })}
-              className={`h-9 w-9 rounded-full border-2 ${c.bolinha} ${d.cor === k ? "ring-2 ring-violet-600 ring-offset-2 dark:ring-offset-neutral-900" : ""}`}
-            />
-          ))}
-        </div>
-        {d.tipo === "locacao" && !d.cor && <p className="text-xs text-neutral-500">Locações saem em pêssego por padrão.</p>}
-      </fieldset>
+      <SeletorCor valor={d.cor ?? ""} aoMudar={(cor) => setD({ ...d, cor })} />
+      {d.tipo === "locacao" && !d.cor && <p className="text-xs text-neutral-500">Locações saem em pêssego por padrão.</p>}
       <p className="text-xs text-neutral-500">Início</p>
       <div className="flex gap-2">
         <input className={campo} type="date" value={d.dia} onChange={mudar("dia")} />

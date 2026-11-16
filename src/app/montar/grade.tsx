@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { CORES } from "@/lib/cores-evento";
 import { fmtDataHora } from "@/lib/datas";
-import { criarAutomatico, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
+import { SeletorCor } from "../seletor-cor";
+import { criarAutomatico, definirCorEvento, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
 import { NovoEvento } from "./novo-evento";
 
 export type EventoGrade = {
   id: string;
   titulo: string;
   inicio: string;
+  cor: string | null;
   passado: boolean;
   reuniao: boolean;
   situacao: "vazio" | "rascunho" | "publicada";
@@ -48,6 +51,7 @@ export function Grade({
   const [ocupado, iniciar] = useTransition();
   const [mensagem, setMensagem] = useState<{ tipo: "erro" | "ok"; texto: string } | null>(null);
   const [mostrarPassados, setMostrarPassados] = useState(false);
+  const [corAberta, setCorAberta] = useState<string | null>(null);
 
   const rodar = (acao: () => Promise<{ erro: string | null; aviso?: string }>) =>
     iniciar(async () => {
@@ -120,14 +124,23 @@ export function Grade({
       {visiveis.map((e) => {
         const sit = SITUACAO[e.situacao];
         return (
-          <article key={e.id} className={`rounded-xl border border-neutral-200 p-4 dark:border-neutral-800 ${e.passado ? "opacity-60" : ""}`}>
+          <article key={e.id} className={`rounded-xl border p-4 ${e.cor && CORES[e.cor] ? CORES[e.cor].card : "border-neutral-200 dark:border-neutral-800"} ${e.passado ? "opacity-60" : ""}`}>
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
                 <p className="text-sm text-neutral-500">{e.titulo}</p>
+                <button onClick={() => setCorAberta(corAberta === e.id ? null : e.id)} className="mt-1 text-xs text-neutral-500 underline">
+                  🎨 Cor
+                </button>
               </div>
               <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${sit.c}`}>{sit.t}</span>
             </div>
+
+            {corAberta === e.id && (
+              <div className="mb-3">
+                <SeletorCor valor={e.cor ?? ""} aoMudar={(cor) => rodar(() => definirCorEvento(e.id, cor))} />
+              </div>
+            )}
 
             {e.reuniao ? (
               <p className="text-sm text-neutral-500">Convocação geral: todos são chamados.</p>

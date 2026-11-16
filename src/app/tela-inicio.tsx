@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
@@ -25,7 +26,7 @@ export type Linha = {
   papel: string;
   status: string;
   motivo: string | null;
-  eventos: { titulo: string; inicio: string };
+  eventos: { titulo: string; inicio: string; cor?: string | null };
   funcoes: { nome: string } | null;
   ministerios: { nome: string } | null;
 };
@@ -65,7 +66,7 @@ export function TelaInicio({
     const s = STATUS[e.status];
     const papel = PAPEL[e.papel];
     return (
-      <article key={e.id} className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+      <article key={e.id} className={`rounded-xl border p-4 ${e.eventos.cor && CORES[e.eventos.cor] ? CORES[e.eventos.cor].card : "border-neutral-200 dark:border-neutral-800"}`}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.eventos.inicio))}</p>
