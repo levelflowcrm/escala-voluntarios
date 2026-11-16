@@ -59,3 +59,14 @@ export function diasDaSemanaNoMes(mes: string, diaSemana: number): string[] {
 export function inicioNoFuso(dia: string, hora: string): string {
   return `${dia}T${hora.slice(0, 5)}:00${OFFSET}`;
 }
+
+/** Dia (AAAA-MM-DD) no fuso da igreja. */
+export function diaNoFuso(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: FUSO, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+}
+
+/** Quantos dias de calendário faltam (0 = hoje, 1 = amanhã), no fuso da igreja. */
+export function diasAte(inicio: string | Date, agora = new Date()): number {
+  const dia = (d: Date) => Date.parse(`${diaNoFuso(d)}T00:00:00Z`);
+  return Math.round((dia(new Date(inicio)) - dia(agora)) / 86_400_000);
+}

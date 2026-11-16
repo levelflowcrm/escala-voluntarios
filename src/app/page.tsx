@@ -11,7 +11,7 @@ export default async function Inicio() {
 
   const agora = new Date().toISOString();
   const quinzeDias = new Date(Date.now() - 14 * 86_400_000).toISOString();
-  const [{ data: pessoa }, { data: coordenador }, { data: futuras }, { data: passadas }, { data: avisos }] = await Promise.all([
+  const [{ data: pessoa }, { data: coordenador }, { data: futuras }, { data: passadas }, { data: avisos }, { data: leitura }] = await Promise.all([
     supabase.from("pessoas").select("nome").eq("id", pessoaId).single(),
     supabase.rpc("sou_coordenador_algum"),
     supabase
@@ -35,7 +35,16 @@ export default async function Inicio() {
       .gte("criado_em", quinzeDias)
       .order("criado_em", { ascending: false })
       .limit(2),
+    supabase.from("leituras_comunicados").select("visto_em").eq("pessoa_id", pessoaId).maybeSingle(),
   ]);
+
+  // Sininho: comunicados de outras pessoas criados depois da última visita à tela de comunicados.
+  const desde = leitura?.visto_em ?? quinzeDias;
+  const { count: novos } = await supabase
+    .from("comunicados")
+    .select("id", { count: "exact", head: true })
+    .gt("criado_em", desde)
+    .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
 
   // A ordenação por tabela relacionada não ordena as linhas principais; ordena aqui.
   const porData = (lista: Linha[], sentido: 1 | -1) =>
@@ -49,6 +58,7 @@ export default async function Inicio() {
       coordenador={!!coordenador}
       proximas={proximas}
       historico={historico}
+      novosComunicados={novos ?? 0}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,
         titulo: a.titulo,
