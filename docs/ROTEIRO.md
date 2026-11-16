@@ -6,7 +6,8 @@
 - [x] Importação da planilha (jul–out/2026: 33 pessoas, 73 eventos, 195 escalações)
 - [x] Motor de sugestão automática com testes
 - [x] Projeto no Supabase criado e banco aplicado (33 pessoas, 73 eventos, 195 escalações)
-- [ ] Login (Google + link mágico por e-mail)
+- [x] Telas de login (Google + link por e-mail) e vínculo da conta pelo e-mail cadastrado
+- [ ] Configurar o provedor Google no Supabase
 - [ ] Publicação na Vercel
 
 ## Etapa 1 – Cadastro
