@@ -17,14 +17,10 @@ export default async function Termometro() {
   const ids = (meus ?? []).map((m) => m.ministerio_id as string);
   if (ids.length === 0) redirect("/");
 
-  const { data: membros } = await supabase
-    .from("membros_ministerio")
-    .select("pessoas!inner(id, nome, aniversario, ativo)")
-    .in("ministerio_id", ids);
+  const { data: membros } = await supabase.rpc("dados_do_time");
   const time = new Map<string, { nome: string; aniversario: string | null }>();
-  for (const m of membros ?? []) {
-    const p = m.pessoas as unknown as { id: string; nome: string; aniversario: string | null; ativo: boolean };
-    if (p.ativo) time.set(p.id, { nome: p.nome, aniversario: p.aniversario });
+  for (const p of (membros ?? []) as { pessoa_id: string; nome: string; aniversario: string | null }[]) {
+    time.set(p.pessoa_id, { nome: p.nome, aniversario: p.aniversario });
   }
 
   const { data: carga } = await supabase
