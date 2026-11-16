@@ -1,4 +1,4 @@
-# Onde paramos (06/11/2026)
+# Onde paramos (06/11/2026, 2ª sessão)
 
 Resumo para retomar o projeto numa nova sessão.
 
@@ -18,6 +18,7 @@ Resumo para retomar o projeto numa nova sessão.
 - [x] `20261104000001_estrutura_inicial.sql` + `seed.sql` (33 pessoas, 73 eventos, 195 escalações)
 - [x] `20261106000001_corrige_acesso_anonimo.sql` (anônimo sem acesso, conferido)
 - [ ] `20261106000002_vincular_conta.sql` → **colar no SQL Editor**
+- [ ] `20261106000003_responder_escala.sql` → **colar no SQL Editor** (depois do anterior)
 
 As migrações são aplicadas colando no SQL Editor do Supabase. A API de
 gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
@@ -27,6 +28,7 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
 - #1 Base do app — **juntado**
 - #2 Correção de segurança — falta Ready for review + Merge
 - #3 Login (e-mail e Google) — depende do #2; falta Ready for review + Merge
+- Telas Montar escala / Minhas escalas — depende do #3 (branch `claude/eager-bell-uq0guc`)
 
 ## Próximos passos
 
@@ -40,8 +42,13 @@ gerenciamento deste ambiente só consegue **ler** o banco (usada para conferir).
 6. (Opcional) Login com Google: criar cliente OAuth no Google Cloud com
    redirecionamento `https://oceyznlmglxhzzcenzjt.supabase.co/auth/v1/callback`
    e ativar o provedor Google no Supabase.
-7. Telas: **Montar escala** (coordenador) e **Minhas escalas** com
-   Confirmar / Não posso (voluntário).
+7. ~~Telas **Montar escala** e **Minhas escalas**~~ feitas. Testar no app
+   publicado: entrar como Luciano, abrir Montar escala → dezembro → Criar
+   cultos fixos → Sugerir → Publicar; depois entrar como um voluntário e
+   Confirmar / Não posso.
+8. Próximas ideias: tela de disponibilidade (voluntário marca quando não
+   pode), aviso por WhatsApp/e-mail ao publicar, cadastro de funções de
+   Projeção e Iluminação.
 
 ## Pendências com o coordenador
 

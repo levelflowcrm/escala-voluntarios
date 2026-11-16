@@ -102,3 +102,64 @@ reset role;
 select set_config('request.jwt.claim.sub', '', false);
 select set_config('request.jwt.claims', '', false);
 update pessoas set email = null, auth_user_id = null where nome = 'Thamires';
+
+-- 5) Confirmar / Não posso
+do $$
+declare
+  josy uuid := (select id from pessoas where nome = 'Josy');
+  min uuid := (select id from ministerios where nome = 'Transmissão');
+  f uuid := (select id from funcoes where nome = 'Câmera Black');
+  futuro uuid; rascunho uuid; passado uuid;
+begin
+  update pessoas set auth_user_id = '00000000-0000-0000-0000-00000000a001' where id = josy;
+  insert into eventos (igreja_id, titulo, inicio) select igreja_id, 'Teste futuro', now() + interval '3 days' from pessoas where id = josy returning id into futuro;
+  insert into eventos (igreja_id, titulo, inicio) select igreja_id, 'Teste rascunho', now() + interval '4 days' from pessoas where id = josy returning id into rascunho;
+  insert into escalas_ministerio values (futuro, min, true, now()), (rascunho, min, false, null);
+  insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id) values (futuro, min, f, josy), (rascunho, min, f, josy);
+  select e.id into passado from escalas e join eventos ev on ev.id = e.evento_id
+   where e.pessoa_id = josy and ev.inicio < now() limit 1;
+  perform set_config('teste.futuro', futuro::text, false);
+  perform set_config('teste.rascunho', rascunho::text, false);
+  perform set_config('teste.passado', passado::text, false);
+end $$;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000a001', false);
+do $$
+declare
+  futuro uuid := current_setting('teste.futuro')::uuid;
+  rascunho uuid := current_setting('teste.rascunho')::uuid;
+  minha uuid; n int; ok boolean;
+begin
+  select count(*) into n from escalas where evento_id = rascunho;
+  if n > 0 then raise exception 'FALHOU: voluntário vê rascunho'; end if;
+
+  select id into minha from escalas where evento_id = futuro;
+  perform responder_escala(minha, 'recusado', '  viagem  ');
+  if (select status from escalas where id = minha) <> 'recusado'
+     or (select motivo from escalas where id = minha) <> 'viagem' then
+    raise exception 'FALHOU: recusa não gravou';
+  end if;
+  perform responder_escala(minha, 'confirmado');
+  if (select status from escalas where id = minha) <> 'confirmado' or (select motivo from escalas where id = minha) is not null then
+    raise exception 'FALHOU: confirmação não gravou';
+  end if;
+
+  ok := false;
+  begin
+    perform responder_escala((select e.id from escalas e where e.evento_id = rascunho), 'confirmado');
+  exception when others then ok := true; end;
+  if not ok then raise exception 'FALHOU: respondeu rascunho'; end if;
+
+  ok := false;
+  begin
+    perform responder_escala(current_setting('teste.passado')::uuid, 'recusado');
+  exception when others then ok := sqlerrm like '%já aconteceu%'; end;
+  if not ok then raise exception 'FALHOU: respondeu evento passado'; end if;
+
+  raise notice 'Confirmar / Não posso: OK';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false);
+delete from eventos where titulo in ('Teste futuro', 'Teste rascunho');
+update pessoas set auth_user_id = null where nome = 'Josy';
