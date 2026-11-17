@@ -22,6 +22,16 @@ export function IconeTermometro() {
   );
 }
 
+export function IconeAniversariantes() {
+  return (
+    <Icone href="/aniversariantes" nome="Aniversariantes">
+      <path d="M3 20h18v-8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8z" />
+      <path d="M3 14.8c.3.1.7.2 1 .2a2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1c.4 0 .7-.1 1-.2" />
+      <path d="M12 4l1.5 1.6a2 2 0 1 1-3 .1L12 4z" />
+    </Icone>
+  );
+}
+
 export function IconeSugestoes() {
   return (
     <Icone href="/sugestoes" nome="Sugestões">

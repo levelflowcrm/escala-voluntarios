@@ -7,7 +7,7 @@ import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeAgenda, IconeContribuir, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { IconeAgenda, IconeAniversariantes, IconeContribuir, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 
@@ -119,6 +119,7 @@ export function TelaInicio({
             {admin && <IconePermissoes />}
             <IconeAgenda />
             {coordenador && <IconeTermometro />}
+            {coordenador && <IconeAniversariantes />}
             <IconeSugestoes />
             <IconeContribuir />
             <Sino novos={novosComunicados} />

@@ -83,6 +83,10 @@ As funções com menos gente habilitada são preenchidas primeiro.
 - O master também recebe um **aviso por WhatsApp** (mesma fila e limites dos outros avisos; precisa de celular válido no cadastro dele; não avisa sobre mensagem que ele mesmo enviou).
 - Diferente de "Sugestões", que vão para o coordenador do ministério.
 
+## Aniversariantes
+
+- O coordenador vê o ícone 🎂 no topo da tela inicial (`/aniversariantes`): quem faz aniversário hoje, nos próximos 30 dias (passando pela virada do ano) e todos do mês. Só aparecem os voluntários dos ministérios que ele coordena; a data vem do Perfil de cada pessoa (quem não preencheu é contado no rodapé).
+
 ## Pontuação do voluntário
 
 Janela dos **últimos 90 dias**, só de escalas publicadas. Cada pessoa vê a
