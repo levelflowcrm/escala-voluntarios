@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { despacharFila } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type DadosPerfil = { nomeCompleto: string; celular: string; aniversario: string };
@@ -24,5 +26,6 @@ export async function salvarPerfil(d: DadosPerfil): Promise<{ erro: string | nul
     .eq("id", eu);
   if (error) return { erro: "Não foi possível salvar" };
   revalidatePath("/perfil");
+  after(() => despacharFila());
   return { erro: null };
 }

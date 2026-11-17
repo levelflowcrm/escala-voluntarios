@@ -113,3 +113,5 @@ confirmada e avisa o coordenador (sino e "Chegadas de hoje").
 - O toque em "Cheguei" envia a posição do celular; o banco calcula a distância até a igreja (`igrejas.latitude/longitude`) e só aceita até `raio_cheguei_m` (250 m), com folga igual à imprecisão do GPS (máx. 150 m).
 - A posição **não é guardada**. Sem permissão de localização ou longe da igreja, a chegada não é registrada (a pessoa ainda pode confirmar presença normalmente).
 - Igreja sem coordenadas cadastradas: a checagem é dispensada. Nasci Pra Deus: Av. Monteiro Lobato, 1522 — Macedo, Guarulhos/SP.
+
+- **Boas-vindas:** ao ganhar um celular válido (cadastro ou correção), a pessoa recebe uma única mensagem explicando os avisos e, se ainda não entrou no app, como entrar com o Google. Só uma vez por pessoa; trocar de número depois não repete.
