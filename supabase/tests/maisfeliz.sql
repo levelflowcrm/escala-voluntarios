@@ -28,8 +28,8 @@ begin
     values (a, tm, 'voluntario'), (b, tm, 'voluntario'), (c, tm, 'voluntario'), (d, tm, 'voluntario'), (coord, tm, 'coordenador')
     on conflict (pessoa_id, ministerio_id) do update set papel = excluded.papel;
 
-  -- Culto que começou há 3 horas, escala publicada: A, B e C serviram; D está recusada
-  insert into eventos (igreja_id, titulo, inicio) values (ig, 'Culto maisfeliz', now() - interval '3 hours') returning id into ev;
+  -- Culto que começou há 3 horas (ou à 0h01 de hoje, pois a janela fecha à meia-noite), escala publicada: A, B e C serviram; D está recusada
+  insert into eventos (igreja_id, titulo, inicio) values (ig, 'Culto maisfeliz', greatest(now() - interval '3 hours', (date_trunc('day', now() at time zone 'America/Sao_Paulo') at time zone 'America/Sao_Paulo') + interval '1 minute')) returning id into ev;
   insert into escalas_ministerio (evento_id, ministerio_id, publicada) values (ev, tm, true);
   insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id, status) values
     (ev, tm, f1, a, 'confirmado'), (ev, tm, f2, b, 'confirmado'), (ev, tm, f3, c, 'pendente'), (ev, tm, f4, d, 'recusado');

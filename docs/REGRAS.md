@@ -93,7 +93,7 @@ recusa, troca ou escala sem resposta.
 
 ## MaisFeliz
 
-Depois do culto (de 1 h após o início até 36 h depois), quem serviu escolhe um
+Depois do culto (de 1 h após o início até a meia-noite do mesmo dia, horário de Brasília), quem serviu escolhe um
 emoji de 1 a 5. O voto é anônimo (sem nome e sem horário) e o líder só vê o
 resumo por culto, com 3 respostas ou mais.
 
