@@ -86,8 +86,9 @@ ranking público.
 | Troca pedida e aceita | −2 |
 | Escala que ficou sem resposta até o evento passar | −6 |
 
-A pontuação nunca fica abaixo de zero. Níveis: 🌱 Semente (0–39), 🥉 Bronze
-(40–119), 🥈 Prata (120–239), 🥇 Ouro (240+). A sequência é interrompida por
+A pontuação nunca fica abaixo de zero. Níveis (medem constância, não volume): 🌱 Semente (0–29), 🥉 Bronze
+(30–69), 🥈 Prata (70–119), 🥇 Ouro (120+). Os cortes serão revistos depois de
+um mês de uso real. A sequência é interrompida por
 recusa, troca ou escala sem resposta.
 
 ## MaisFeliz

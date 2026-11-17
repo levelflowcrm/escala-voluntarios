@@ -109,3 +109,29 @@ begin
   end if;
   raise notice 'Funções internas fechadas: OK';
 end $$;
+
+-- Faixas de nível: cortes em 30, 70 e 120 (usa a função real com pessoas sem histórico)
+do $$
+declare p uuid; ig uuid; tm uuid; f uuid; ev uuid; i int; r record; cortes int[] := array[3, 7, 12];
+begin
+  select id, igreja_id into tm, ig from ministerios where nome = 'Transmissão';
+  select id into f from funcoes where nome = 'Câmera Black';
+  insert into pessoas (igreja_id, nome) values (ig, 'Teste Faixa') returning id into p;
+  -- sem nada: semente
+  select * into r from calcular_pontuacao(p);
+  if r.nivel <> 'semente' then raise exception 'FALHOU: sem histórico deveria ser semente, é %', r.nivel; end if;
+  -- 3 escalas seguidas = 30 + 6 = 36 => bronze
+  for i in 1..12 loop
+    insert into eventos (igreja_id, titulo, inicio) values (ig, 'Culto faixa ' || i, now() - make_interval(days => i)) returning id into ev;
+    insert into escalas_ministerio (evento_id, ministerio_id, publicada) values (ev, tm, true);
+    insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id, status) values (ev, tm, f, p, 'confirmado');
+    if i = 1 then select * into r from calcular_pontuacao(p); if r.pontos <> 12 or r.nivel <> 'semente' then raise exception 'FALHOU: 1 escala = 12 pts semente (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 2 then select * into r from calcular_pontuacao(p); if r.pontos <> 24 or r.nivel <> 'semente' then raise exception 'FALHOU: 2 escalas = 24 pts semente (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 3 then select * into r from calcular_pontuacao(p); if r.pontos <> 36 or r.nivel <> 'bronze' then raise exception 'FALHOU: 3 escalas = 36 pts bronze (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 6 then select * into r from calcular_pontuacao(p); if r.pontos <> 72 or r.nivel <> 'prata' then raise exception 'FALHOU: 6 escalas = 72 pts prata (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 10 then select * into r from calcular_pontuacao(p); if r.pontos <> 120 or r.nivel <> 'ouro' then raise exception 'FALHOU: 10 escalas = 120 pts ouro (%/%)', r.pontos, r.nivel; end if; end if;
+  end loop;
+  delete from eventos where titulo like 'Culto faixa %';
+  delete from pessoas where id = p;
+  raise notice 'Faixas de nível: OK';
+end $$;

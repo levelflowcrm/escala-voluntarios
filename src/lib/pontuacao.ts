@@ -1,9 +1,9 @@
 /** Níveis e apresentação da pontuação. As regras de cálculo ficam no banco (migração 19) e em docs/REGRAS.md. */
 export const NIVEIS = [
   { id: "semente", emoji: "🌱", rotulo: "Semente", minimo: 0 },
-  { id: "bronze", emoji: "🥉", rotulo: "Bronze", minimo: 40 },
-  { id: "prata", emoji: "🥈", rotulo: "Prata", minimo: 120 },
-  { id: "ouro", emoji: "🥇", rotulo: "Ouro", minimo: 240 },
+  { id: "bronze", emoji: "🥉", rotulo: "Bronze", minimo: 30 },
+  { id: "prata", emoji: "🥈", rotulo: "Prata", minimo: 70 },
+  { id: "ouro", emoji: "🥇", rotulo: "Ouro", minimo: 120 },
 ] as const;
 
 export type Pontuacao = {
