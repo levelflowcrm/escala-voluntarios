@@ -4,7 +4,7 @@ import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeAgenda, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { IconeAgenda, IconeContribuir, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 
@@ -105,11 +105,12 @@ export function TelaInicio({
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             {admin && <IconePermissoes />}
             <IconeAgenda />
             {coordenador && <IconeTermometro />}
             <IconeSugestoes />
+            <IconeContribuir />
             <Sino novos={novosComunicados} />
           </div>
           <form action={sair} className="flex items-center gap-3">

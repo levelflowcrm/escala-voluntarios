@@ -49,3 +49,11 @@ export function IconePermissoes() {
     </Icone>
   );
 }
+
+export function IconeContribuir() {
+  return (
+    <Icone href="/contribuir" nome="Apoie o Mais Conectados">
+      <path d="M12 21s-7-4.6-9.3-9.2C1.2 8.6 3 5 6.5 5c2 0 3.6 1.1 5.5 3 1.9-1.9 3.5-3 5.5-3C21 5 22.8 8.6 21.3 11.8 19 16.4 12 21 12 21Z" />
+    </Icone>
+  );
+}
