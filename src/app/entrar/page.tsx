@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FormularioEntrar } from "./formulario";
 
@@ -8,9 +9,19 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-6 px-4 py-10">
       <div>
-        <p className="text-sm font-medium text-violet-600 dark:text-violet-400">Igreja Nasci Pra Deus</p>
-        <h1 className="mt-1 text-2xl font-semibold">Mais Conectados</h1>
-        <p className="mt-2 text-neutral-500">Entre para ver suas escalas e confirmar presença.</p>
+        <div className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-neutral-200 dark:ring-neutral-700">
+          <Image
+            src="/logo-mais-conectados.png"
+            alt="Mais Conectados — Conectados para servir"
+            width={900}
+            height={547}
+            priority
+            className="h-auto w-full"
+          />
+        </div>
+        <h1 className="sr-only">Mais Conectados</h1>
+        <p className="mt-4 text-sm font-medium text-violet-600 dark:text-violet-400">Igreja Nasci Pra Deus</p>
+        <p className="mt-1 text-neutral-500">Entre para ver suas escalas e confirmar presença.</p>
       </div>
       {erro && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
