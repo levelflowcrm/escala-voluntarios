@@ -24,6 +24,8 @@ export type DadosEvento = {
   descricao: string;
   repeticao?: Repeticao;
   ate?: string;
+  /** Reunião com todos convocados (sem escala por função). */
+  convocacaoGeral?: boolean;
 };
 
 export type Alcance = "este" | "proximos";
@@ -48,7 +50,7 @@ function validar(d: DadosEvento) {
   return { erro: null, ok: { titulo, tipo_agenda: d.tipo, cor: d.cor || null, inicio, fim, local, observacao } } as const;
 }
 
-/** Cria evento de agenda (com repetição opcional). Só administrador (a RLS barra os demais). */
+/** Cria um evento (agenda + escala dos ministérios), com repetição opcional. Só o administrador master (a RLS barra os demais). */
 export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
   const v = validar(d);
   if (v.erro !== null) return { erro: v.erro };
@@ -57,8 +59,8 @@ export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
   if (repeticao !== "nenhuma" && !DATA.test(d.ate ?? "")) return { erro: "Informe até quando o evento se repete" };
 
   const supabase = await criarClienteServidor();
-  const { data: admin } = await supabase.rpc("sou_admin");
-  if (!admin) return { erro: "Só o administrador da igreja pode cadastrar eventos na agenda." };
+  const { data: master } = await supabase.rpc("sou_admin_master");
+  if (!master) return { erro: "Só o administrador da igreja pode cadastrar eventos." };
   const { data: igrejaId } = await supabase.rpc("minha_igreja");
 
   const dias = gerarOcorrencias(d.dia, repeticao, d.ate ?? d.dia);
@@ -68,8 +70,8 @@ export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
     const inicio = inicioNoFuso(dia, d.hora);
     return {
       igreja_id: igrejaId,
-      so_agenda: true,
       serie_id: serie,
+      convocacao_geral: !!d.convocacaoGeral,
       ...v.ok,
       inicio,
       fim: duracao === null ? null : new Date(new Date(inicio).getTime() + duracao).toISOString(),
@@ -86,8 +88,9 @@ export async function editarEventoAgenda(id: string, d: DadosEvento, alcance: Al
   const v = validar(d);
   if (v.erro !== null) return { erro: v.erro };
   const supabase = await criarClienteServidor();
-  const { data: atual } = await supabase.from("eventos").select("id, serie_id, inicio").eq("id", id).eq("so_agenda", true).maybeSingle();
+  const { data: atual } = await supabase.from("eventos").select("id, serie_id, inicio").eq("id", id).maybeSingle();
   if (!atual) return { erro: "Evento não encontrado ou sem permissão." };
+  const campos = { ...v.ok, convocacao_geral: !!d.convocacaoGeral };
 
   let erro = null;
   if (alcance === "proximos" && atual.serie_id) {
@@ -95,17 +98,16 @@ export async function editarEventoAgenda(id: string, d: DadosEvento, alcance: Al
       .from("eventos")
       .select("id, inicio")
       .eq("serie_id", atual.serie_id)
-      .eq("so_agenda", true)
       .gte("inicio", atual.inicio);
     const duracao = v.ok.fim ? new Date(v.ok.fim).getTime() - new Date(v.ok.inicio).getTime() : null;
     for (const e of lote ?? []) {
       const inicio = e.id === id ? v.ok.inicio : inicioNoFuso(diaNoFuso(new Date(e.inicio)), d.hora);
       const fim = duracao === null ? null : new Date(new Date(inicio).getTime() + duracao).toISOString();
-      const r = await supabase.from("eventos").update({ ...v.ok, inicio, fim }).eq("id", e.id);
+      const r = await supabase.from("eventos").update({ ...campos, inicio, fim }).eq("id", e.id);
       if (r.error) erro = r.error;
     }
   } else {
-    const r = await supabase.from("eventos").update(v.ok).eq("id", id).eq("so_agenda", true);
+    const r = await supabase.from("eventos").update(campos).eq("id", id);
     erro = r.error;
   }
   revalidatePath("/agenda");
@@ -114,9 +116,9 @@ export async function editarEventoAgenda(id: string, d: DadosEvento, alcance: Al
 
 export async function apagarEventoAgenda(id: string, alcance: Alcance = "este"): Promise<R> {
   const supabase = await criarClienteServidor();
-  const { data: atual } = await supabase.from("eventos").select("id, serie_id, inicio").eq("id", id).eq("so_agenda", true).maybeSingle();
+  const { data: atual } = await supabase.from("eventos").select("id, serie_id, inicio").eq("id", id).maybeSingle();
   if (!atual) return { erro: "Evento não encontrado ou sem permissão." };
-  const consulta = supabase.from("eventos").delete().eq("so_agenda", true);
+  const consulta = supabase.from("eventos").delete();
   const { error } =
     alcance === "proximos" && atual.serie_id
       ? await consulta.eq("serie_id", atual.serie_id).gte("inicio", atual.inicio)

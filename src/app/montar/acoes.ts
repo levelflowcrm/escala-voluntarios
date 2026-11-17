@@ -89,6 +89,8 @@ export async function definirTitular(
 export async function gerarCultos(mes: string): Promise<Resultado> {
   if (!mesValido(mes)) return { erro: "Mês inválido" };
   const supabase = await criarClienteServidor();
+  const { data: master } = await supabase.rpc("sou_admin_master");
+  if (!master) return { erro: "Só o administrador da igreja cria os cultos do mês." };
   const { inicio, fim } = limitesMes(mes);
 
   const [{ data: igrejaId }, { data: tipos }, { data: existentes }, { data: pausas }] = await Promise.all([
@@ -133,7 +135,12 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
   ]);
   if (!funcoes?.length) return { erro: "Este ministério ainda não tem funções cadastradas." };
 
-  const eventosIds = (eventosMes ?? []).map((e) => e.id);
+  // Eventos que o ministério dispensou não entram na sugestão
+  const { data: dispensas } = await supabase.from("eventos_dispensados").select("evento_id").eq("ministerio_id", ministerioId);
+  const dispensados = new Set((dispensas ?? []).map((d) => d.evento_id as string));
+  const eventosAtivos = (eventosMes ?? []).filter((e) => !dispensados.has(e.id));
+
+  const eventosIds = eventosAtivos.map((e) => e.id);
   const pessoaIds = (membros ?? [])
     .filter((m) => (m.pessoas as unknown as { ativo: boolean }).ativo)
     .map((m) => m.pessoa_id);
@@ -161,7 +168,7 @@ export async function sugerir(ministerioId: string, mes: string): Promise<Result
   const comResponsavel = new Set(
     (escalasMes ?? []).filter((e) => e.ministerio_id === ministerioId && e.papel === "responsavel_dia").map((e) => e.evento_id),
   );
-  const alvo = (eventosMes ?? []).filter(
+  const alvo = eventosAtivos.filter(
     (e) => new Date(e.inicio) > agora && !e.convocacao_geral && !comResponsavel.has(e.id),
   );
   if (alvo.length === 0) return { erro: null, aviso: "Não há eventos futuros com vagas neste mês." };
@@ -252,36 +259,17 @@ export async function publicar(ministerioId: string, mes: string): Promise<Resul
   return { erro: null, aviso: data.length ? `${data.length} eventos publicados.` : "Já estava tudo publicado." };
 }
 
-/** Cria um evento avulso (conferência, ensaio especial, reunião...). Só coordenador (a RLS barra os demais). */
-export async function criarEvento(
-  titulo: string,
-  dia: string,
-  hora: string,
-  convocacaoGeral: boolean,
-  cor = "",
-): Promise<Resultado> {
-  const nome = titulo.trim();
-  if (!nome) return { erro: "Dê um nome ao evento" };
-  if (nome.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || Number.isNaN(Date.parse(`${dia}T12:00:00Z`))) return { erro: "Data inválida" };
-  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return { erro: "Horário inválido" };
-  if (cor && !CORES[cor]) return { erro: "Cor inválida" };
-
+/** O coordenador dispensa (ou volta a escalar) um evento para o PRÓPRIO ministério. A função do banco confere a permissão. */
+export async function dispensarEvento(eventoId: string, ministerioId: string, dispensar: boolean): Promise<Resultado> {
   const supabase = await criarClienteServidor();
-  const { data: igrejaId } = await supabase.rpc("minha_igreja");
-  if (!igrejaId) return { erro: "Cadastro não encontrado" };
-  const inicio = inicioNoFuso(dia, hora);
-  const { data: existente } = await supabase.from("eventos").select("id").eq("titulo", nome).eq("inicio", inicio).maybeSingle();
-  if (existente) return { erro: "Esse evento já existe nesse dia e horário." };
-
-  const { error } = await supabase
-    .from("eventos")
-    .insert({ igreja_id: igrejaId, titulo: nome, inicio, convocacao_geral: convocacaoGeral, cor: cor || null });
+  const { error } = await supabase.rpc("dispensar_evento", { p_evento: eventoId, p_ministerio: ministerioId, p_dispensar: dispensar });
   revalidatePath("/montar");
-  return error ? { erro: traduzirErro(error) } : { erro: null, aviso: "Evento criado. Ele aparece no mês correspondente." };
+  revalidatePath("/");
+  if (error) return { erro: traduzirErro(error) };
+  return { erro: null, aviso: dispensar ? "Evento dispensado para o seu ministério. Ele fica em “Dispensados” caso mude de ideia." : "Evento de volta na escala do seu ministério." };
 }
 
-/** Define (ou limpa, com "") a cor de um culto/evento de escala. Só coordenador (a RLS barra os demais). */
+/** Define (ou limpa, com "") a cor de um evento. Só o administrador master (a RLS barra os demais). */
 export async function definirCorEvento(eventoId: string, cor: string): Promise<Resultado> {
   if (cor && !CORES[cor]) return { erro: "Cor inválida" };
   const supabase = await criarClienteServidor();
@@ -292,7 +280,7 @@ export async function definirCorEvento(eventoId: string, cor: string): Promise<R
   return { erro: null };
 }
 
-/** Muda o dia/horário de UM culto (os demais cultos fixos não mudam). Só coordenador (a RLS barra os demais). */
+/** Muda o dia/horário de UM evento (os demais cultos fixos não mudam). Só o administrador master (a RLS barra os demais). */
 export async function alterarCulto(eventoId: string, dia: string, hora: string): Promise<Resultado> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || Number.isNaN(Date.parse(`${dia}T12:00:00Z`))) return { erro: "Data inválida" };
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return { erro: "Horário inválido" };
@@ -311,7 +299,7 @@ export async function alterarCulto(eventoId: string, dia: string, hora: string):
 
 /**
  * Cancela UM culto: remove o evento (e as escalas dele) e, se for culto fixo, registra uma pausa de um dia
- * para o gerador não recriá-lo. Só coordenador.
+ * para o gerador não recriá-lo. Só o administrador master.
  */
 export async function cancelarCulto(eventoId: string, motivo: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
@@ -330,10 +318,16 @@ export async function cancelarCulto(eventoId: string, motivo: string): Promise<R
   return error ? { erro: "Não foi possível cancelar agora." } : { erro: null, aviso: "Culto cancelado. Para voltar atrás, remova a pausa em Cultos fixos e gere os cultos do mês." };
 }
 
-/** "Criar automático": cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */
+/** "Criar automático": (master) cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */
 export async function criarAutomatico(ministerioId: string, mes: string): Promise<Resultado> {
-  const cultos = await gerarCultos(mes);
-  if (cultos.erro) return cultos;
+  // Os cultos do mês só o master cria; o coordenador usa os que já existem
+  const supabase = await criarClienteServidor();
+  const { data: master } = await supabase.rpc("sou_admin_master");
+  let cultos: Resultado = { erro: null };
+  if (master) {
+    cultos = await gerarCultos(mes);
+    if (cultos.erro) return cultos;
+  }
   const escala = await sugerir(ministerioId, mes);
   if (escala.erro) return escala;
   return {

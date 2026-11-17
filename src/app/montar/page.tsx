@@ -18,14 +18,21 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
   const mes = mesValido(params.mes) ? params.mes : mesAtual();
   const { inicio, fim } = limitesMes(mes);
 
-  const [{ data: funcoes }, { data: eventos }, { data: membros }] = await Promise.all([
+  const [{ data: funcoes }, { data: eventosTodos }, { data: membros }, { data: dispensas }, { data: master }, { data: escaladosPeriodo }] = await Promise.all([
     supabase.from("funcoes").select("id, nome").eq("ministerio_id", ministerio.id).eq("ativo", true).order("ordem"),
     supabase.from("eventos").select("id, titulo, inicio, convocacao_geral, intensivo, cor").eq("so_agenda", false).gte("inicio", inicio).lt("inicio", fim).order("inicio"),
     supabase
       .from("membros_ministerio")
       .select("pessoa_id, pessoas!inner(nome, ativo)")
       .eq("ministerio_id", ministerio.id),
+    supabase.from("eventos_dispensados").select("evento_id").eq("ministerio_id", ministerio.id),
+    supabase.rpc("sou_admin_master"),
+    supabase.rpc("escalados_no_periodo", { p_inicio: inicio, p_fim: fim }),
   ]);
+  // Eventos que este ministério dispensou saem da escala e ficam numa lista à parte
+  const idsDispensados = new Set((dispensas ?? []).map((d) => d.evento_id as string));
+  const eventos = (eventosTodos ?? []).filter((e) => !idsDispensados.has(e.id));
+  const dispensados = (eventosTodos ?? []).filter((e) => idsDispensados.has(e.id)).map((e) => ({ id: e.id, titulo: e.titulo, inicio: e.inicio }));
   const eventoIds = (eventos ?? []).map((e) => e.id);
   const funcaoIds = (funcoes ?? []).map((f) => f.id);
 
@@ -65,6 +72,14 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
     funcoes: { nome: string } | null;
   };
   const lista = (escalas ?? []) as unknown as LinhaEscala[];
+  // Quem já está escalado por OUTRO ministério em cada evento (o coordenador vê antes de tentar escalar)
+  const ocupadosPorEvento = new Map<string, Record<string, string>>();
+  for (const o of (escaladosPeriodo ?? []) as { evento_id: string; pessoa_id: string; ministerio_id: string; ministerio: string }[]) {
+    if (o.ministerio_id === ministerio.id) continue;
+    const atual = ocupadosPorEvento.get(o.evento_id) ?? {};
+    atual[o.pessoa_id] = o.ministerio;
+    ocupadosPorEvento.set(o.evento_id, atual);
+  }
   const agora = Date.now();
 
   const grade: EventoGrade[] = (eventos ?? []).map((e) => {
@@ -78,6 +93,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
       cor: e.cor ?? null,
       passado: new Date(e.inicio).getTime() < agora,
       reuniao: e.convocacao_geral,
+      ocupados: ocupadosPorEvento.get(e.id) ?? {},
       situacao: !publicada.has(e.id) ? "vazio" : publicada.get(e.id) ? "publicada" : "rascunho",
       responsavel: responsavel ? { nome: responsavel.pessoas?.nome ?? "", status: responsavel.status } : null,
       vagas: (funcoes ?? []).map((f) => {
@@ -106,6 +122,8 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
       temFuncoes={funcaoIds.length > 0}
       grade={grade}
       aptos={aptos}
+      dispensados={dispensados}
+      master={!!master}
     />
   );
 }

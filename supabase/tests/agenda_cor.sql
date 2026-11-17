@@ -23,26 +23,34 @@ begin
   raise notice 'Agenda cor/locação: OK';
 end $$;
 
--- Cor de culto de escala: coordenador altera; voluntário comum não.
+-- Cor de culto de escala: só o master altera; coordenador e voluntário comum não.
 do $$
-declare ig uuid; tm uuid; c uuid; v uuid; ev uuid; n int; cor_atual text;
-  uc uuid := gen_random_uuid(); uv uuid := gen_random_uuid();
+declare ig uuid; tm uuid; c uuid; v uuid; m uuid; ev uuid; n int; cor_atual text;
+  uc uuid := gen_random_uuid(); uv uuid := gen_random_uuid(); um uuid := gen_random_uuid();
 begin
   select id into ig from igrejas limit 1;
   select id into tm from ministerios where nome = 'Transmissão';
   select id into c from pessoas where nome = 'Thamires';
   select id into v from pessoas where nome = 'Diogo';
+  select id into m from pessoas where nome = 'Sérgio';
   update pessoas set auth_user_id = uc where id = c;
   update pessoas set auth_user_id = uv where id = v;
+  update pessoas set auth_user_id = um where id = m;
+  insert into administradores (pessoa_id, master) values (m, true) on conflict (pessoa_id) do update set master = true;
   insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (c, tm, 'coordenador'), (v, tm, 'voluntario')
     on conflict (pessoa_id, ministerio_id) do update set papel = excluded.papel;
   insert into eventos (igreja_id, titulo, inicio) values (ig, 'Culto cor teste', now() + interval '20 days') returning id into ev;
 
   set local role authenticated;
   perform set_config('request.jwt.claim.sub', uc::text, true);
-  update eventos set cor = 'menta' where id = ev and not so_agenda;
+  update eventos set cor = 'rosa' where id = ev;
   get diagnostics n = row_count;
-  if n <> 1 then raise exception 'FALHOU: coordenador não conseguiu colorir o culto'; end if;
+  if n <> 0 then raise exception 'FALHOU: coordenador alterou a cor do culto'; end if;
+
+  perform set_config('request.jwt.claim.sub', um::text, true);
+  update eventos set cor = 'menta' where id = ev;
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FALHOU: master não conseguiu colorir o culto'; end if;
 
   perform set_config('request.jwt.claim.sub', uv::text, true);
   update eventos set cor = 'rosa' where id = ev and not so_agenda;
@@ -50,6 +58,11 @@ begin
   if n <> 0 then raise exception 'FALHOU: voluntário alterou a cor do culto'; end if;
 
   reset role;
+  perform set_config('request.jwt.claim.sub', '', true);
+  alter table administradores disable trigger administradores_master;
+  delete from administradores where pessoa_id = m;
+  alter table administradores enable trigger administradores_master;
+  update pessoas set auth_user_id = null where id in (c, v, m);
   select cor into cor_atual from eventos where id = ev;
   if cor_atual <> 'menta' then raise exception 'FALHOU: cor final inesperada (%)', cor_atual; end if;
   raise notice 'Cor de cultos de escala: OK';

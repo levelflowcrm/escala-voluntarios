@@ -4,8 +4,7 @@ import { useState, useTransition } from "react";
 import { CORES } from "@/lib/cores-evento";
 import { diaNoFuso, fmtDataHora } from "@/lib/datas";
 import { SeletorCor } from "../seletor-cor";
-import { alterarCulto, cancelarCulto, criarAutomatico, definirCorEvento, definirTitular, gerarCultos, publicar, sugerir } from "./acoes";
-import { NovoEvento } from "./novo-evento";
+import { alterarCulto, cancelarCulto, criarAutomatico, definirCorEvento, definirTitular, dispensarEvento, gerarCultos, publicar, sugerir } from "./acoes";
 
 export type EventoGrade = {
   id: string;
@@ -14,6 +13,8 @@ export type EventoGrade = {
   cor: string | null;
   passado: boolean;
   reuniao: boolean;
+  /** pessoaId → nome do ministério que já escalou essa pessoa neste evento */
+  ocupados: Record<string, string>;
   situacao: "vazio" | "rascunho" | "publicada";
   responsavel: { nome: string; status: string } | null;
   vagas: {
@@ -42,11 +43,15 @@ export function Grade({
   mes,
   eventos,
   aptos,
+  dispensados,
+  master,
 }: {
   ministerioId: string;
   mes: string;
   eventos: EventoGrade[];
   aptos: Record<string, { id: string; nome: string }[]>;
+  dispensados: { id: string; titulo: string; inicio: string }[];
+  master: boolean;
 }) {
   const [ocupado, iniciar] = useTransition();
   const [mensagem, setMensagem] = useState<{ tipo: "erro" | "ok"; texto: string } | null>(null);
@@ -75,7 +80,7 @@ export function Grade({
       <button
         disabled={ocupado}
         onClick={() => {
-          if (confirm("Criar automático: cria os cultos do mês e preenche as vagas vazias respeitando disponibilidade, conflitos com outros ministérios e a divisão da carga. Nada é publicado. Continuar?"))
+          if (confirm(master ? "Criar automático: cria os cultos do mês e preenche as vagas vazias respeitando disponibilidade, conflitos com outros ministérios e a divisão da carga. Nada é publicado. Continuar?" : "Criar automático: preenche as vagas vazias respeitando disponibilidade, conflitos com outros ministérios e a divisão da carga. Nada é publicado. Continuar?"))
             rodar(() => criarAutomatico(ministerioId, mes));
         }}
         className={`${botao} w-full bg-violet-600 text-white`}
@@ -83,10 +88,11 @@ export function Grade({
         ✨ Criar automático
       </button>
       <div className="flex flex-wrap gap-2">
-        <button disabled={ocupado} onClick={() => rodar(() => gerarCultos(mes))} className={`${botao} border border-neutral-300 dark:border-neutral-700`}>
-          Criar cultos fixos do mês
-        </button>
-        <NovoEvento rodar={rodar} />
+        {master && (
+          <button disabled={ocupado} onClick={() => rodar(() => gerarCultos(mes))} className={`${botao} border border-neutral-300 dark:border-neutral-700`}>
+            Criar cultos fixos do mês
+          </button>
+        )}
         <button
           disabled={ocupado || vagasAbertas === 0}
           onClick={() => rodar(() => sugerir(ministerioId, mes))}
@@ -120,7 +126,7 @@ export function Grade({
       )}
 
       {visiveis.length === 0 && (
-        <p className="text-neutral-500">Nenhum evento neste mês. Use “Criar cultos fixos do mês” para começar.</p>
+        <p className="text-neutral-500">{master ? "Nenhum evento neste mês. Use “Criar cultos fixos do mês” ou cadastre eventos na Agenda da igreja." : "Nenhum evento neste mês para o seu ministério. Os eventos são cadastrados pelo administrador na Agenda da igreja."}</p>
       )}
 
       {visiveis.map((e) => {
@@ -132,14 +138,28 @@ export function Grade({
                 <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
                 <p className="text-sm text-neutral-500">{e.titulo}</p>
                 <div className="mt-1 flex flex-wrap gap-3 text-xs text-neutral-500">
-                  <button onClick={() => setCorAberta(corAberta === e.id ? null : e.id)} className="underline">🎨 Cor</button>
-                  <button
-                    onClick={() => setAlterando({ id: e.id, dia: diaNoFuso(new Date(e.inicio)), hora: horaFmt.format(new Date(e.inicio)) })}
-                    className="underline"
-                  >
-                    ✏️ Alterar dia/horário
-                  </button>
-                  <button
+                  {master && <button onClick={() => setCorAberta(corAberta === e.id ? null : e.id)} className="underline">🎨 Cor</button>}
+                  {master && (
+                    <button
+                      onClick={() => setAlterando({ id: e.id, dia: diaNoFuso(new Date(e.inicio)), hora: horaFmt.format(new Date(e.inicio)) })}
+                      className="underline"
+                    >
+                      ✏️ Alterar dia/horário
+                    </button>
+                  )}
+                  {!e.passado && (
+                    <button
+                      disabled={ocupado}
+                      onClick={() => {
+                        if (confirm(`Dispensar “${e.titulo}” para o seu ministério? Ele sai da sua escala (as outras áreas não mudam) e você pode voltar atrás.`))
+                          rodar(() => dispensarEvento(e.id, ministerioId, true));
+                      }}
+                      className="underline"
+                    >
+                      🚫 Meu time não serve neste evento
+                    </button>
+                  )}
+                  {master && <button
                     disabled={ocupado}
                     onClick={() => {
                       const escalados = e.vagas.filter((v) => v.pessoaId).length;
@@ -150,7 +170,7 @@ export function Grade({
                     className="text-red-600 underline"
                   >
                     Cancelar culto
-                  </button>
+                  </button>}
                 </div>
               </div>
               <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${sit.c}`}>{sit.t}</span>
@@ -207,11 +227,16 @@ export function Grade({
                           className={`h-10 min-w-0 flex-1 rounded-lg border bg-transparent px-2 text-sm ${v.pessoaId ? "border-neutral-300 dark:border-neutral-700" : "border-dashed border-amber-400"}`}
                         >
                           <option value="">— vaga aberta —</option>
-                          {(aptos[v.funcaoId] ?? []).map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.nome}
-                            </option>
-                          ))}
+                          {(aptos[v.funcaoId] ?? []).map((p) => {
+                            const outro = e.ocupados[p.id];
+                            const jaEscalado = !!outro && p.id !== v.pessoaId;
+                            return (
+                              <option key={p.id} value={p.id} disabled={jaEscalado}>
+                                {p.nome}
+                                {jaEscalado ? ` — já escalado em ${outro}` : ""}
+                              </option>
+                            );
+                          })}
                         </select>
                         <span title={sim?.t} className={`w-5 text-center ${sim?.c ?? ""}`}>
                           {sim?.s}
@@ -236,6 +261,23 @@ export function Grade({
           </article>
         );
       })}
+
+      {dispensados.length > 0 && (
+        <section className="flex flex-col gap-2 rounded-xl border border-dashed border-neutral-300 p-4 dark:border-neutral-700">
+          <h2 className="text-sm font-medium">Dispensados pelo seu ministério ({dispensados.length})</h2>
+          <p className="text-xs text-neutral-500">Esses eventos não entram na escala do seu time. Se mudar de ideia, é só voltar a escalar.</p>
+          {dispensados.map((d) => (
+            <div key={d.id} className="flex items-center justify-between gap-3 text-sm">
+              <span>
+                <span className="capitalize">{fmtDataHora.format(new Date(d.inicio))}</span> · {d.titulo}
+              </span>
+              <button disabled={ocupado} onClick={() => rodar(() => dispensarEvento(d.id, ministerioId, false))} className="shrink-0 text-violet-700 underline dark:text-violet-300">
+                Voltar a escalar
+              </button>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
