@@ -4,7 +4,7 @@ import { clienteServico, despacharFila, MAX_POR_RODADA_CRON, whatsappAtivo } fro
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-/** Rotina diária (Vercel Cron): monta os lembretes de amanhã e envia a fila. Protegida por CRON_SECRET. */
+/** Rotina diária (Vercel Cron): monta os lembretes de amanhã e do MaisFeliz e envia a fila. Protegida por CRON_SECRET. */
 export async function GET(req: Request) {
   const segredo = process.env.CRON_SECRET;
   if (!segredo || req.headers.get("authorization") !== `Bearer ${segredo}`) {
@@ -16,6 +16,8 @@ export async function GET(req: Request) {
   if (!db) return NextResponse.json({ erro: "sem chave de serviço" }, { status: 500 });
 
   const { data: lembretes, error } = await db.rpc("enfileirar_lembretes");
+  // Lembrete do MaisFeliz (quem serviu hoje e ainda não avaliou); falha aqui não impede o envio da fila
+  const { data: maisfeliz } = await db.rpc("enfileirar_lembretes_maisfeliz");
   const r = await despacharFila(MAX_POR_RODADA_CRON);
-  return NextResponse.json({ ok: !error, lembretes: lembretes ?? 0, enviados: r.enviados, ...(r.motivo ? { motivo: r.motivo } : {}) });
+  return NextResponse.json({ ok: !error, lembretes: lembretes ?? 0, maisfeliz: maisfeliz ?? 0, enviados: r.enviados, ...(r.motivo ? { motivo: r.motivo } : {}) });
 }
