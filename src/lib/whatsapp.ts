@@ -74,8 +74,12 @@ async function enviarTexto(numero: string, texto: string): Promise<{ ok: boolean
       signal: AbortSignal.timeout(8000),
     });
     return r.ok ? { ok: true } : { ok: false, erro: `http_${r.status}` };
-  } catch {
-    return { ok: false, erro: "falha_de_rede" };
+  } catch (e) {
+    // Só o tipo da falha (ex.: TimeoutError, TypeError, ENOTFOUND): nunca URL, token nem telefone.
+    const nome = e instanceof Error ? e.name : "desconhecido";
+    const causa = (e as { cause?: { code?: string; message?: string } })?.cause;
+    const detalhe = String(causa?.code ?? causa?.message ?? (e instanceof Error ? e.message : "")).replace(/https?:\/\/\S+/g, "").slice(0, 60);
+    return { ok: false, erro: `falha_de_rede:${nome}:${detalhe}`.slice(0, 120) };
   }
 }
 
