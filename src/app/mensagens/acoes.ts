@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { despacharFila } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export async function enviarMensagem(tipo: "erro" | "sugestao", texto: string, pagina: string): Promise<{ erro: string | null }> {
@@ -15,6 +17,7 @@ export async function enviarMensagem(tipo: "erro" | "sugestao", texto: string, p
     .from("mensagens_app")
     .insert({ autor_id: eu, tipo, texto: limpo, pagina: pagina.trim().slice(0, 200) || null });
   if (error) return { erro: "Não foi possível enviar. Tente de novo." };
+  after(() => despacharFila()); // avisa o master por WhatsApp na hora (o banco só enfileira)
   revalidatePath("/mensagens");
   revalidatePath("/");
   return { erro: null };

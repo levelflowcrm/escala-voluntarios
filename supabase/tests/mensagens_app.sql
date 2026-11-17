@@ -60,3 +60,46 @@ begin
   update pessoas set auth_user_id = null where id in (v, o, m);
   raise notice 'Mensagens do app: OK';
 end $$;
+
+-- Aviso por WhatsApp ao master (pela fila)
+do $$
+declare v uuid; m uuid; msg uuid; n int; txt text;
+  uv uuid := gen_random_uuid(); um uuid := gen_random_uuid();
+begin
+  select id into v from pessoas where nome = 'Diogo';
+  select id into m from pessoas where nome = 'Sérgio';
+  update pessoas set auth_user_id = uv where id = v;
+  update pessoas set auth_user_id = um, celular = '(11) 95402-4089' where id = m;
+  insert into administradores (pessoa_id, master) values (m, true) on conflict (pessoa_id) do update set master = true;
+  delete from fila_whatsapp where tipo = 'mensagem_app';
+
+  set local role authenticated;
+  perform set_config('request.jwt.claim.sub', uv::text, true);
+  insert into mensagens_app (autor_id, tipo, texto) values (v, 'sugestao', 'Colocar modo escuro') returning id into msg;
+  -- mensagem do próprio master não gera aviso para ele
+  perform set_config('request.jwt.claim.sub', um::text, true);
+  insert into mensagens_app (autor_id, tipo, texto) values (m, 'erro', 'Teste do master');
+  reset role;
+  perform set_config('request.jwt.claim.sub', '', true);
+
+  select count(*), max(texto) into n, txt from fila_whatsapp where tipo = 'mensagem_app' and pessoa_id = m;
+  if n <> 1 then raise exception 'FALHOU: master deveria ter 1 aviso na fila (%)', n; end if;
+  if txt not like '%nova sugestão de Diogo%' or txt not like '%Colocar modo escuro%' or txt not like '%/mensagens%' then
+    raise exception 'FALHOU: texto do aviso inesperado: %', txt;
+  end if;
+
+  -- sem celular válido: nada entra na fila
+  delete from fila_whatsapp where tipo = 'mensagem_app';
+  update pessoas set celular = null where id = m;
+  insert into mensagens_app (igreja_id, autor_id, tipo, texto) select igreja_id, id, 'erro', 'Outro erro' from pessoas where id = v;
+  select count(*) into n from fila_whatsapp where tipo = 'mensagem_app';
+  if n <> 0 then raise exception 'FALHOU: enfileirou para master sem celular (%)', n; end if;
+
+  delete from mensagens_app;
+  delete from fila_whatsapp where tipo = 'mensagem_app';
+  alter table administradores disable trigger administradores_master;
+  delete from administradores where pessoa_id = m;
+  alter table administradores enable trigger administradores_master;
+  update pessoas set auth_user_id = null where id in (v, m);
+  raise notice 'Aviso WhatsApp do master: OK';
+end $$;
