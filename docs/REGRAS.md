@@ -95,7 +95,7 @@ recusa, troca ou escala sem resposta.
 
 Depois do culto (de 1 h após o início até a meia-noite do mesmo dia, horário de Brasília), quem serviu escolhe um
 emoji de 1 a 5. O voto é anônimo (sem nome e sem horário) e o líder só vê o
-resumo por culto, com 3 respostas ou mais. Na rotina diária das 20h (Brasília), quem serviu hoje e ainda não avaliou recebe 1 lembrete por WhatsApp (sem nota nem resultado) com o prazo até a meia-noite.
+resumo por culto, com 3 respostas ou mais. Na rotina diária das 21h (Brasília; cobre também o culto de quarta, cuja janela só abre às 20h30), quem serviu hoje e ainda não avaliou recebe 1 lembrete por WhatsApp (sem nota nem resultado) com o prazo até a meia-noite.
 
 ## Cheguei
 
@@ -104,7 +104,7 @@ confirmada e avisa o coordenador (sino e "Chegadas de hoje").
 
 ## Avisos por WhatsApp
 - **Ligado por padrão para todos com celular cadastrado** (sem opção de desligar no perfil); o sino do app continua. Quem pedir para parar: o coordenador limpa o celular na tela Voluntários.
-- O banco só **enfileira** (`fila_whatsapp`, privada); o app envia pela Uazapi (instância "Mais Conectados") logo após a ação e numa rotina diária (20h, horário de Brasília).
+- O banco só **enfileira** (`fila_whatsapp`, privada); o app envia pela Uazapi (instância "Mais Conectados") logo após a ação e numa rotina diária (21h, horário de Brasília; o plano gratuito da Vercel roda uma vez por dia, em qualquer minuto dessa hora).
 - Quando avisa: **chegada** (coordenadores do ministério), **troca pedida** (colega) e **troca aceita/recusada** (quem pediu), **escala publicada** (quem foi escalado, 1 mensagem por pessoa por ministério por hora), **lembrete de véspera** (1 mensagem por pessoa com a lista do dia seguinte; pede confirmação se faltar).
 - Proteções: interruptor `WHATSAPP_ATIVO` (só `true` envia); máx. 10 envios por ação / 30 por rotina; máx. 4 mensagens por pessoa por dia; mensagem com mais de 12 h na fila expira em vez de ser enviada atrasada; textos variam; sem celular válido, não entra na fila.
 - Ainda não avisa: vagas abertas (próximo passo, para não gerar volume).
