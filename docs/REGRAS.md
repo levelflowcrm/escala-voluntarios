@@ -86,8 +86,8 @@ ranking público.
 | Troca pedida e aceita | −2 |
 | Escala que ficou sem resposta até o evento passar | −6 |
 
-A pontuação nunca fica abaixo de zero. Níveis (medem constância, não volume): 🌱 Semente (0–29), 🥉 Bronze
-(30–69), 🥈 Prata (70–119), 🥇 Ouro (120+). Os cortes serão revistos depois de
+A pontuação nunca fica abaixo de zero. Níveis, como o crescimento de uma planta (medem constância, não volume): 🌰 Semente (0–29), 🌱 Plantinha
+(30–69), 🌿 Arbusto (70–119), 🌳 Árvore (120–179) e 🌳🍎 Árvore frutífera (180+, o máximo). Os cortes serão revistos depois de
 um mês de uso real. A sequência é interrompida por
 recusa, troca ou escala sem resposta.
 
