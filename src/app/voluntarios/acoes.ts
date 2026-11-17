@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { validarNovoVoluntario } from "@/lib/voluntario";
-import { normalizarNumero } from "@/lib/whatsapp";
+import { despacharFila, normalizarNumero } from "@/lib/whatsapp";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,6 +35,7 @@ export async function salvarCelular(pessoaId: string, celular: string): Promise<
   if (error) return { erro: "Não foi possível salvar" };
   if (!data?.length) return { erro: "Sem permissão para alterar essa pessoa" };
   revalidatePath("/voluntarios");
+  after(() => despacharFila());
   return { erro: null };
 }
 

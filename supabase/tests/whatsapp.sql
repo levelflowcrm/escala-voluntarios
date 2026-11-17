@@ -95,6 +95,23 @@ begin
   select texto into txt from fila_whatsapp where tipo = 'lembrete' and pessoa_id = a;
   if txt like '%falta confirmar%' then raise exception 'FALHOU: pediu confirmação de quem já confirmou'; end if;
 
+  -- boas-vindas: ao cadastrar o celular, uma mensagem só; trocar de número não repete
+  delete from fila_whatsapp;
+  update pessoas set celular = null, auth_user_id = null where id = sem_cel;
+  update pessoas set celular = '11 96666-5555' where id = sem_cel;
+  select texto into txt from fila_whatsapp where tipo = 'boas_vindas' and pessoa_id = sem_cel;
+  if txt is null then raise exception 'FALHOU: não enviou boas-vindas ao cadastrar o celular'; end if;
+  if txt not like '%entre com o Google%' then raise exception 'FALHOU: boas-vindas sem o passo a passo de acesso'; end if;
+  update pessoas set celular = '11 95555-4444' where id = sem_cel;
+  select count(*) into n from fila_whatsapp where tipo = 'boas_vindas' and pessoa_id = sem_cel;
+  if n <> 1 then raise exception 'FALHOU: repetiu boas-vindas ao trocar o número (%)', n; end if;
+  -- número inválido não gera mensagem
+  delete from fila_whatsapp;
+  update pessoas set celular = null where id = sem_cel;
+  update pessoas set celular = '123' where id = sem_cel;
+  select count(*) into n from fila_whatsapp where pessoa_id = sem_cel;
+  if n <> 0 then raise exception 'FALHOU: boas-vindas para número inválido'; end if;
+
   -- limpeza: remove o que o teste criou
   delete from fila_whatsapp;
   delete from trocas where id = troca;
@@ -107,7 +124,7 @@ do $$
 declare fn text;
 begin
   for fn in select unnest(array[
-    'enfileirar_whatsapp(uuid,text,text,text)', 'enfileirar_lembretes()', 'rotulo_evento_whatsapp(uuid)'
+    'enfileirar_whatsapp(uuid,text,text,text)', 'enfileirar_lembretes()', 'rotulo_evento_whatsapp(uuid)', 'tg_whatsapp_boas_vindas()'
   ]) loop
     if has_function_privilege('authenticated', fn, 'execute') or has_function_privilege('anon', fn, 'execute') then
       raise exception 'FALHOU: % executável por authenticated/anon', fn;
