@@ -91,14 +91,22 @@ export async function despacharFila(limite: number = MAX_POR_RODADA): Promise<{ 
     const db = clienteServico();
     if (!db) return { enviados: 0, motivo: "sem_chave_de_servico" };
 
-    const { data: pendentes } = await db
+    const { data: pendentes, error: erroFila } = await db
       .from("fila_whatsapp")
-      .select("id, pessoa_id, texto, criado_em, pessoas(celular)")
+      .select("id, pessoa_id, texto, criado_em")
       .is("enviado_em", null)
       .lt("tentativas", MAX_TENTATIVAS)
       .order("criado_em", { ascending: true })
       .limit(100);
+    if (erroFila) return { enviados: 0, motivo: "erro_ao_ler_fila" };
     if (!pendentes?.length) return { enviados: 0 };
+
+    const { data: pessoas, error: erroPessoas } = await db
+      .from("pessoas")
+      .select("id, celular")
+      .in("id", [...new Set(pendentes.map((p) => p.pessoa_id))]);
+    if (erroPessoas) return { enviados: 0, motivo: "erro_ao_ler_celulares" };
+    const celularDe = new Map((pessoas ?? []).map((p) => [p.id as string, (p.celular as string | null) ?? null]));
 
     const inicioDia = new Date();
     inicioDia.setHours(inicioDia.getHours() - 24);
@@ -106,10 +114,13 @@ export async function despacharFila(limite: number = MAX_POR_RODADA): Promise<{ 
     const enviadosHoje: Record<string, number> = {};
     for (const x of recentes ?? []) enviadosHoje[x.pessoa_id] = (enviadosHoje[x.pessoa_id] ?? 0) + 1;
 
-    const itens: ItemFila[] = pendentes.map((p) => {
-      const pessoa = Array.isArray(p.pessoas) ? p.pessoas[0] : p.pessoas;
-      return { id: p.id, pessoa_id: p.pessoa_id, texto: p.texto, criado_em: p.criado_em, celular: (pessoa as { celular: string | null } | null)?.celular ?? null };
-    });
+    const itens: ItemFila[] = pendentes.map((p) => ({
+      id: p.id,
+      pessoa_id: p.pessoa_id,
+      texto: p.texto,
+      criado_em: p.criado_em,
+      celular: celularDe.get(p.pessoa_id) ?? null,
+    }));
     const { enviar, expirados } = escolherEnviaveis(itens, enviadosHoje, new Date(), limite);
 
     if (expirados.length) await db.from("fila_whatsapp").update({ tentativas: 99, erro: "expirado" }).in("id", expirados);
