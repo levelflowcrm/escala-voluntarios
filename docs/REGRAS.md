@@ -9,6 +9,7 @@ Combinadas com o coordenador da Transmissão em 04/11/2026.
 | Transmissão | Luciano | DTV-Transmissão, Câmera Black, Câmera Grua, Câmera Móvel |
 | Projeção | (a definir) | (a definir com o coordenador) |
 | Iluminação | (a definir) | (a definir com o coordenador) |
+| Produção | (a definir) | (a definir com o coordenador) |
 
 ## Escala
 
@@ -67,3 +68,35 @@ As funções com menos gente habilitada são preenchidas primeiro.
 ## Pendências para confirmar
 
 - Coordenadores e funções de Projeção e Iluminação.
+
+## Pontuação do voluntário
+
+Janela dos **últimos 90 dias**, só de escalas publicadas. Cada pessoa vê a
+própria; o coordenador vê a de quem está nos ministérios que coordena. Não há
+ranking público.
+
+| Item | Pontos |
+|---|---|
+| Escala servida (confirmada, evento já realizado) | +10 |
+| Chegou no horário (botão "Cheguei" até a hora do início) | +3 |
+| Cobriu um colega (troca aceita) | +8 |
+| Assumiu uma vaga aberta | +8 |
+| Cada escala da sequência atual sem faltar (até 10) | +2 |
+| Escala recusada | −4 |
+| Troca pedida e aceita | −2 |
+| Escala que ficou sem resposta até o evento passar | −6 |
+
+A pontuação nunca fica abaixo de zero. Níveis: 🌱 Semente (0–39), 🥉 Bronze
+(40–119), 🥈 Prata (120–239), 🥇 Ouro (240+). A sequência é interrompida por
+recusa, troca ou escala sem resposta.
+
+## MaisFeliz
+
+Depois do culto (de 1 h após o início até 36 h depois), quem serviu escolhe um
+emoji de 1 a 5. O voto é anônimo (sem nome e sem horário) e o líder só vê o
+resumo por culto, com 3 respostas ou mais.
+
+## Cheguei
+
+O botão abre 3 h antes do início e fecha 4 h depois. Marca a escala como
+confirmada e avisa o coordenador (sino e "Chegadas de hoje").
