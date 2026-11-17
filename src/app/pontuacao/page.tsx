@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { dadosDoNivel, ITENS, progressoNivel, type Pontuacao } from "@/lib/pontuacao";
+import { dadosDoNivel, ITENS, NIVEIS, progressoNivel, type Pontuacao } from "@/lib/pontuacao";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 type LinhaTime = Pontuacao & { pessoa_id: string; pessoa: string };
@@ -41,6 +41,39 @@ export default async function PaginaPontuacao() {
           {prog.proximo ? <>Faltam <strong>{prog.faltam}</strong> pontos para {prog.proximo.emoji} {prog.proximo.rotulo}.</> : "Sua árvore já está dando frutos. Obrigado por servir tão bem!"}
         </p>
         {(p?.sequencia ?? 0) > 0 && <p className="rounded-xl bg-white/15 px-3 py-2 text-sm">🔥 {p.sequencia} {p.sequencia === 1 ? "escala seguida" : "escalas seguidas"} sem faltar</p>}
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-neutral-500">Sua trilha</h2>
+        <p className="text-xs text-neutral-500">Cada estágio mostra como você cresce ao servir com constância. Os pontos contam os últimos 90 dias.</p>
+        <ol className="flex flex-col gap-2">
+          {NIVEIS.map((n) => {
+            const pontos = p?.pontos ?? 0;
+            const atual = n.id === nivel.id;
+            const conquistado = pontos >= n.minimo && !atual;
+            return (
+              <li
+                key={n.id}
+                className={`flex items-center gap-3 rounded-xl border p-3 ${
+                  atual
+                    ? "border-violet-500 bg-violet-50 dark:bg-violet-950/40"
+                    : "border-neutral-200 dark:border-neutral-800"
+                } ${!atual && !conquistado ? "opacity-60" : ""}`}
+              >
+                <span className="w-12 shrink-0 text-center text-2xl">{n.emoji}</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{n.rotulo}</p>
+                  <p className="text-xs text-neutral-500">
+                    {n.minimo === 0 ? "Ponto de partida" : `A partir de ${n.minimo} pontos`}
+                  </p>
+                </div>
+                <span className="text-xs font-medium">
+                  {atual ? "Você está aqui" : conquistado ? "✓ Conquistado" : `Faltam ${n.minimo - pontos}`}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       </section>
 
       <section className="flex flex-col gap-1">
