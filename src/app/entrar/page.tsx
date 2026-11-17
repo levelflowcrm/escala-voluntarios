@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormularioEntrar } from "./formulario";
+import { InstalarApp } from "./instalar-app";
 
 export const metadata = { title: "Entrar · Mais Conectados" };
 
@@ -29,6 +30,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
         </p>
       )}
       <FormularioEntrar />
+      <InstalarApp />
       <section className="flex flex-col gap-2 border-t border-neutral-200 pt-5 text-sm dark:border-neutral-800">
         <h2 className="font-medium">O que é o Mais Conectados</h2>
         <p className="text-neutral-600 dark:text-neutral-300">
