@@ -46,9 +46,9 @@ begin
   insert into escalas_ministerio (evento_id, ministerio_id, publicada) values (ev, tm, true);
   insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id, status) values (ev, tm, f2, b, 'pendente');
 
-  -- A: 50 + 3*2 + 2*5 = 66 (bronze), sequência 5
+  -- A: 50 + 3*2 + 2*5 = 66 (plantinha), sequência 5
   select * into r from calcular_pontuacao(a);
-  if r.pontos <> 66 or r.nivel <> 'bronze' or r.servidas <> 5 or r.no_horario <> 2 or r.sequencia <> 5 then
+  if r.pontos <> 66 or r.nivel <> 'plantinha' or r.servidas <> 5 or r.no_horario <> 2 or r.sequencia <> 5 then
     raise exception 'FALHOU A: pontos %, nivel %, servidas %, no_horario %, seq %', r.pontos, r.nivel, r.servidas, r.no_horario, r.sequencia;
   end if;
   -- B: 10 + 8 (assumida) + 2 (seq 1) - 4 (recusa) - 6 (sem resposta) = 10 (semente)
@@ -120,16 +120,17 @@ begin
   -- sem nada: semente
   select * into r from calcular_pontuacao(p);
   if r.nivel <> 'semente' then raise exception 'FALHOU: sem histórico deveria ser semente, é %', r.nivel; end if;
-  -- 3 escalas seguidas = 30 + 6 = 36 => bronze
-  for i in 1..12 loop
+  -- 3 escalas seguidas = 30 + 6 = 36 => plantinha
+  for i in 1..16 loop
     insert into eventos (igreja_id, titulo, inicio) values (ig, 'Culto faixa ' || i, now() - make_interval(days => i)) returning id into ev;
     insert into escalas_ministerio (evento_id, ministerio_id, publicada) values (ev, tm, true);
     insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id, status) values (ev, tm, f, p, 'confirmado');
     if i = 1 then select * into r from calcular_pontuacao(p); if r.pontos <> 12 or r.nivel <> 'semente' then raise exception 'FALHOU: 1 escala = 12 pts semente (%/%)', r.pontos, r.nivel; end if; end if;
     if i = 2 then select * into r from calcular_pontuacao(p); if r.pontos <> 24 or r.nivel <> 'semente' then raise exception 'FALHOU: 2 escalas = 24 pts semente (%/%)', r.pontos, r.nivel; end if; end if;
-    if i = 3 then select * into r from calcular_pontuacao(p); if r.pontos <> 36 or r.nivel <> 'bronze' then raise exception 'FALHOU: 3 escalas = 36 pts bronze (%/%)', r.pontos, r.nivel; end if; end if;
-    if i = 6 then select * into r from calcular_pontuacao(p); if r.pontos <> 72 or r.nivel <> 'prata' then raise exception 'FALHOU: 6 escalas = 72 pts prata (%/%)', r.pontos, r.nivel; end if; end if;
-    if i = 10 then select * into r from calcular_pontuacao(p); if r.pontos <> 120 or r.nivel <> 'ouro' then raise exception 'FALHOU: 10 escalas = 120 pts ouro (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 3 then select * into r from calcular_pontuacao(p); if r.pontos <> 36 or r.nivel <> 'plantinha' then raise exception 'FALHOU: 3 escalas = 36 pts plantinha (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 6 then select * into r from calcular_pontuacao(p); if r.pontos <> 72 or r.nivel <> 'arbusto' then raise exception 'FALHOU: 6 escalas = 72 pts arbusto (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 10 then select * into r from calcular_pontuacao(p); if r.pontos <> 120 or r.nivel <> 'arvore' then raise exception 'FALHOU: 10 escalas = 120 pts árvore (%/%)', r.pontos, r.nivel; end if; end if;
+    if i = 16 then select * into r from calcular_pontuacao(p); if r.pontos <> 180 or r.nivel <> 'frutifera' then raise exception 'FALHOU: 16 escalas = 180 pts árvore frutífera (%/%)', r.pontos, r.nivel; end if; end if;
   end loop;
   delete from eventos where titulo like 'Culto faixa %';
   delete from pessoas where id = p;

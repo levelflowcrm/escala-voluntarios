@@ -38,7 +38,7 @@ export default async function PaginaPontuacao() {
           <div className="h-full rounded-full bg-white" style={{ width: `${prog.percentual}%` }} />
         </div>
         <p className="text-sm text-violet-100">
-          {prog.proximo ? <>Faltam <strong>{prog.faltam}</strong> pontos para {prog.proximo.emoji} {prog.proximo.rotulo}.</> : "Você chegou ao nível mais alto. Obrigado por servir tão bem!"}
+          {prog.proximo ? <>Faltam <strong>{prog.faltam}</strong> pontos para {prog.proximo.emoji} {prog.proximo.rotulo}.</> : "Sua árvore já está dando frutos. Obrigado por servir tão bem!"}
         </p>
         {(p?.sequencia ?? 0) > 0 && <p className="rounded-xl bg-white/15 px-3 py-2 text-sm">🔥 {p.sequencia} {p.sequencia === 1 ? "escala seguida" : "escalas seguidas"} sem faltar</p>}
       </section>

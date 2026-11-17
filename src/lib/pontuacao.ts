@@ -1,9 +1,10 @@
 /** Níveis e apresentação da pontuação. As regras de cálculo ficam no banco (migração 19) e em docs/REGRAS.md. */
 export const NIVEIS = [
-  { id: "semente", emoji: "🌱", rotulo: "Semente", minimo: 0 },
-  { id: "bronze", emoji: "🥉", rotulo: "Bronze", minimo: 30 },
-  { id: "prata", emoji: "🥈", rotulo: "Prata", minimo: 70 },
-  { id: "ouro", emoji: "🥇", rotulo: "Ouro", minimo: 120 },
+  { id: "semente", emoji: "🌰", rotulo: "Semente", minimo: 0 },
+  { id: "plantinha", emoji: "🌱", rotulo: "Plantinha", minimo: 30 },
+  { id: "arbusto", emoji: "🌿", rotulo: "Arbusto", minimo: 70 },
+  { id: "arvore", emoji: "🌳", rotulo: "Árvore", minimo: 120 },
+  { id: "frutifera", emoji: "🌳🍎", rotulo: "Árvore frutífera", minimo: 180 },
 ] as const;
 
 export type Pontuacao = {
@@ -23,7 +24,7 @@ export function dadosDoNivel(id: string) {
   return NIVEIS.find((n) => n.id === id) ?? NIVEIS[0];
 }
 
-/** Quanto falta para o próximo nível (null quando já está no ouro). */
+/** Quanto falta para o próximo nível (null quando já é árvore frutífera). */
 export function progressoNivel(pontos: number): { proximo: (typeof NIVEIS)[number] | null; faltam: number; percentual: number } {
   const atualIdx = NIVEIS.reduce((acc, n, i) => (pontos >= n.minimo ? i : acc), 0);
   const proximo = NIVEIS[atualIdx + 1] ?? null;
