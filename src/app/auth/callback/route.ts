@@ -6,6 +6,11 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
+  // O banco recusa contas novas de quem não foi cadastrado pelo coordenador (migração 29)
+  if (!code && (searchParams.get("error_description") ?? "").includes("Database error saving new user")) {
+    return NextResponse.redirect(`${origin}/entrar?erro=sem-cadastro`);
+  }
+
   if (code) {
     const supabase = await criarClienteServidor();
     const { error } = await supabase.auth.exchangeCodeForSession(code);

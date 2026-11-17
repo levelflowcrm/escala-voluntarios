@@ -45,9 +45,6 @@ SQL Editor do Supabase **antes** do merge que as usa.
 
 - Revogar o token `sbp_fc48...` colado no chat antes
   (https://supabase.com/dashboard/account/tokens).
-- Quem não é voluntário cadastrado consegue criar uma conta de login (fica vazia,
-  cai em "Quase lá!" e não enxerga nada: RLS por `minha_igreja()`). Para barrar
-  até isso, desligar novos cadastros no Supabase (Authentication → Sign In /
-  Providers → "Allow new users to sign up"), validando antes que o Google continua entrando.
+- Contas vazias barradas (migração 29, 17/11): só e-mail já cadastrado em `pessoas` consegue criar conta de login. O coordenador precisa cadastrar o e-mail **antes** do primeiro acesso; quem tentar sem cadastro vê a mensagem na tela de entrada.
 - Login: **só Google** (decidido em 16/11). O link por e-mail foi removido porque o e-mail padrão do Supabase só atende a equipe do projeto. Se algum voluntário não tiver conta Google, configurar SMTP próprio (Resend/Brevo) e reativar.
 - A proteção de colunas de `pessoas` já existe (migração `20261116000003`, teste `protege_pessoas.sql`).
