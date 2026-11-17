@@ -4,7 +4,7 @@ import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
 import { limitesMes, mesAtual } from "@/lib/datas";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
-const CAMPOS = "id, papel, status, motivo, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
+const CAMPOS = "id, papel, status, motivo, chegou_em, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
 
 export default async function Inicio() {
   const supabase = await criarClienteServidor();
@@ -48,6 +48,14 @@ export default async function Inicio() {
     .select("id", { count: "exact", head: true })
     .gt("criado_em", desde)
     .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
+  // Coordenador: quem avisou "Cheguei" depois da última visita também acende o sino.
+  let chegadasNovas = 0;
+  if (coordenador) {
+    const { data: ch } = await supabase.rpc("chegadas_do_dia");
+    chegadasNovas = ((ch ?? []) as { pessoa_id: string; chegou_em: string | null }[]).filter(
+      (c) => c.chegou_em && c.chegou_em > desde && c.pessoa_id !== pessoaId,
+    ).length;
+  }
 
   // Quantas vezes servi neste mês (confirmadas, já realizadas ou não).
   const { inicio: iniMes, fim: fimMes } = limitesMes(mesAtual());
@@ -108,7 +116,7 @@ export default async function Inicio() {
       admin={!!admin}
       proximas={proximas}
       historico={historico}
-      novosComunicados={novos ?? 0}
+      novosComunicados={(novos ?? 0) + chegadasNovas}
       servidasNoMes={servidasNoMes}
       vagasParaMim={vagasParaMim}
       trocasRecebidas={trocasRecebidas}
