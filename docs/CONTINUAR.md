@@ -11,7 +11,7 @@ Resumo para retomar o projeto numa nova sessão. O app se chama **Mais Conectado
 | Supabase | projeto `escala-voluntarios`, ID `oceyznlmglxhzzcenzjt`, região us-west-2 |
 | Gmail do projeto | levelflowcrm@gmail.com |
 | Vercel | no ar (time `levelflowcrm-9108`), deploy automático a cada merge na `main` |
-| Login com Google | funcionando; app **Em produção** no Google Cloud (projeto interno "Culto360", nome exibido "Mais Conectados"), sem necessidade de usuários de teste |
+| Login com Google | funcionando; app **Em produção** no Google Cloud (projeto e cliente OAuth chamados "Mais Conectados"; o ID técnico do projeto `aqueous-sandbox-514903-h4` não muda), sem necessidade de usuários de teste |
 | Domínio | **maisconectados.com.br** (Registro.br, DNS do próprio Registro.br: A `@` → 216.198.79.1), ligado à Vercel com HTTPS; Supabase Site URL e Redirect URLs já usam o domínio; endereço provisório `escala-voluntarios-peach.vercel.app` segue válido. `www` ainda não configurado |
 
 ## O que está aplicado no Supabase
