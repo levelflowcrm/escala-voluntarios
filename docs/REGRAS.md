@@ -108,3 +108,8 @@ confirmada e avisa o coordenador (sino e "Chegadas de hoje").
 - Quando avisa: **chegada** (coordenadores do ministério), **troca pedida** (colega) e **troca aceita/recusada** (quem pediu), **escala publicada** (quem foi escalado, 1 mensagem por pessoa por ministério por hora), **lembrete de véspera** (1 mensagem por pessoa com a lista do dia seguinte; pede confirmação se faltar).
 - Proteções: interruptor `WHATSAPP_ATIVO` (só `true` envia); máx. 10 envios por ação / 30 por rotina; máx. 4 mensagens por pessoa por dia; mensagem com mais de 12 h na fila expira em vez de ser enviada atrasada; textos variam; sem celular válido, não entra na fila.
 - Ainda não avisa: vagas abertas (próximo passo, para não gerar volume).
+
+## Cheguei só no local
+- O toque em "Cheguei" envia a posição do celular; o banco calcula a distância até a igreja (`igrejas.latitude/longitude`) e só aceita até `raio_cheguei_m` (250 m), com folga igual à imprecisão do GPS (máx. 150 m).
+- A posição **não é guardada**. Sem permissão de localização ou longe da igreja, a chegada não é registrada (a pessoa ainda pode confirmar presença normalmente).
+- Igreja sem coordenadas cadastradas: a checagem é dispensada. Nasci Pra Deus: Av. Monteiro Lobato, 1522 — Macedo, Guarulhos/SP.

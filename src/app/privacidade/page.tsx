@@ -30,7 +30,7 @@ export default function Privacidade() {
         </li>
         <li>
           <strong>Aviso de chegada (&quot;Cheguei&quot;):</strong> o horário em que você avisa, pelo botão, que chegou para
-          servir. Não usamos sua localização.
+          servir. Para confirmar que você está na igreja, o aplicativo pede a localização do seu celular apenas no momento em que você toca em &quot;Cheguei&quot;; ela é usada só para calcular a distância até a igreja e <strong>não é guardada</strong>.
         </li>
         <li>
           <strong>Reação ao culto (MaisFeliz):</strong> o emoji que você escolhe para dizer como foi a escala. Ela é

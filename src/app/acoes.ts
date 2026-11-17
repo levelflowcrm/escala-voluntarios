@@ -24,10 +24,17 @@ export async function responder(escalaId: string, resposta: "confirmado" | "recu
   return error ? { erro: error.message } : { erro: null };
 }
 
-/** "Cheguei": o voluntário avisa que já está na igreja (só no dia, pela função do banco). */
-export async function registrarChegada(escalaId: string) {
+/** "Cheguei": o voluntário avisa que já está na igreja (só no dia e só perto da igreja, conferido pelo banco). */
+export async function registrarChegada(escalaId: string, lat: number, lng: number, precisao: number | null) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { erro: "Não consegui ler a sua localização." };
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.rpc("registrar_chegada", { p_escala: escalaId });
+  // A posição só serve para o banco conferir a distância até a igreja; não é guardada.
+  const { error } = await supabase.rpc("registrar_chegada", {
+    p_escala: escalaId,
+    p_lat: lat,
+    p_lng: lng,
+    p_precisao: precisao !== null && Number.isFinite(precisao) ? precisao : null,
+  });
   if (!error) after(() => despacharFila()); // avisa os coordenadores por WhatsApp
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
