@@ -48,7 +48,7 @@ begin
   if n <> 1 then raise exception 'FALHOU: republicar na mesma hora duplicou o aviso (%)', n; end if;
 
   perform set_config('request.jwt.claim.sub', ua::text, true);
-  perform registrar_chegada(esc);
+  perform registrar_chegada(esc, -23.465533, -46.5133597);
   perform set_config('request.jwt.claim.sub', '', true);
   select count(*) into n from fila_whatsapp where tipo = 'chegada';
   if n <> 1 then raise exception 'FALHOU: chegada deveria avisar só 1 coordenador com celular, foi %', n; end if;

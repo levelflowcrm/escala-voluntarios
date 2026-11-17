@@ -1,6 +1,6 @@
 -- Gerado por scripts/importar_planilha.py — não edite à mão.
 begin;
-insert into igrejas (id, nome, slug) values ('a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Igreja Nasci Pra Deus', 'nasci-pra-deus') on conflict do nothing;
+insert into igrejas (id, nome, slug, latitude, longitude) values ('a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Igreja Nasci Pra Deus', 'nasci-pra-deus', -23.465533, -46.5133597) on conflict do nothing;
 insert into ministerios (id, igreja_id, nome, cor) values ('2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Transmissão', '#7c3aed') on conflict do nothing;
 insert into ministerios (id, igreja_id, nome, cor) values ('f91c1c12-0fc6-5845-957d-b4ff0f5f5f7b', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Projeção', '#0891b2') on conflict do nothing;
 insert into ministerios (id, igreja_id, nome, cor) values ('a1ce891a-2292-51dc-8d24-4a241c2b3bb8', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Iluminação', '#d97706') on conflict do nothing;
