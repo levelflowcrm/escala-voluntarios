@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SCRIPT_INICIAL } from "@/lib/aparencia";
 import "./globals.css";
@@ -16,7 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Mais Conectados",
   description: "Escalas, confirmações e cuidado com os voluntários da igreja",
+  appleWebApp: { capable: true, title: "Mais Conectados", statusBarStyle: "default" },
 };
+
+export const viewport: Viewport = { themeColor: "#7c3aed" };
 
 export default function RootLayout({
   children,
