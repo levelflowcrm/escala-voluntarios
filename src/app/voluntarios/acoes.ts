@@ -89,6 +89,7 @@ export async function adicionarVoluntario(d: DadosNovoVoluntario): Promise<{ err
   });
   if (error) return { erro: error.message };
   revalidatePath("/voluntarios");
+  after(() => despacharFila()); // envia na hora a boas-vindas da pessoa nova (o banco só enfileira)
   const linha = (Array.isArray(data) ? data[0] : data) as { ja_existia?: boolean } | null;
   return { erro: null, nome: v.nome, jaExistia: !!linha?.ja_existia };
 }
