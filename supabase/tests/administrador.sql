@@ -1,4 +1,4 @@
--- Administrador master, poder de coordenador e agenda só do administrador.
+-- Administrador master, poder de coordenador e eventos só do master.
 \set ON_ERROR_STOP 1
 do $$
 declare
@@ -30,17 +30,16 @@ begin
   perform set_config('request.jwt.claim.sub', uvol::text, true);
   if sou_coordenador_algum() or sou_admin() then raise exception 'FALHOU: voluntário com poder indevido'; end if;
 
-  -- só o administrador cria evento de agenda
+  -- coordenador NÃO cria evento (nem de agenda, nem de escala): só o master
   perform set_config('request.jwt.claim.sub', ucoord::text, true);
   begin
     insert into eventos (igreja_id, titulo, inicio, so_agenda) values (ig, 'Conferência', now() + interval '20 days', true);
     raise exception 'FALHOU: coordenador criou evento de agenda';
   exception when insufficient_privilege then null; end;
-  -- coordenador ainda cria evento comum (de escala)
-  insert into eventos (igreja_id, titulo, inicio) values (ig, 'Ensaio extra', now() + interval '21 days') returning id into ev;
-  begin update eventos set so_agenda = true where id = ev; raise exception 'FALHOU: coordenador virou evento em agenda';
+  begin
+    insert into eventos (igreja_id, titulo, inicio) values (ig, 'Ensaio extra', now() + interval '21 days');
+    raise exception 'FALHOU: coordenador criou evento de escala';
   exception when insufficient_privilege then null; end;
-  delete from eventos where id = ev;
 
   perform set_config('request.jwt.claim.sub', uadm::text, true);
   insert into eventos (igreja_id, titulo, inicio, fim, so_agenda, local, tipo_agenda)

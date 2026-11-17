@@ -69,6 +69,13 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 - Coordenadores e funções de Projeção e Iluminação.
 
+## Eventos
+
+- **Só o administrador master** (levelflowcrm@gmail.com) cria, altera, cancela e colore eventos, cultos fixos e pausas. Coordenadores não criam eventos.
+- **Todo evento entra na Agenda da igreja e na escala de todos os ministérios** (o antigo "só agenda" deixou de existir).
+- **Dispensar:** o coordenador pode dispensar um evento para o PRÓPRIO ministério ("Meu time não serve neste evento"). O evento some da escala dele, fica em "Dispensados" e dá para voltar a escalar. Não dá para dispensar com gente escalada (tire as pessoas antes); recusas antigas são limpas.
+- **Voluntário em vários ministérios:** cada coordenador monta o seu time, mas a mesma pessoa **nunca** fica duas vezes no mesmo evento (o banco barra). Na escolha da vaga, quem já foi escalado por outro ministério aparece desativado com "já escalado em <ministério>", e o "Criar automático" também pula essas pessoas.
+
 ## Pontuação do voluntário
 
 Janela dos **últimos 90 dias**, só de escalas publicadas. Cada pessoa vê a

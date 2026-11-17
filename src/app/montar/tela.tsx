@@ -10,6 +10,8 @@ export function TelaMontar({
   temFuncoes,
   grade,
   aptos,
+  dispensados,
+  master,
 }: {
   ministerios: { id: string; nome: string }[];
   ministerio: { id: string; nome: string };
@@ -17,6 +19,8 @@ export function TelaMontar({
   temFuncoes: boolean;
   grade: EventoGrade[];
   aptos: Record<string, { id: string; nome: string }[]>;
+  dispensados: { id: string; titulo: string; inicio: string }[];
+  master: boolean;
 }) {
   const mesTexto = fmtMes.format(new Date(`${mes}-15T12:00:00-03:00`));
   const nomeMes = mesTexto.charAt(0).toUpperCase() + mesTexto.slice(1);
@@ -30,9 +34,11 @@ export function TelaMontar({
         </Link>
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold">Montar escala</h1>
-          <Link href="/cultos-fixos" className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-700">
-            🗓️ Cultos fixos
-          </Link>
+          {master && (
+            <Link href="/cultos-fixos" className="rounded-full border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-700">
+              🗓️ Cultos fixos
+            </Link>
+          )}
         </div>
         {ministerios.length > 1 && (
           <nav className="flex flex-wrap gap-2">
@@ -66,7 +72,7 @@ export function TelaMontar({
           a escala pode ser montada aqui.
         </p>
       ) : (
-        <Grade ministerioId={ministerio.id} mes={mes} eventos={grade} aptos={aptos} />
+        <Grade ministerioId={ministerio.id} mes={mes} eventos={grade} aptos={aptos} dispensados={dispensados} master={master} />
       )}
     </main>
   );

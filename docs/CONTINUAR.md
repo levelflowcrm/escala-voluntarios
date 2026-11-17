@@ -48,3 +48,7 @@ SQL Editor do Supabase **antes** do merge que as usa.
 - Contas vazias barradas (migração 29, 17/11): só e-mail já cadastrado em `pessoas` consegue criar conta de login. O coordenador precisa cadastrar o e-mail **antes** do primeiro acesso; quem tentar sem cadastro vê a mensagem na tela de entrada.
 - Login: **só Google** (decidido em 16/11). O link por e-mail foi removido porque o e-mail padrão do Supabase só atende a equipe do projeto. Se algum voluntário não tiver conta Google, configurar SMTP próprio (Resend/Brevo) e reativar.
 - A proteção de colunas de `pessoas` já existe (migração `20261116000003`, teste `protege_pessoas.sql`).
+
+## Eventos (17/11)
+
+Todo evento aparece na Agenda e na escala; só o master cria/edita eventos, cultos fixos e pausas; cada coordenador pode dispensar o evento para o próprio ministério (migração 30). Ver `docs/REGRAS.md`, seção Eventos.

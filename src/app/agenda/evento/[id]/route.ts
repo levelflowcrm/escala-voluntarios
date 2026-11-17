@@ -12,7 +12,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     .from("eventos")
     .select("id, titulo, inicio, fim, local, observacao")
     .eq("id", id)
-    .eq("so_agenda", true)
     .maybeSingle();
   if (!e) return new NextResponse("Evento não encontrado", { status: 404 });
   const duracaoMin = e.fim ? Math.round((new Date(e.fim).getTime() - new Date(e.inicio).getTime()) / 60_000) : undefined;

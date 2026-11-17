@@ -18,6 +18,7 @@ export type EventoAgenda = {
   tipo_agenda: string | null;
   cor: string | null;
   serie_id: string | null;
+  convocacao_geral: boolean;
 };
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
@@ -25,7 +26,7 @@ const FUSO = "America/Sao_Paulo";
 const diaFmt = new Intl.DateTimeFormat("en-CA", { timeZone: FUSO });
 const horaFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
-const vazio: DadosEvento = { titulo: "", tipo: "conferencia", cor: "", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "" };
+const vazio: DadosEvento = { titulo: "", tipo: "conferencia", cor: "", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "", convocacaoGeral: false };
 
 function doEvento(e: EventoAgenda): DadosEvento {
   const ini = new Date(e.inicio);
@@ -40,6 +41,7 @@ function doEvento(e: EventoAgenda): DadosEvento {
     horaFim: fim ? horaFmt.format(fim) : "",
     local: e.local ?? "",
     descricao: e.observacao ?? "",
+    convocacaoGeral: e.convocacao_geral,
   };
 }
 
@@ -87,6 +89,10 @@ function Formulario({
       </div>
       <input className={campo} placeholder="Local (opcional)" maxLength={120} value={d.local} onChange={mudar("local")} />
       <textarea className={`${campo} h-20 py-2`} placeholder="Descrição (opcional)" maxLength={1000} value={d.descricao} onChange={mudar("descricao")} />
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={!!d.convocacaoGeral} onChange={(ev) => setD({ ...d, convocacaoGeral: ev.target.checked })} className="h-4 w-4" />
+        Reunião com todos convocados (sem escala por função)
+      </label>
       {permiteRepetir && (
         <>
           <select className={campo} value={d.repeticao} onChange={mudar("repeticao")}>

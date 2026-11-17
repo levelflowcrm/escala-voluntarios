@@ -10,6 +10,9 @@ export default async function CultosFixos() {
   if (!eu) redirect("/sem-cadastro");
   const ministerios = await ministeriosQueCoordeno(supabase, eu);
   if (ministerios.length === 0) redirect("/");
+  // Cultos fixos e pausas: só o administrador master (coordenador só dispensa eventos do próprio ministério)
+  const { data: master } = await supabase.rpc("sou_admin_master");
+  if (!master) redirect("/montar");
 
   const hoje = diaNoFuso(new Date());
   const [{ data: cultos }, { data: pausas }] = await Promise.all([
