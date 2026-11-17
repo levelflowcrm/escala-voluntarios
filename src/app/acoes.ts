@@ -21,3 +21,11 @@ export async function responder(escalaId: string, resposta: "confirmado" | "recu
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }
+
+/** "Cheguei": o voluntário avisa que já está na igreja (só no dia, pela função do banco). */
+export async function registrarChegada(escalaId: string) {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc("registrar_chegada", { p_escala: escalaId });
+  revalidatePath("/");
+  return error ? { erro: error.message } : { erro: null };
+}

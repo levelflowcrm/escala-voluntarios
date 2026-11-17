@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { TelaComunicados, type Comunicado } from "./tela";
+import { TelaComunicados, type Chegada, type Comunicado } from "./tela";
 
 export default async function Comunicados() {
   const supabase = await criarClienteServidor();
@@ -27,5 +27,18 @@ export default async function Comunicados() {
     autor: (c.pessoas as unknown as { nome: string } | null)?.nome ?? "",
   }));
   const ministerios = meus;
-  return <TelaComunicados comunicados={comunicados} ministerios={ministerios} vistoEm={leitura?.visto_em ?? new Date(Date.now() - 14 * 86_400_000).toISOString()} />;
+  let chegadas: Chegada[] = [];
+  if (ministerios.length > 0) {
+    const { data: ch } = await supabase.rpc("chegadas_do_dia");
+    chegadas = ((ch ?? []) as Record<string, string | null>[]).map((c) => ({
+      id: c.escala_id as string,
+      pessoa: c.pessoa as string,
+      funcao: c.funcao ?? "",
+      ministerio: c.ministerio as string,
+      evento: c.evento as string,
+      inicio: c.inicio as string,
+      chegouEm: c.chegou_em,
+    }));
+  }
+  return <TelaComunicados chegadas={chegadas} comunicados={comunicados} ministerios={ministerios} vistoEm={leitura?.visto_em ?? new Date(Date.now() - 14 * 86_400_000).toISOString()} />;
 }

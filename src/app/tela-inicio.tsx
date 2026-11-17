@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BotaoCheguei } from "./botao-cheguei";
 import Link from "next/link";
 import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
@@ -27,6 +28,7 @@ export type Linha = {
   papel: string;
   status: string;
   motivo: string | null;
+  chegou_em?: string | null;
   eventos: { titulo: string; inicio: string; cor?: string | null };
   funcoes: { nome: string } | null;
   ministerios: { nome: string } | null;
@@ -176,6 +178,9 @@ export function TelaInicio({
             <a href={`/agenda/${proximo.id}`} className="self-start rounded-full bg-white/20 px-3 py-1.5 text-xs font-medium">
               📅 Adicionar à agenda
             </a>
+          )}
+          {proximo.status !== "recusado" && (
+            <BotaoCheguei escalaId={proximo.id} inicio={proximo.eventos.inicio} chegouEm={proximo.chegou_em ?? null} />
           )}
           {proximo.status === "pendente" ? (
             <div className="rounded-xl bg-white p-3 text-neutral-900">

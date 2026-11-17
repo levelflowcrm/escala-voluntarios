@@ -33,4 +33,5 @@ $PSQL -f supabase/tests/ocupacoes.sql
 $PSQL -f supabase/tests/agenda_cor.sql
 $PSQL -f supabase/tests/adicionar_voluntario.sql
 $PSQL -f supabase/tests/cultos_fixos.sql
+$PSQL -f supabase/tests/cheguei.sql
 echo "OK: migrações, seed e testes passaram"
