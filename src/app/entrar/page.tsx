@@ -26,7 +26,9 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
       </div>
       {erro && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
-          Não foi possível entrar. Tente de novo com o botão abaixo.
+          {erro === "sem-cadastro"
+            ? "Este e-mail ainda não está cadastrado. Peça ao coordenador do seu ministério para cadastrar o seu Gmail e entre de novo."
+            : "Não foi possível entrar. Tente de novo com o botão abaixo."}
         </p>
       )}
       <FormularioEntrar />
