@@ -45,6 +45,7 @@ export function TelaInicio({
   historico,
   avisos = [],
   novosComunicados = 0,
+  mensagensNovas = 0,
   servidasNoMes = 0,
   pendencias = null,
   vagasParaMim = 0,
@@ -59,6 +60,7 @@ export function TelaInicio({
   historico: Linha[];
   avisos?: { id: string; titulo: string; texto: string; ministerio: string }[];
   novosComunicados?: number;
+  mensagensNovas?: number;
   servidasNoMes?: number;
   pendencias?: Pendencias | null;
   vagasParaMim?: number;
@@ -123,10 +125,17 @@ export function TelaInicio({
           </div>
           <form action={sair} className="flex items-center gap-3">
             <Link href="/perfil" className="text-sm text-neutral-500 underline">Perfil</Link>
+            <Link href="/mensagens" className="text-sm text-neutral-500 underline">Erro ou ideia?</Link>
             <button className="text-sm text-neutral-500 underline">Sair</button>
           </form>
         </div>
       </header>
+
+      {mensagensNovas > 0 && (
+        <Link href="/mensagens" className="rounded-xl bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          📬 {mensagensNovas === 1 ? "1 mensagem nova" : `${mensagensNovas} mensagens novas`} de erros e sugestões do app
+        </Link>
+      )}
 
       <nav className="flex flex-wrap gap-2">
         {coordenador && (

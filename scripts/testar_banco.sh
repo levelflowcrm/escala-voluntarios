@@ -39,4 +39,5 @@ $PSQL -f supabase/tests/pontuacao.sql
 $PSQL -f supabase/tests/whatsapp.sql
 $PSQL -f supabase/tests/contas_vazias.sql
 $PSQL -f supabase/tests/dispensar_evento.sql
+$PSQL -f supabase/tests/mensagens_app.sql
 echo "OK: migrações, seed e testes passaram"
