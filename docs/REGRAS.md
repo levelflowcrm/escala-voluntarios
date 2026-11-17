@@ -80,6 +80,7 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 - Qualquer pessoa cadastrada registra um **erro** ou uma **sugestão** sobre o próprio app em `/mensagens` (link "Erro ou ideia?" na tela inicial). O nome do autor vai junto.
 - Quem recebe e acompanha (Nova → Vista → Resolvida) é **só o administrador master** (levelflowcrm@gmail.com); na tela inicial dele aparece um aviso com as mensagens novas. O autor vê só o que enviou.
+- O master também recebe um **aviso por WhatsApp** (mesma fila e limites dos outros avisos; precisa de celular válido no cadastro dele; não avisa sobre mensagem que ele mesmo enviou).
 - Diferente de "Sugestões", que vão para o coordenador do ministério.
 
 ## Pontuação do voluntário
