@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CartaoMaisFeliz } from "./cartao-maisfeliz";
 import { BotaoCheguei } from "./botao-cheguei";
 import Link from "next/link";
 import { CORES } from "@/lib/cores-evento";
@@ -47,6 +48,7 @@ export function TelaInicio({
   pendencias = null,
   vagasParaMim = 0,
   trocasRecebidas = 0,
+  maisFeliz = null,
 }: {
   nome: string;
   coordenador: boolean;
@@ -59,6 +61,7 @@ export function TelaInicio({
   pendencias?: Pendencias | null;
   vagasParaMim?: number;
   trocasRecebidas?: number;
+  maisFeliz?: { eventoId: string; titulo: string } | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
   const proximo = proximas.find((e) => e.status !== "recusado");
@@ -153,6 +156,8 @@ export function TelaInicio({
         </Link>
       </nav>
 
+      {maisFeliz && <CartaoMaisFeliz key={maisFeliz.eventoId} eventoId={maisFeliz.eventoId} titulo={maisFeliz.titulo} />}
+
       {proximo && (
         <section className="flex flex-col gap-3 rounded-2xl bg-violet-600 p-5 text-white">
           <div className="flex items-center justify-between">
@@ -212,6 +217,12 @@ export function TelaInicio({
         <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
           🙌 Você serviu <strong>{servidasNoMes}</strong> {servidasNoMes === 1 ? "vez" : "vezes"} neste mês. Obrigado!
         </p>
+      )}
+
+      {coordenador && (
+        <Link href="/maisfeliz" className="rounded-xl bg-violet-50 px-4 py-3 text-sm dark:bg-violet-950/40">
+          😊 Como o time se sentiu nos cultos. <strong>Ver MaisFeliz</strong>
+        </Link>
       )}
 
       {pendencias && (pendencias.vagasAbertas.length > 0 || pendencias.semResposta.length > 0) && (

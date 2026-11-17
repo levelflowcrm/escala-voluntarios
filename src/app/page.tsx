@@ -68,6 +68,8 @@ export default async function Inicio() {
     .lt("eventos.inicio", fimMes);
   const [{ data: vagas }, { data: trocas }] = await Promise.all([supabase.rpc("vagas_abertas"), supabase.rpc("minhas_trocas")]);
   const vagasParaMim = (vagas ?? []).length;
+  const { data: avaliar } = await supabase.rpc("maisfeliz_pendentes");
+  const maisFeliz = ((avaliar ?? []) as { evento_id: string; titulo: string }[])[0] ?? null;
   const trocasRecebidas = ((trocas ?? []) as { direcao: string }[]).filter((t) => t.direcao === "recebida").length;
 
   const servidasNoMes = doMes?.length ?? 0;
@@ -120,6 +122,7 @@ export default async function Inicio() {
       servidasNoMes={servidasNoMes}
       vagasParaMim={vagasParaMim}
       trocasRecebidas={trocasRecebidas}
+      maisFeliz={maisFeliz ? { eventoId: maisFeliz.evento_id, titulo: maisFeliz.titulo } : null}
       pendencias={pendencias}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,

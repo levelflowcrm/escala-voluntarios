@@ -29,3 +29,11 @@ export async function registrarChegada(escalaId: string) {
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }
+
+/** MaisFeliz: reação anônima ao fim da escala (1 a 5). */
+export async function votarMaisFeliz(eventoId: string, nota: number) {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc("registrar_maisfeliz", { p_evento: eventoId, p_nota: nota });
+  revalidatePath("/");
+  return error ? { erro: error.message } : { erro: null };
+}
