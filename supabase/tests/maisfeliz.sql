@@ -44,6 +44,18 @@ begin
   select count(*) into n from maisfeliz_pendentes() where evento_id = ev;
   if n <> 1 then raise exception 'FALHOU: A deveria ter 1 avaliação pendente, tem %', n; end if;
 
+  -- Lembrete por WhatsApp: A (confirmado) e C ("Cheguei") recebem; D (recusado) e quem ainda não serviu não
+  update pessoas set celular = '11 95402-4089' where id in (a, c, d);
+  delete from fila_whatsapp;
+  n := enfileirar_lembretes_maisfeliz();
+  if n <> 2 then raise exception 'FALHOU: lembrete MaisFeliz esperado para 2 pessoas, foi %', n; end if;
+  if not exists (select 1 from fila_whatsapp where tipo = 'maisfeliz' and pessoa_id = a and texto like '%meia-noite%' and texto like '%Culto maisfeliz%') then
+    raise exception 'FALHOU: lembrete MaisFeliz sem o culto ou sem o prazo';
+  end if;
+  if exists (select 1 from fila_whatsapp where tipo = 'maisfeliz' and pessoa_id = d) then raise exception 'FALHOU: lembrete para quem recusou'; end if;
+  if enfileirar_lembretes_maisfeliz() <> 0 then raise exception 'FALHOU: lembrete MaisFeliz duplicado no mesmo dia'; end if;
+  delete from fila_whatsapp;
+
   -- Antes de o culto começar não dá para votar
   begin
     perform registrar_maisfeliz(ev_futuro, 5);
@@ -71,6 +83,11 @@ begin
   exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
   select count(*) into n from maisfeliz_pendentes() where evento_id = ev;
   if n <> 0 then raise exception 'FALHOU: avaliação continua pendente depois de votar'; end if;
+
+  -- Quem já avaliou não recebe lembrete
+  delete from fila_whatsapp;
+  if enfileirar_lembretes_maisfeliz() <> 1 then raise exception 'FALHOU: depois do voto de A, só C deveria receber lembrete'; end if;
+  delete from fila_whatsapp;
 
   -- Acesso direto às tabelas é negado para o usuário logado
   perform set_config('request.jwt.claim.sub', ua::text, true);
@@ -109,6 +126,7 @@ begin
 
   -- Limpeza
   perform set_config('request.jwt.claim.sub', '', true);
+  delete from fila_whatsapp;
   delete from eventos where id in (ev, ev_futuro);
   update pessoas set auth_user_id = null where id in (a, b, c, d, coord);
   raise notice 'MaisFeliz: OK';

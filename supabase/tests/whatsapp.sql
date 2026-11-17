@@ -124,7 +124,7 @@ do $$
 declare fn text;
 begin
   for fn in select unnest(array[
-    'enfileirar_whatsapp(uuid,text,text,text)', 'enfileirar_lembretes()', 'rotulo_evento_whatsapp(uuid)', 'tg_whatsapp_boas_vindas()'
+    'enfileirar_whatsapp(uuid,text,text,text)', 'enfileirar_lembretes()', 'enfileirar_lembretes_maisfeliz()', 'rotulo_evento_whatsapp(uuid)', 'tg_whatsapp_boas_vindas()'
   ]) loop
     if has_function_privilege('authenticated', fn, 'execute') or has_function_privilege('anon', fn, 'execute') then
       raise exception 'FALHOU: % executável por authenticated/anon', fn;

@@ -95,7 +95,7 @@ recusa, troca ou escala sem resposta.
 
 Depois do culto (de 1 h após o início até a meia-noite do mesmo dia, horário de Brasília), quem serviu escolhe um
 emoji de 1 a 5. O voto é anônimo (sem nome e sem horário) e o líder só vê o
-resumo por culto, com 3 respostas ou mais.
+resumo por culto, com 3 respostas ou mais. Na rotina diária das 20h (Brasília), quem serviu hoje e ainda não avaliou recebe 1 lembrete por WhatsApp (sem nota nem resultado) com o prazo até a meia-noite.
 
 ## Cheguei
 
