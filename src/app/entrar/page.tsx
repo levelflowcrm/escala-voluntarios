@@ -29,6 +29,21 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
         </p>
       )}
       <FormularioEntrar />
+      <section className="flex flex-col gap-2 border-t border-neutral-200 pt-5 text-sm dark:border-neutral-800">
+        <h2 className="font-medium">O que é o Mais Conectados</h2>
+        <p className="text-neutral-600 dark:text-neutral-300">
+          Aplicativo de escala de voluntários para igrejas. Quem serve na igreja usa o Mais Conectados para:
+        </p>
+        <ul className="list-disc pl-5 text-neutral-600 dark:text-neutral-300">
+          <li>ver suas escalas e confirmar presença;</li>
+          <li>avisar que chegou no dia do culto;</li>
+          <li>pedir troca a um colega ou assumir vagas abertas;</li>
+          <li>informar disponibilidade e receber comunicados e avisos do seu ministério.</li>
+        </ul>
+        <p className="text-neutral-500">
+          O acesso é liberado pela coordenação da sua igreja. Usamos apenas seu nome e e-mail do Google para identificar você.
+        </p>
+      </section>
       <p className="text-center text-xs text-neutral-500">
         Ao entrar, você concorda com os <Link className="underline" href="/termos">Termos de Uso</Link> e a{" "}
         <Link className="underline" href="/privacidade">Política de Privacidade</Link>.
