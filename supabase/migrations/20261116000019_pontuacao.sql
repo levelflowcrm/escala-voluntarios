@@ -113,4 +113,8 @@ begin
   if exists (select 1 from pg_roles where rolname = 'anon') then
     execute 'revoke execute on function minha_pontuacao(), pontuacao_do_time(), calcular_pontuacao(uuid), assumir_vaga(uuid, uuid) from anon';
   end if;
+  -- calcular_pontuacao é interna (aceita qualquer pessoa): só as funções acima a chamam
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    execute 'revoke execute on function calcular_pontuacao(uuid) from authenticated';
+  end if;
 end $$;

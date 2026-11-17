@@ -96,3 +96,16 @@ begin
   delete from pessoas where id in (b, c);
   raise notice 'Pontuação: OK';
 end $$;
+
+-- Funções internas não podem ser chamadas direto por quem está logado
+do $$
+begin
+  if has_function_privilege('authenticated', 'calcular_pontuacao(uuid)', 'execute') then
+    raise exception 'FALHOU: usuário logado executa calcular_pontuacao direto';
+  end if;
+  if has_function_privilege('authenticated', 'pode_assumir_vaga(uuid,uuid,uuid)', 'execute')
+     or has_function_privilege('authenticated', 'pode_cobrir(uuid,uuid)', 'execute') then
+    raise exception 'FALHOU: usuário logado executa função interna de regra';
+  end if;
+  raise notice 'Funções internas fechadas: OK';
+end $$;
