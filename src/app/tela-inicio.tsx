@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { dadosDoNivel } from "@/lib/pontuacao";
 import { CartaoMaisFeliz } from "./cartao-maisfeliz";
 import { BotaoCheguei } from "./botao-cheguei";
 import Link from "next/link";
@@ -49,6 +50,7 @@ export function TelaInicio({
   vagasParaMim = 0,
   trocasRecebidas = 0,
   maisFeliz = null,
+  pontuacao = null,
 }: {
   nome: string;
   coordenador: boolean;
@@ -62,6 +64,7 @@ export function TelaInicio({
   vagasParaMim?: number;
   trocasRecebidas?: number;
   maisFeliz?: { eventoId: string; titulo: string } | null;
+  pontuacao?: { pontos: number; nivel: string } | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
   const proximo = proximas.find((e) => e.status !== "recusado");
@@ -211,6 +214,13 @@ export function TelaInicio({
             </Link>
           )}
         </section>
+      )}
+
+      {pontuacao && (
+        <Link href="/pontuacao" className="flex items-center justify-between rounded-xl bg-violet-50 px-4 py-3 text-sm dark:bg-violet-950/40">
+          <span>{dadosDoNivel(pontuacao.nivel).emoji} Sua pontuação: <strong>{pontuacao.pontos} pontos</strong> · {dadosDoNivel(pontuacao.nivel).rotulo}</span>
+          <span className="text-violet-700 underline dark:text-violet-300">Ver</span>
+        </Link>
       )}
 
       {servidasNoMes > 0 && (
