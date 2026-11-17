@@ -63,8 +63,8 @@ export function clienteServico() {
 }
 
 async function enviarTexto(numero: string, texto: string): Promise<{ ok: boolean; erro?: string }> {
-  const base = process.env.UAZAPI_URL?.replace(/\/+$/, "");
-  const token = process.env.UAZAPI_TOKEN;
+  const base = process.env.UAZAPI_URL?.trim().replace(/\/+$/, "");
+  const token = process.env.UAZAPI_TOKEN?.trim();
   if (!base || !token) return { ok: false, erro: "uazapi_nao_configurada" };
   try {
     const r = await fetch(`${base}/send/text`, {
