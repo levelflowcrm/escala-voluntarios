@@ -3,13 +3,14 @@ import { dadosDoNivel, progressoNivel } from "./pontuacao";
 
 describe("progressoNivel", () => {
   it("mostra quanto falta para o próximo nível", () => {
-    expect(progressoNivel(0)).toMatchObject({ faltam: 40, percentual: 0 });
+    expect(progressoNivel(0)).toMatchObject({ faltam: 30, percentual: 0 });
     expect(progressoNivel(20).proximo?.id).toBe("bronze");
-    expect(progressoNivel(20).percentual).toBe(50);
-    expect(progressoNivel(40).proximo?.id).toBe("prata");
+    expect(progressoNivel(15).percentual).toBe(50);
+    expect(progressoNivel(30).proximo?.id).toBe("prata");
+    expect(progressoNivel(119).proximo?.id).toBe("ouro");
   });
   it("no ouro não há próximo nível", () => {
-    expect(progressoNivel(300)).toEqual({ proximo: null, faltam: 0, percentual: 100 });
+    expect(progressoNivel(200)).toEqual({ proximo: null, faltam: 0, percentual: 100 });
   });
 });
 
