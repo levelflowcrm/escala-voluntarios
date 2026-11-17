@@ -25,7 +25,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
       </div>
       {erro && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
-          O link expirou ou já foi usado. Peça um novo abaixo.
+          Não foi possível entrar. Tente de novo com o botão abaixo.
         </p>
       )}
       <FormularioEntrar />

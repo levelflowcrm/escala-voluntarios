@@ -49,7 +49,5 @@ SQL Editor do Supabase **antes** do merge que as usa.
   cai em "Quase lá!" e não enxerga nada: RLS por `minha_igreja()`). Para barrar
   até isso, desligar novos cadastros no Supabase (Authentication → Sign In /
   Providers → "Allow new users to sign up"), validando antes que o Google continua entrando.
-- Login por link de e-mail: o e-mail padrão do Supabase só envia para a equipe do
-  projeto e com limite baixo. Para voluntários, configurar SMTP próprio ou
-  esconder essa opção e deixar só o Google.
+- Login: **só Google** (decidido em 16/11). O link por e-mail foi removido porque o e-mail padrão do Supabase só atende a equipe do projeto. Se algum voluntário não tiver conta Google, configurar SMTP próprio (Resend/Brevo) e reativar.
 - A proteção de colunas de `pessoas` já existe (migração `20261116000003`, teste `protege_pessoas.sql`).

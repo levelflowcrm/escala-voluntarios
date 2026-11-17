@@ -1,55 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { criarClienteNavegador } from "@/lib/supabase/client";
 
+/** Entrada só com Google (o link por e-mail ficou de fora: o e-mail padrão do Supabase não atende os voluntários). */
 export function FormularioEntrar() {
-  const [email, setEmail] = useState("");
-  const [estado, setEstado] = useState<"livre" | "enviando" | "enviado" | "erro">("livre");
-  const [mensagemErro, setMensagemErro] = useState("");
   const supabase = criarClienteNavegador();
-  const voltarPara = () => `${window.location.origin}/auth/callback`;
-
-  async function enviarLink(e: React.FormEvent) {
-    e.preventDefault();
-    setEstado("enviando");
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: voltarPara() },
-    });
-    if (error) {
-      setMensagemErro(
-        error.status === 429
-          ? "Muitos pedidos seguidos. Espere alguns minutos e tente de novo."
-          : "Não foi possível enviar o link. Confira o e-mail e tente de novo.",
-      );
-      setEstado("erro");
-    } else {
-      setEstado("enviado");
-    }
-  }
 
   async function entrarComGoogle() {
-    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: voltarPara() } });
-  }
-
-  if (estado === "enviado") {
-    return (
-      <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-        <p className="font-medium">Confira seu e-mail 📬</p>
-        <p className="mt-1 text-sm text-neutral-500">
-          Mandamos um link de acesso para <strong>{email}</strong>. Abra no mesmo celular. Se não chegar em 2 minutos,
-          olhe o spam.
-        </p>
-        <button className="mt-3 text-sm text-violet-600 underline" onClick={() => setEstado("livre")}>
-          Usar outro e-mail
-        </button>
-      </div>
-    );
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <button
         onClick={entrarComGoogle}
         className="flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
@@ -62,32 +27,7 @@ export function FormularioEntrar() {
         </svg>
         Entrar com Google
       </button>
-
-      <div className="flex items-center gap-3 text-xs text-neutral-400">
-        <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-        ou receba um link por e-mail
-        <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-      </div>
-
-      <form onSubmit={enviarLink} className="flex flex-col gap-3">
-        <input
-          type="email"
-          required
-          inputMode="email"
-          autoComplete="email"
-          placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="h-12 rounded-xl border border-neutral-300 bg-transparent px-4 outline-none focus:border-violet-500 dark:border-neutral-700"
-        />
-        <button
-          disabled={estado === "enviando"}
-          className="h-12 rounded-xl bg-violet-600 font-medium text-white hover:bg-violet-700 disabled:opacity-60"
-        >
-          {estado === "enviando" ? "Enviando..." : "Receber link de acesso"}
-        </button>
-        {estado === "erro" && <p className="text-sm text-red-600">{mensagemErro}</p>}
-      </form>
+      <p className="text-center text-xs text-neutral-500">Use o mesmo e-mail Google que o seu coordenador cadastrou.</p>
     </div>
   );
 }
