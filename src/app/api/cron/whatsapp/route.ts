@@ -17,5 +17,5 @@ export async function GET(req: Request) {
 
   const { data: lembretes, error } = await db.rpc("enfileirar_lembretes");
   const r = await despacharFila(MAX_POR_RODADA_CRON);
-  return NextResponse.json({ ok: !error, lembretes: lembretes ?? 0, enviados: r.enviados });
+  return NextResponse.json({ ok: !error, lembretes: lembretes ?? 0, enviados: r.enviados, ...(r.motivo ? { motivo: r.motivo } : {}) });
 }
