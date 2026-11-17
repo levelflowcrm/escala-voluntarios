@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { validarNovoVoluntario } from "@/lib/voluntario";
+import { normalizarNumero } from "@/lib/whatsapp";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,6 +20,18 @@ export async function salvarEmail(pessoaId: string, email: string): Promise<{ er
   if (error) {
     return { erro: error.code === "23505" ? "Esse e-mail já é de outra pessoa" : "Não foi possível salvar" };
   }
+  if (!data?.length) return { erro: "Sem permissão para alterar essa pessoa" };
+  revalidatePath("/voluntarios");
+  return { erro: null };
+}
+
+/** Salva (ou limpa) o celular de um voluntário; é para ele que vão os avisos de WhatsApp. A RLS só deixa coordenadores alterarem. */
+export async function salvarCelular(pessoaId: string, celular: string): Promise<{ erro: string | null }> {
+  const texto = celular.trim();
+  if (texto && !normalizarNumero(texto)) return { erro: "Celular inválido. Use DDD + número, ex.: (11) 95402-4089" };
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("pessoas").update({ celular: texto || null }).eq("id", pessoaId).select("id");
+  if (error) return { erro: "Não foi possível salvar" };
   if (!data?.length) return { erro: "Sem permissão para alterar essa pessoa" };
   revalidatePath("/voluntarios");
   return { erro: null };

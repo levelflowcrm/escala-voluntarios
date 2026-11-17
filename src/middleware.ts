@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLICAS = ["/entrar", "/auth", "/privacidade", "/termos"];
+// /api/cron não tem sessão: a própria rota exige o CRON_SECRET.
+const PUBLICAS = ["/entrar", "/auth", "/privacidade", "/termos", "/api/cron"];
 
 /** Renova a sessão a cada requisição e manda quem não fez login para /entrar. */
 export async function middleware(request: NextRequest) {
