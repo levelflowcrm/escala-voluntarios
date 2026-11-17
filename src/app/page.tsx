@@ -57,6 +57,16 @@ export default async function Inicio() {
     ).length;
   }
 
+  // Administrador master: erros e sugestões do app que ainda não foram vistos.
+  let mensagensNovas = 0;
+  if (admin) {
+    const { data: master } = await supabase.rpc("sou_admin_master");
+    if (master) {
+      const { count } = await supabase.from("mensagens_app").select("id", { count: "exact", head: true }).eq("status", "nova");
+      mensagensNovas = count ?? 0;
+    }
+  }
+
   // Quantas vezes servi neste mês (confirmadas, já realizadas ou não).
   const { inicio: iniMes, fim: fimMes } = limitesMes(mesAtual());
   const { data: doMes } = await supabase
@@ -121,6 +131,7 @@ export default async function Inicio() {
       proximas={proximas}
       historico={historico}
       novosComunicados={(novos ?? 0) + chegadasNovas}
+      mensagensNovas={mensagensNovas}
       servidasNoMes={servidasNoMes}
       vagasParaMim={vagasParaMim}
       trocasRecebidas={trocasRecebidas}

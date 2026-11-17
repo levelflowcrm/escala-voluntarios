@@ -76,6 +76,12 @@ As funções com menos gente habilitada são preenchidas primeiro.
 - **Dispensar:** o coordenador pode dispensar um evento para o PRÓPRIO ministério ("Meu time não serve neste evento"). O evento some da escala dele, fica em "Dispensados" e dá para voltar a escalar. Não dá para dispensar com gente escalada (tire as pessoas antes); recusas antigas são limpas.
 - **Voluntário em vários ministérios:** cada coordenador monta o seu time, mas a mesma pessoa **nunca** fica duas vezes no mesmo evento (o banco barra). Na escolha da vaga, quem já foi escalado por outro ministério aparece desativado com "já escalado em <ministério>", e o "Criar automático" também pula essas pessoas.
 
+## Erros e sugestões do app
+
+- Qualquer pessoa cadastrada registra um **erro** ou uma **sugestão** sobre o próprio app em `/mensagens` (link "Erro ou ideia?" na tela inicial). O nome do autor vai junto.
+- Quem recebe e acompanha (Nova → Vista → Resolvida) é **só o administrador master** (levelflowcrm@gmail.com); na tela inicial dele aparece um aviso com as mensagens novas. O autor vê só o que enviou.
+- Diferente de "Sugestões", que vão para o coordenador do ministério.
+
 ## Pontuação do voluntário
 
 Janela dos **últimos 90 dias**, só de escalas publicadas. Cada pessoa vê a
