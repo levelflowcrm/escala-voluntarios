@@ -101,3 +101,10 @@ resumo por culto, com 3 respostas ou mais.
 
 O botão abre 3 h antes do início e fecha 4 h depois. Marca a escala como
 confirmada e avisa o coordenador (sino e "Chegadas de hoje").
+
+## Avisos por WhatsApp
+- **Ligado por padrão para todos com celular cadastrado** (sem opção de desligar no perfil); o sino do app continua. Quem pedir para parar: o coordenador limpa o celular na tela Voluntários.
+- O banco só **enfileira** (`fila_whatsapp`, privada); o app envia pela Uazapi (instância "Mais Conectados") logo após a ação e numa rotina diária (20h, horário de Brasília).
+- Quando avisa: **chegada** (coordenadores do ministério), **troca pedida** (colega) e **troca aceita/recusada** (quem pediu), **escala publicada** (quem foi escalado, 1 mensagem por pessoa por ministério por hora), **lembrete de véspera** (1 mensagem por pessoa com a lista do dia seguinte; pede confirmação se faltar).
+- Proteções: interruptor `WHATSAPP_ATIVO` (só `true` envia); máx. 10 envios por ação / 30 por rotina; máx. 4 mensagens por pessoa por dia; mensagem com mais de 12 h na fila expira em vez de ser enviada atrasada; textos variam; sem celular válido, não entra na fila.
+- Ainda não avisa: vagas abertas (próximo passo, para não gerar volume).

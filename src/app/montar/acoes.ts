@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { CORES } from "@/lib/cores-evento";
 import { emPausa, type Pausa } from "@/lib/cultos";
 import { diaNoFuso, diasDaSemanaNoMes, FUSO, inicioNoFuso, limitesMes, mesValido } from "@/lib/datas";
 import { sugerirEscala, type VoluntarioEntrada } from "@/lib/escala/sugerir";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { despacharFila } from "@/lib/whatsapp";
 
 type Resultado = { erro: string | null; aviso?: string };
 
@@ -246,6 +248,7 @@ export async function publicar(ministerioId: string, mes: string): Promise<Resul
   revalidatePath("/montar");
   revalidatePath("/");
   if (error) return { erro: traduzirErro(error) };
+  if (data.length) after(() => despacharFila()); // avisa quem foi escalado por WhatsApp
   return { erro: null, aviso: data.length ? `${data.length} eventos publicados.` : "Já estava tudo publicado." };
 }
 

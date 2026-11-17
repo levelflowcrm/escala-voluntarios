@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
+import { despacharFila } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export async function sair() {
@@ -26,6 +28,7 @@ export async function responder(escalaId: string, resposta: "confirmado" | "recu
 export async function registrarChegada(escalaId: string) {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc("registrar_chegada", { p_escala: escalaId });
+  if (!error) after(() => despacharFila()); // avisa os coordenadores por WhatsApp
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }

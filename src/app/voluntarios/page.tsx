@@ -14,11 +14,12 @@ export default async function Voluntarios() {
   if (ids.length === 0) redirect("/");
 
   const { data } = await supabase.rpc("dados_do_time");
-  const lista: Voluntario[] = ((data ?? []) as { pessoa_id: string; nome: string; email: string | null; conectado: boolean }[]).map((p) => ({
+  const lista: Voluntario[] = ((data ?? []) as { pessoa_id: string; nome: string; email: string | null; conectado: boolean; celular: string | null }[]).map((p) => ({
     id: p.pessoa_id,
     nome: p.nome,
     email: p.email ?? "",
     conectado: p.conectado,
+    celular: p.celular ?? "",
   }));
   lista.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 

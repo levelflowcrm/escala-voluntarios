@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { despacharFila } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 type R = { erro?: string };
@@ -8,6 +10,7 @@ type R = { erro?: string };
 async function chamar(fn: string, args: Record<string, unknown>): Promise<R> {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc(fn, args);
+  if (!error) after(() => despacharFila()); // avisa o colega / quem pediu por WhatsApp
   revalidatePath("/");
   revalidatePath("/trocas");
   return error ? { erro: error.message } : {};
