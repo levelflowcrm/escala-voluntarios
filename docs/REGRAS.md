@@ -83,6 +83,10 @@ As funções com menos gente habilitada são preenchidas primeiro.
 - O master também recebe um **aviso por WhatsApp** (mesma fila e limites dos outros avisos; precisa de celular válido no cadastro dele; não avisa sobre mensagem que ele mesmo enviou).
 - Diferente de "Sugestões", que vão para o coordenador do ministério.
 
+## Minhas escalas
+
+- Botão "Minhas escalas" na tela inicial abre `/minhas-escalas`: o voluntário vê só os dias em que serve (pendentes e confirmadas; recusadas e trocadas não aparecem). Aba **Por mês** (setas para mês anterior/próximo) e aba **Próximas** (todas as que ainda vão acontecer). Cada escala mostra horário, evento, função, ministério, situação e "Adicionar à Agenda do Google".
+
 ## Agenda da igreja (faixa de dias)
 
 - No topo de `/agenda`, todo voluntário vê uma faixa de 30 dias com rolagem lateral: pontinho rosa = há evento; dia preenchido de roxo = a pessoa está escalada (pendente ou confirmada; recusadas e trocadas não contam). Tocar no dia mostra os eventos dele, com horário, local e, se for o caso, a função e o ministério.
