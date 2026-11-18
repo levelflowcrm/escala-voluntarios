@@ -11,10 +11,16 @@ export default async function Permissoes() {
   if (!admin) redirect("/");
   const { data: master } = await supabase.rpc("sou_admin_master");
 
-  const [{ data: pessoas }, { data: ministerios }] = await Promise.all([
+  const [{ data: pessoas }, { data: ministerios }, { data: membros }] = await Promise.all([
     supabase.rpc("equipe_permissoes"),
     supabase.from("ministerios").select("id, nome").order("nome"),
+    supabase.from("membros_ministerio").select("pessoa_id, ministerio_id, papel"),
   ]);
+  // Em quais times cada pessoa está (como voluntário ou coordenador)
+  const times: Record<string, { ministerioId: string; papel: string }[]> = {};
+  for (const m of (membros ?? []) as { pessoa_id: string; ministerio_id: string; papel: string }[]) {
+    (times[m.pessoa_id] ??= []).push({ ministerioId: m.ministerio_id, papel: m.papel });
+  }
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 py-8">
@@ -25,7 +31,7 @@ export default async function Permissoes() {
         {!master && " Só o administrador master promove outros administradores."}
       </p>
       <TelaPermissoes
-        pessoas={(pessoas ?? []) as PessoaPerm[]}
+        pessoas={((pessoas ?? []) as PessoaPerm[]).map((p) => ({ ...p, times: times[p.pessoa_id] ?? [] }))}
         ministerios={(ministerios ?? []) as { id: string; nome: string }[]}
         souMaster={!!master}
         euId={eu as string}
