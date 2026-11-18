@@ -66,6 +66,28 @@ describe("sugerirEscala", () => {
     expect(r2.atribuicoes[0].pessoaId).toBe("a");
   });
 
+  it("dia marcado no calendário vale acima da regra semanal, mas não acima de bloqueio", () => {
+    // 2026-12-09 é uma quarta (turno da noite); Ana nunca pode às quartas, mas marcou esse dia
+    const vs: VoluntarioEntrada[] = [
+      { id: "a", nome: "Ana", funcoesAptas: ["dtv"], indisponibilidades: [{ diaSemana: 3 }], diasDisponiveis: ["2026-12-09"] },
+      { id: "b", nome: "Bia", funcoesAptas: ["dtv"], indisponibilidades: [{ diaSemana: 3 }] },
+      { id: "c", nome: "Caio", funcoesAptas: ["dtv"], indisponibilidades: [{ diaSemana: 3 }], diasDisponiveis: ["2026-12-09"], bloqueios: [{ inicio: "2026-12-08", fim: "2026-12-10" }] },
+    ];
+    const r = sugerirEscala([qua], [funcoes[0]], vs, [], opcoes);
+    expect(r.atribuicoes[0].pessoaId).toBe("a");
+    expect(sugerirEscala([qua], [funcoes[0]], [vs[1], vs[2]], [], opcoes).atribuicoes).toEqual([]);
+  });
+
+  it("'só nos dias que eu marcar' tira a pessoa dos dias não marcados", () => {
+    const vs: VoluntarioEntrada[] = [
+      { id: "a", nome: "Ana", funcoesAptas: ["dtv"], soDiasMarcados: true },
+      { id: "b", nome: "Bia", funcoesAptas: ["dtv"], soDiasMarcados: true, diasDisponiveis: ["2026-12-09"] },
+    ];
+    const r = sugerirEscala([qua], [funcoes[0]], vs, [], opcoes);
+    expect(r.atribuicoes[0].pessoaId).toBe("b");
+    expect(sugerirEscala([qua], [funcoes[0]], [vs[0]], [], opcoes).atribuicoes).toEqual([]);
+  });
+
   it("faz rodízio: distribui o mês de forma equilibrada", () => {
     const eventos = [domManha, domNoite, qua, dom13];
     const r = sugerirEscala(eventos, funcoes, pessoas(6), [], opcoes);

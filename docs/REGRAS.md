@@ -69,6 +69,16 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 - Coordenadores e funções de Projeção e Iluminação.
 
+## Disponibilidade
+
+Ordem das regras (a mesma na sugestão automática, nas vagas, nas trocas e nos avisos de vaga):
+1. **Bloqueio** (viagem, ausência) no dia: indisponível, sempre.
+2. **Dia marcado no calendário** ("posso servir"): disponível, mesmo que a regra da semana diga que não.
+3. **"Só sirvo nos dias que eu marcar"** ligado: indisponível nos dias sem marca.
+4. Senão vale a **regra semanal** (por culto/turno e, nos atalhos, por dia da semana).
+
+Atalhos: **Todos os dias**, **Só fins de semana** (sábado e domingo) e **Só durante a semana** (segunda a sexta). Substituem as regras por dia da semana e podem ser refinados por culto.
+
 ## Troca e vaga aberta
 
 - **Pedir troca** (ou "Não posso") **abre a vaga**: a pessoa deixa a escala e todos os colegas que podem assumir (membros do ministério, aptos na função, sem conflito no evento, bloqueio ou indisponibilidade) recebem WhatsApp e veem em Vagas abertas; o primeiro que aceitar assume e a vaga volta como confirmada. Cada pessoa recebe no máximo um aviso por evento, mesmo com várias vagas abertas (a lista completa fica em Vagas). O aviso não cita quem saiu e só vale com a escala publicada e o evento no futuro.

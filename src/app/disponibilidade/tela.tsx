@@ -5,7 +5,8 @@ import { useState, useTransition } from "react";
 import type { Periodo } from "@/lib/escala/sugerir";
 import { nomeTurno } from "@/lib/turnos";
 import { Preferencias } from "./preferencias";
-import { adicionarBloqueio, removerBloqueio, salvarTurno } from "./acoes";
+import { adicionarBloqueio, removerBloqueio, salvarTurno, type Atalho } from "./acoes";
+import { Atalhos, Calendario } from "./calendario";
 
 export type RegraTurno = "sempre" | "nunca" | number[];
 
@@ -83,12 +84,20 @@ export function TelaDisponibilidade({
   hoje,
   limite,
   observacao,
+  atalho,
+  marcados,
+  diasComEvento,
+  soDiasMarcados,
 }: {
   turnos: { diaSemana: number; periodo: Periodo; cultos: string[]; regra: RegraTurno }[];
   bloqueios: { id: string; inicio: string; fim: string; motivo: string | null }[];
   hoje: string;
   limite: number | null;
   observacao: string;
+  atalho: Atalho | null;
+  marcados: string[];
+  diasComEvento: string[];
+  soDiasMarcados: boolean;
 }) {
   const [ocupado, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
@@ -117,12 +126,16 @@ export function TelaDisponibilidade({
 
       {erro && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{erro}</p>}
 
+      <Atalhos key={atalho ?? "personalizado"} atual={atalho} />
+
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Cultos de toda semana</h2>
         {turnos.map((t) => (
           <CartaoTurno key={`${t.diaSemana}|${t.periodo}`} turno={t} ocupado={ocupado} rodar={rodar} />
         ))}
       </section>
+
+      <Calendario hoje={hoje} marcados={marcados} diasComEvento={diasComEvento} soDiasMarcados={soDiasMarcados} />
 
       <Preferencias limite={limite} observacao={observacao} />
 
