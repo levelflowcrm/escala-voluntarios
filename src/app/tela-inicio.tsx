@@ -93,7 +93,7 @@ export function TelaInicio({
         {comResposta && <Resposta escalaId={e.id} status={e.status} />}
         {comResposta && e.papel === "titular" && e.funcoes && (e.status === "pendente" || e.status === "confirmado") && (
           <Link href={`/trocas/nova/${e.id}`} className="mt-2 inline-block text-sm text-violet-700 underline dark:text-violet-300">
-            Pedir troca a um colega
+            Pedir troca ou abrir a vaga
           </Link>
         )}
       </article>
