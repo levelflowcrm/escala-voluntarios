@@ -33,3 +33,22 @@ export function montarIcs(e: {
     "",
   ].join("\r\n");
 }
+
+/**
+ * Link do Google Agenda com o evento já preenchido ("Adicionar ao Google Agenda"):
+ * abre o app (ou o site) em vez de baixar um arquivo.
+ */
+export function linkGoogleAgenda(e: { titulo: string; inicio: string | Date; duracaoMin?: number; descricao?: string; local?: string }): string {
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const ini = new Date(e.inicio);
+  const fim = new Date(ini.getTime() + (e.duracaoMin ?? 150) * 60_000);
+  const partes = [
+    "action=TEMPLATE",
+    `text=${encodeURIComponent(e.titulo)}`,
+    `dates=${fmt(ini)}/${fmt(fim)}`,
+    "ctz=America%2FSao_Paulo",
+    ...(e.descricao ? [`details=${encodeURIComponent(e.descricao)}`] : []),
+    ...(e.local ? [`location=${encodeURIComponent(e.local)}`] : []),
+  ];
+  return `https://calendar.google.com/calendar/render?${partes.join("&")}`;
+}

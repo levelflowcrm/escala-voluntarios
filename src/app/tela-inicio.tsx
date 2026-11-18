@@ -8,6 +8,7 @@ import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
 import { IconeAgenda, IconeAniversariantes, IconeContribuir, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 
@@ -193,9 +194,13 @@ export function TelaInicio({
             )}
           </p>
           {proximo.status !== "pendente" && (
-            <a href={`/agenda/${proximo.id}`} className="self-start rounded-full bg-white/20 px-3 py-1.5 text-xs font-medium">
-              📅 Adicionar à agenda
-            </a>
+            <BotaoAgenda
+              sobreFundoEscuro
+              titulo={`Servir: ${proximo.eventos.titulo}${proximo.funcoes ? ` · ${proximo.funcoes.nome}` : ""}`}
+              inicio={proximo.eventos.inicio}
+              descricao={[proximo.ministerios && `Ministério: ${proximo.ministerios.nome}`, proximo.funcoes && `Função: ${proximo.funcoes.nome}`, "Escala pelo Mais Conectados"].filter(Boolean).join("\n")}
+              icsHref={`/agenda/${proximo.id}`}
+            />
           )}
           {proximo.status !== "recusado" && (
             <BotaoCheguei escalaId={proximo.id} inicio={proximo.eventos.inicio} chegouEm={proximo.chegou_em ?? null} />

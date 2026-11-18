@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
 import { TIPOS } from "@/lib/agenda-tipos";
 import { CORES, corDoEvento } from "@/lib/cores-evento";
+import { BotaoAgenda } from "../botao-agenda";
 import { SeletorCor } from "../seletor-cor";
 import { REPETICOES } from "@/lib/recorrencia";
 import { apagarEventoAgenda, criarEventoAgenda, editarEventoAgenda, type Alcance, type DadosEvento } from "./acoes";
@@ -186,7 +187,14 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
             {e.local && <p className="text-sm text-neutral-500">📍 {e.local}</p>}
             {e.observacao && <p className="text-sm text-neutral-600 dark:text-neutral-300">{e.observacao}</p>}
             <div className="mt-1 flex flex-wrap gap-3 text-sm">
-              <a href={`/agenda/evento/${e.id}`} className="text-violet-700 underline dark:text-violet-300">📅 Adicionar à agenda</a>
+              <BotaoAgenda
+                titulo={e.titulo}
+                inicio={e.inicio}
+                duracaoMin={e.fim ? Math.round((new Date(e.fim).getTime() - new Date(e.inicio).getTime()) / 60_000) : undefined}
+                descricao={e.observacao ?? undefined}
+                local={e.local ?? undefined}
+                icsHref={`/agenda/evento/${e.id}`}
+              />
               {admin && (
                 <>
                   <button onClick={() => setEditando(e.id)} className="text-neutral-500 underline">Editar</button>
