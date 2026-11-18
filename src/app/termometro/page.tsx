@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { mesAtual } from "@/lib/datas";
-import { aniversariantesDoMes, classificarCarga, type Carga } from "@/lib/termometro";
+import { classificarCarga, type Carga } from "@/lib/termometro";
 import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { TelaTermometro } from "./tela";
@@ -30,12 +29,5 @@ export default async function Termometro() {
   cargas.sort((a, b) => b.noventa - a.noventa || a.nome.localeCompare(b.nome, "pt-BR"));
   const niveis = classificarCarga(cargas);
 
-  const mes = Number(mesAtual().slice(5, 7));
-  return (
-    <TelaTermometro
-      linhas={cargas.map((c) => ({ ...c, nivel: niveis.get(c.pessoaId)! }))}
-      aniversariantes={aniversariantesDoMes([...time.values()], mes)}
-      mes={mes}
-    />
-  );
+  return <TelaTermometro linhas={cargas.map((c) => ({ ...c, nivel: niveis.get(c.pessoaId)! }))} />;
 }
