@@ -11,7 +11,16 @@ export type PessoaPerm = {
   admin: boolean;
   master: boolean;
   coordena: string[];
+  times: { ministerioId: string; papel: string }[];
 };
+
+/** O que a pessoa é no app, do maior poder para o menor. */
+function funcaoNoApp(p: PessoaPerm): string {
+  if (p.master) return "Administrador master";
+  if (p.admin) return "Administrador";
+  if (p.coordena.length > 0) return "Coordenador";
+  return p.times.length > 0 ? "Voluntário" : "Sem time";
+}
 
 function Chave({ ligado, rotulo, desabilitado, aoMudar }: { ligado: boolean; rotulo: string; desabilitado?: boolean; aoMudar: () => void }) {
   return (
@@ -56,6 +65,27 @@ export function TelaPermissoes({
               {p.master && <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-300">master</span>}
             </p>
             <p className="text-sm text-neutral-500">{p.email ?? "sem e-mail"}{!p.conectado && " · ainda não entrou"}</p>
+            <p className="mt-1 text-xs font-medium text-violet-700 dark:text-violet-300">{funcaoNoApp(p)}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            <span className="text-neutral-500">Times:</span>
+            {p.times.length === 0 && <span className="text-neutral-500">nenhum (não pode ser escalado)</span>}
+            {p.times
+              .map((x) => ({ ...x, nome: ministerios.find((m) => m.id === x.ministerioId)?.nome ?? "" }))
+              .filter((x) => x.nome)
+              .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+              .map((x) => (
+                <span
+                  key={x.ministerioId}
+                  className={`rounded-full px-2 py-0.5 ${
+                    x.papel === "coordenador"
+                      ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
+                      : "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                  }`}
+                >
+                  {x.nome}{x.papel === "coordenador" ? " · coordena" : ""}
+                </span>
+              ))}
           </div>
           <div className="flex flex-wrap gap-2">
             <Chave
