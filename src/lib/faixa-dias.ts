@@ -9,25 +9,27 @@ export function somarDias(dia: string, n: number): string {
 }
 
 /**
- * Faixa de dias a partir de hoje: quantos eventos há em cada dia e se a pessoa está escalada nele.
+ * Faixa só com os dias que têm evento, de hoje em diante, em ordem. Dias sem evento não aparecem.
  * `eventosPorDia` e `escaladoEm` usam dias AAAA-MM-DD no fuso da igreja.
  */
-export function montarFaixa(hoje: string, eventosPorDia: Map<string, number>, escaladoEm: Set<string>, dias = 30): DiaFaixa[] {
-  return Array.from({ length: dias }, (_, i) => {
-    const dia = somarDias(hoje, i);
-    const [a, m, d] = dia.split("-").map(Number);
-    return {
-      dia,
-      numero: d,
-      semana: SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()],
-      eventos: eventosPorDia.get(dia) ?? 0,
-      escalado: escaladoEm.has(dia),
-      hoje: i === 0,
-    };
-  });
+export function montarFaixa(hoje: string, eventosPorDia: Map<string, number>, escaladoEm: Set<string>): DiaFaixa[] {
+  return [...eventosPorDia.entries()]
+    .filter(([dia, n]) => n > 0 && dia >= hoje)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([dia, eventos]) => {
+      const [a, m, d] = dia.split("-").map(Number);
+      return {
+        dia,
+        numero: d,
+        semana: SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()],
+        eventos,
+        escalado: escaladoEm.has(dia),
+        hoje: dia === hoje,
+      };
+    });
 }
 
-/** Dia que abre selecionado: hoje se tiver evento; senão o primeiro dia da faixa com evento; senão hoje. */
-export function diaInicial(faixa: DiaFaixa[]): string {
-  return (faixa.find((d) => d.hoje && d.eventos > 0) ?? faixa.find((d) => d.eventos > 0) ?? faixa[0]).dia;
+/** Dia que abre selecionado: hoje se tiver evento; senão o primeiro dia da faixa; sem faixa, hoje. */
+export function diaInicial(faixa: DiaFaixa[], hoje: string): string {
+  return (faixa.find((d) => d.hoje) ?? faixa[0])?.dia ?? hoje;
 }

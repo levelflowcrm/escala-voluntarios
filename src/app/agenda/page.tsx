@@ -42,14 +42,14 @@ export default async function Agenda() {
   for (const e of eventosDia) porDia.set(e.dia, (porDia.get(e.dia) ?? 0) + 1);
   const idsMeus = new Set(minhas.map((m) => m.eventoId));
   const escaladoEm = new Set(eventosDia.filter((e) => idsMeus.has(e.id)).map((e) => e.dia));
-  const faixa = montarFaixa(hoje, porDia, escaladoEm, 30);
+  const faixa = montarFaixa(hoje, porDia, escaladoEm);
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 py-8">
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Agenda da igreja</h1>
       <p className="text-sm text-neutral-500">Os próximos eventos da igreja. Cada evento também aparece na escala dos ministérios, e o coordenador pode dispensá-lo para o time dele. Só o administrador cadastra eventos.</p>
-      <FaixaDias faixa={faixa} eventos={eventosDia} minhas={minhas} />
+      <FaixaDias faixa={faixa} eventos={eventosDia} minhas={minhas} hoje={hoje} />
       <h2 className="mt-2 text-sm font-medium text-neutral-500">Todos os próximos eventos</h2>
       <TelaAgenda eventos={eventos} admin={!!master} />
     </main>

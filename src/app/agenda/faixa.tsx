@@ -22,8 +22,8 @@ const tituloMes = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC", month: "lo
 const asData = (dia: string) => new Date(`${dia}T12:00:00Z`);
 
 /** Faixa de dias com rolagem lateral: pontinho = tem evento; preenchido = você está escalado. */
-export function FaixaDias({ faixa, eventos, minhas }: { faixa: DiaFaixa[]; eventos: EventoDoDia[]; minhas: MinhaEscala[] }) {
-  const [sel, setSel] = useState(() => diaInicial(faixa));
+export function FaixaDias({ faixa, eventos, minhas, hoje }: { faixa: DiaFaixa[]; eventos: EventoDoDia[]; minhas: MinhaEscala[]; hoje: string }) {
+  const [sel, setSel] = useState(() => diaInicial(faixa, hoje));
   const selRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     selRef.current?.scrollIntoView({ inline: "center", block: "nearest" });
@@ -31,6 +31,8 @@ export function FaixaDias({ faixa, eventos, minhas }: { faixa: DiaFaixa[]; event
 
   const doDia = eventos.filter((e) => e.dia === sel);
   const escalaDe = (id: string) => minhas.find((m) => m.eventoId === id);
+
+  if (faixa.length === 0) return <p className="text-sm text-neutral-500">Nenhum evento próximo na agenda.</p>;
 
   return (
     <section className="flex flex-col gap-3">
@@ -49,16 +51,11 @@ export function FaixaDias({ faixa, eventos, minhas }: { faixa: DiaFaixa[]; event
                 d.escalado
                   ? "border-violet-600 bg-violet-600 text-white"
                   : "border-neutral-200 dark:border-neutral-800"
-              } ${ativo ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white dark:ring-offset-black" : ""} ${
-                !d.escalado && d.eventos === 0 ? "text-neutral-400" : ""
-              }`}
+              } ${ativo ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-white dark:ring-offset-black" : ""}`}
             >
               <span className="text-[11px] leading-none">{d.hoje ? "Hoje" : d.semana}</span>
               <span className="text-xl font-semibold leading-none">{d.numero}</span>
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${d.eventos > 0 ? (d.escalado ? "bg-white" : "bg-pink-500") : "bg-transparent"}`}
-                aria-hidden
-              />
+              <span className={`h-1.5 w-1.5 rounded-full ${d.escalado ? "bg-white" : "bg-pink-500"}`} aria-hidden />
               {d.escalado && <span className="sr-only">Você está escalado</span>}
             </button>
           );
