@@ -23,7 +23,7 @@ export function TelaTermometro({ linhas }: { linhas: (Carga & { nivel: Nivel })[
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-5 px-4 py-8">
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
-      <h1 className="text-2xl font-semibold">Termômetro do time</h1>
+      <h1 className="text-2xl font-semibold">Equilíbrio do time</h1>
       <p className="text-sm text-neutral-500">Escalas de cada pessoa nos últimos 90 dias. Ajuda a dividir melhor e a cuidar de quem serve muito.</p>
 
       {linhas.length === 0 ? (

@@ -7,7 +7,7 @@ import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeAgenda, IconeAniversariantes, IconeContribuir, IconePermissoes, IconeSugestoes, IconeTermometro } from "./icones-topo";
+import { IconeAgenda, IconeAniversariantes, IconeContribuir, IconePermissoes, IconeSugestoes, IconeEquilibrio } from "./icones-topo";
 import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
@@ -119,7 +119,7 @@ export function TelaInicio({
           <div className="flex flex-wrap items-center justify-end gap-2">
             {admin && <IconePermissoes />}
             <IconeAgenda />
-            {coordenador && <IconeTermometro />}
+            {coordenador && <IconeEquilibrio />}
             {coordenador && <IconeAniversariantes />}
             <IconeSugestoes />
             <IconeContribuir />
