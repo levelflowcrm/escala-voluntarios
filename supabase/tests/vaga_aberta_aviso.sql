@@ -30,7 +30,7 @@ begin
   update escalas set status = 'recusado', respondido_em = now() where id = esc;
   select count(*), max(texto) into n, txt from fila_whatsapp where tipo = 'vaga_aberta' and pessoa_id = b;
   if n <> 1 then raise exception 'FALHOU: colega apto deveria receber 1 aviso (%)', n; end if;
-  if txt not like '%Câmera Black%' or txt not like '%Culto aviso vaga%' or txt not like '%/vagas%' then raise exception 'FALHOU: texto do aviso inesperado: %', txt; end if;
+  if txt not like '%Culto aviso vaga%' or txt not like '%/vagas%' then raise exception 'FALHOU: texto do aviso inesperado: %', txt; end if;
   if exists (select 1 from fila_whatsapp where tipo = 'vaga_aberta' and pessoa_id in (a, c, d)) then
     raise exception 'FALHOU: avisou quem saiu, aprendiz ou gente de fora do ministério';
   end if;
@@ -40,6 +40,12 @@ begin
   update escalas set respondido_em = now() where id = esc;
   update escalas set status = 'recusado' where id = esc;
   if (select count(*) from fila_whatsapp where tipo = 'vaga_aberta') <> n then raise exception 'FALHOU: duplicou avisos'; end if;
+
+  -- Segunda vaga no mesmo evento (outra pessoa sai): B não recebe um segundo aviso
+  insert into escalas (evento_id, ministerio_id, funcao_id, pessoa_id, status) values (ev, tm, f, c, 'pendente') returning id into esc;
+  update escalas set status = 'recusado' where id = esc;
+  select count(*) into n from fila_whatsapp where tipo = 'vaga_aberta' and pessoa_id = b;
+  if n <> 1 then raise exception 'FALHOU: B recebeu % avisos para o mesmo evento', n; end if;
 
   -- Bloqueio no dia: quem está bloqueado não é avisado
   delete from fila_whatsapp;

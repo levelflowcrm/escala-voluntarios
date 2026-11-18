@@ -71,7 +71,7 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 ## Troca e vaga aberta
 
-- **Pedir troca** (ou "Não posso") **abre a vaga**: a pessoa deixa a escala e todos os colegas que podem assumir (membros do ministério, aptos na função, sem conflito no evento, bloqueio ou indisponibilidade) recebem WhatsApp e veem em Vagas abertas; o primeiro que aceitar assume e a vaga volta como confirmada. O aviso não cita quem saiu e só vale com a escala publicada e o evento no futuro.
+- **Pedir troca** (ou "Não posso") **abre a vaga**: a pessoa deixa a escala e todos os colegas que podem assumir (membros do ministério, aptos na função, sem conflito no evento, bloqueio ou indisponibilidade) recebem WhatsApp e veem em Vagas abertas; o primeiro que aceitar assume e a vaga volta como confirmada. Cada pessoa recebe no máximo um aviso por evento, mesmo com várias vagas abertas (a lista completa fica em Vagas). O aviso não cita quem saiu e só vale com a escala publicada e o evento no futuro.
 - Alternativa: pedir a um colega específico; a pessoa continua escalada até ele aceitar.
 
 ## Eventos
