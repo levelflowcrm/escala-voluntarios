@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
-import { despacharFila } from "@/lib/whatsapp";
+import { despacharFila, MAX_POR_RODADA_CRON } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export async function sair() {
@@ -20,6 +20,8 @@ export async function responder(escalaId: string, resposta: "confirmado" | "recu
     resposta,
     motivo_txt: motivo?.slice(0, 300) ?? null,
   });
+  // "Não posso" abre a vaga: o banco enfileira o aviso aos colegas que podem assumir e aqui já enviamos.
+  if (!error && resposta === "recusado") after(() => despacharFila(MAX_POR_RODADA_CRON));
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }

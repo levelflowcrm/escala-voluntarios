@@ -9,11 +9,13 @@ export function BotaoAcao({
   acao,
   destaque = false,
   voltarPara,
+  confirmar,
 }: {
   rotulo: string;
   acao: () => Promise<{ erro?: string }>;
   destaque?: boolean;
   voltarPara?: string;
+  confirmar?: string;
 }) {
   const [ocupado, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
@@ -22,13 +24,14 @@ export function BotaoAcao({
     <div className="flex flex-col gap-1">
       <button
         disabled={ocupado}
-        onClick={() =>
+        onClick={() => {
+          if (confirmar && !window.confirm(confirmar)) return;
           iniciar(async () => {
             const r = await acao();
             setErro(r.erro ?? null);
             if (!r.erro && voltarPara) router.push(voltarPara);
-          })
-        }
+          });
+        }}
         className={`h-11 rounded-xl px-4 text-sm font-medium disabled:opacity-60 ${
           destaque ? "bg-violet-600 text-white" : "border border-neutral-300 dark:border-neutral-700"
         }`}

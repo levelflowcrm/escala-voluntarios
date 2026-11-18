@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
-import { despacharFila } from "@/lib/whatsapp";
+import { despacharFila, MAX_POR_RODADA_CRON } from "@/lib/whatsapp";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 type R = { erro?: string };
@@ -13,6 +13,16 @@ async function chamar(fn: string, args: Record<string, unknown>): Promise<R> {
   if (!error) after(() => despacharFila()); // avisa o colega / quem pediu por WhatsApp
   revalidatePath("/");
   revalidatePath("/trocas");
+  return error ? { erro: error.message } : {};
+}
+
+/** Abre a vaga para o time: a pessoa deixa a escala e todos os colegas que podem assumir são avisados. */
+export async function abrirVaga(escala: string): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc("responder_escala", { escala, resposta: "recusado", motivo_txt: "Pedido de troca" });
+  if (!error) after(() => despacharFila(MAX_POR_RODADA_CRON));
+  revalidatePath("/");
+  revalidatePath("/vagas");
   return error ? { erro: error.message } : {};
 }
 

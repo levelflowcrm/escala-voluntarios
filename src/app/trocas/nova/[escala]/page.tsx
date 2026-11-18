@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { fmtDataHora } from "@/lib/datas";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { pedirTroca } from "../../acoes";
+import { abrirVaga, pedirTroca } from "../../acoes";
 import { BotaoAcao } from "../../botoes";
 
 export default async function NovaTroca({ params }: { params: Promise<{ escala: string }> }) {
@@ -32,11 +32,20 @@ export default async function NovaTroca({ params }: { params: Promise<{ escala: 
         <br />
         <span className="text-neutral-500">{ev.titulo}{funcao && ` · ${funcao}`}</span>
       </p>
-      <p className="text-sm text-neutral-500">
-        Escolha um colega apto para esta função e disponível neste dia. Ele recebe o pedido e, se aceitar, assume
-        a data no seu lugar.
-      </p>
-      {lista.length === 0 && <p className="text-neutral-500">Nenhum colega disponível para cobrir essa data agora. Fale com o coordenador.</p>}
+
+      <section className="flex flex-col gap-2 rounded-2xl border border-violet-300 p-4 dark:border-violet-800">
+        <h2 className="font-medium">Abrir a vaga para o time</h2>
+        <p className="text-sm text-neutral-500">
+          Você deixa esta data e a vaga fica aberta. Os colegas aptos e disponíveis são avisados por WhatsApp e pelo app, e o primeiro que aceitar assume. O coordenador acompanha pelas vagas abertas.
+        </p>
+        <BotaoAcao rotulo="Abrir a vaga" destaque acao={() => abrirVaga(escala)} voltarPara="/" confirmar="Abrir a vaga? Você deixa de ficar escalado(a) nesta data e os colegas aptos serão avisados." />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-medium text-neutral-500">Ou peça a um colega específico</h2>
+        <p className="text-sm text-neutral-500">Ele recebe o pedido e, se aceitar, assume a data no seu lugar. Você continua escalado até ele aceitar.</p>
+        {lista.length === 0 && <p className="text-sm text-neutral-500">Nenhum colega disponível para um pedido direto nesta data.</p>}
+      </section>
       {lista.map((c) => (
         <div key={c.pessoa_id} className="flex items-center justify-between gap-3 rounded-xl border border-neutral-300 p-3 dark:border-neutral-700">
           <span className="font-medium">{c.nome}</span>
