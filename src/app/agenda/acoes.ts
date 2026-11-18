@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { TIPOS } from "@/lib/agenda-tipos";
 import { CORES } from "@/lib/cores-evento";
 import { diaNoFuso, inicioNoFuso } from "@/lib/datas";
 import { gerarOcorrencias, type Repeticao, REPETICOES } from "@/lib/recorrencia";
@@ -9,10 +8,12 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 
 type R = { erro: string | null };
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const HORA = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 export type DadosEvento = {
   titulo: string;
+  /** id do tipo de evento (tabela tipos_evento) */
   tipo: string;
   /** chave da paleta (CORES); vazio = padrão do tipo */
   cor?: string;
@@ -34,7 +35,7 @@ function validar(d: DadosEvento) {
   const titulo = d.titulo.trim();
   if (!titulo) return { erro: "Dê um nome ao evento" } as const;
   if (titulo.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" } as const;
-  if (!TIPOS[d.tipo]) return { erro: "Escolha o tipo do evento" } as const;
+  if (!UUID.test(d.tipo)) return { erro: "Escolha o tipo do evento" } as const;
   if (d.cor && !CORES[d.cor]) return { erro: "Cor inválida" } as const;
   if (!DATA.test(d.dia) || !HORA.test(d.hora)) return { erro: "Informe data e hora de início" } as const;
   const inicio = inicioNoFuso(d.dia, d.hora);
@@ -47,7 +48,7 @@ function validar(d: DadosEvento) {
   }
   const local = d.local.trim().slice(0, 120) || null;
   const observacao = d.descricao.trim().slice(0, 1000) || null;
-  return { erro: null, ok: { titulo, tipo_agenda: d.tipo, cor: d.cor || null, inicio, fim, local, observacao } } as const;
+  return { erro: null, ok: { titulo, tipo_evento_id: d.tipo, tipo_agenda: null, cor: d.cor || null, inicio, fim, local, observacao } } as const;
 }
 
 /** Cria um evento (agenda + escala dos ministérios), com repetição opcional. Só o administrador master (a RLS barra os demais). */
@@ -62,6 +63,8 @@ export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
   const { data: master } = await supabase.rpc("sou_admin_master");
   if (!master) return { erro: "Só o administrador da igreja pode cadastrar eventos." };
   const { data: igrejaId } = await supabase.rpc("minha_igreja");
+  const { data: tipo } = await supabase.from("tipos_evento").select("id").eq("id", d.tipo).is("dia_semana", null).maybeSingle();
+  if (!tipo) return { erro: "Escolha o tipo do evento" };
 
   const dias = gerarOcorrencias(d.dia, repeticao, d.ate ?? d.dia);
   const duracao = v.ok.fim ? new Date(v.ok.fim).getTime() - new Date(v.ok.inicio).getTime() : null;

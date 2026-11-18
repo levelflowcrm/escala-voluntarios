@@ -10,7 +10,7 @@ export type EventoDoDia = {
   titulo: string;
   inicio: string;
   local: string | null;
-  tipo_agenda: string | null;
+  tipo_cor: string | null;
   cor: string | null;
   dia: string;
 };
@@ -70,7 +70,7 @@ export function FaixaDias({ faixa, eventos, minhas, hoje }: { faixa: DiaFaixa[];
       <h2 className="text-sm font-medium">{primeiraMaiuscula(tituloDia.format(asData(sel)))}</h2>
       {doDia.length === 0 && <p className="text-sm text-neutral-500">Nenhum evento neste dia.</p>}
       {doDia.map((e) => {
-        const cor = corDoEvento(e.tipo_agenda, e.cor);
+        const cor = corDoEvento(e.tipo_cor, e.cor);
         const m = escalaDe(e.id);
         return (
           <article key={e.id} className="flex overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">

@@ -9,7 +9,7 @@ type Linha = {
   id: string;
   papel: string;
   status: "pendente" | "confirmado";
-  eventos: { titulo: string; inicio: string; cor: string | null; tipo_agenda: string | null };
+  eventos: { titulo: string; inicio: string; cor: string | null; tipos_evento: { cor: string | null } | null };
   funcoes: { nome: string } | null;
   ministerios: { nome: string } | null;
 };
@@ -32,7 +32,7 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
 
   let consulta = supabase
     .from("escalas")
-    .select("id, papel, status, funcoes(nome), ministerios(nome), eventos!inner(titulo, inicio, cor, tipo_agenda)")
+    .select("id, papel, status, funcoes(nome), ministerios(nome), eventos!inner(titulo, inicio, cor, tipos_evento(cor))")
     .eq("pessoa_id", eu)
     .in("status", ["pendente", "confirmado"])
     .order("inicio", { referencedTable: "eventos" });
@@ -82,7 +82,7 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
         <section key={dia} className="flex flex-col gap-2">
           <h2 className="text-sm font-medium">{primeiraMaiuscula(fmtDia.format(new Date(escalas[0].eventos.inicio)).replace(/-feira/, ""))}</h2>
           {escalas.map((l) => {
-            const cor = corDoEvento(l.eventos.tipo_agenda, l.eventos.cor);
+            const cor = corDoEvento(l.eventos.tipos_evento?.cor ?? null, l.eventos.cor);
             const papel = PAPEL[l.papel];
             return (
               <article key={l.id} className="flex overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">

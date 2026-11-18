@@ -160,3 +160,10 @@ confirmada e avisa o coordenador (sino e "Chegadas de hoje").
 - Igreja sem coordenadas cadastradas: a checagem é dispensada. Nasci Pra Deus: Av. Monteiro Lobato, 1522 — Macedo, Guarulhos/SP.
 
 - **Boas-vindas:** ao ganhar um celular válido (cadastro ou correção), a pessoa recebe uma única mensagem explicando os avisos e, se ainda não entrou no app, como entrar com o Google. Só uma vez por pessoa; trocar de número depois não repete.
+
+## Tipos de evento
+
+- Os tipos (Conferência, Batismo, Noite de Unção, Reunião Backstage…) ficam na tabela `tipos_evento` e são gerenciados pelo **master** em Agenda > Gerenciar tipos de evento: criar, renomear, escolher cor padrão e desativar.
+- Renomear vale para os eventos já criados (eles apontam para o tipo, não para o texto). Desativar tira o tipo da lista de novos eventos, sem apagar o histórico.
+- A cor do evento: a escolhida no evento, senão a cor padrão do tipo, senão nenhuma.
+- Cultos fixos da semana (com dia e hora) continuam em Cultos fixos e não aparecem na lista de tipos da agenda.
