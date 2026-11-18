@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
-import { TIPOS } from "@/lib/agenda-tipos";
+import type { TipoEvento } from "@/lib/tipos-evento";
 import { CORES, corDoEvento } from "@/lib/cores-evento";
 import { BotaoAgenda } from "../botao-agenda";
 import { SeletorCor } from "../seletor-cor";
@@ -16,7 +16,9 @@ export type EventoAgenda = {
   fim: string | null;
   local: string | null;
   observacao: string | null;
-  tipo_agenda: string | null;
+  tipo_id: string | null;
+  tipo_nome: string | null;
+  tipo_cor: string | null;
   cor: string | null;
   serie_id: string | null;
   convocacao_geral: boolean;
@@ -27,14 +29,19 @@ const FUSO = "America/Sao_Paulo";
 const diaFmt = new Intl.DateTimeFormat("en-CA", { timeZone: FUSO });
 const horaFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
-const vazio: DadosEvento = { titulo: "", tipo: "conferencia", cor: "", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "", convocacaoGeral: false };
+const vazio = (tipo: string): DadosEvento => ({ titulo: "", tipo, cor: "", dia: "", hora: "19:30", diaFim: "", horaFim: "", local: "", descricao: "", repeticao: "nenhuma", ate: "", convocacaoGeral: false });
+
+function corPadrao(tipos: TipoEvento[], id: string): string | null {
+  const c = tipos.find((t) => t.id === id)?.cor ?? null;
+  return c && CORES[c] ? c : null;
+}
 
 function doEvento(e: EventoAgenda): DadosEvento {
   const ini = new Date(e.inicio);
   const fim = e.fim ? new Date(e.fim) : null;
   return {
     titulo: e.titulo,
-    tipo: e.tipo_agenda ?? "outro",
+    tipo: e.tipo_id ?? "",
     cor: e.cor ?? "",
     dia: diaFmt.format(ini),
     hora: horaFmt.format(ini),
@@ -53,7 +60,9 @@ function Formulario({
   aoFechar,
   emSerie = false,
   permiteRepetir = false,
+  tipos,
 }: {
+  tipos: TipoEvento[];
   inicial: DadosEvento;
   rotulo: string;
   emSerie?: boolean;
@@ -71,13 +80,16 @@ function Formulario({
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-violet-300 p-3 dark:border-violet-800">
       <input className={campo} placeholder="Nome do evento" maxLength={120} value={d.titulo} onChange={mudar("titulo")} />
-      <select className={campo} value={d.tipo} onChange={mudar("tipo")}>
-        {Object.entries(TIPOS).map(([k, v]) => (
-          <option key={k} value={k}>{v}</option>
+      <select className={campo} value={d.tipo} onChange={mudar("tipo")} aria-label="Tipo do evento">
+        {!d.tipo && <option value="">Escolha o tipo do evento</option>}
+        {tipos.filter((t) => t.ativo || t.id === d.tipo).map((t) => (
+          <option key={t.id} value={t.id}>{t.nome}{t.ativo ? "" : " (inativo)"}</option>
         ))}
       </select>
       <SeletorCor valor={d.cor ?? ""} aoMudar={(cor) => setD({ ...d, cor })} />
-      {d.tipo === "locacao" && !d.cor && <p className="text-xs text-neutral-500">Locações saem em pêssego por padrão.</p>}
+      {!d.cor && corPadrao(tipos, d.tipo) && (
+        <p className="text-xs text-neutral-500">Este tipo sai em {CORES[corPadrao(tipos, d.tipo) as string].nome.toLowerCase()} por padrão.</p>
+      )}
       <p className="text-xs text-neutral-500">Início</p>
       <div className="flex gap-2">
         <input className={campo} type="date" value={d.dia} onChange={mudar("dia")} />
@@ -138,7 +150,8 @@ function Formulario({
   );
 }
 
-export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin: boolean }) {
+export function TelaAgenda({ eventos, tipos, admin }: { eventos: EventoAgenda[]; tipos: TipoEvento[]; admin: boolean }) {
+  const tipoPadrao = (tipos.find((t) => t.ativo && t.nome === "Conferência") ?? tipos.find((t) => t.ativo))?.id ?? "";
   const [criando, setCriando] = useState(false);
   const [editando, setEditando] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -152,7 +165,7 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
         </button>
       )}
       {criando && (
-        <Formulario inicial={vazio} rotulo="Criar evento" permiteRepetir aoEnviar={(d) => criarEventoAgenda(d)} aoFechar={() => setCriando(false)} />
+        <Formulario tipos={tipos} inicial={vazio(tipoPadrao)} rotulo="Criar evento" permiteRepetir aoEnviar={(d) => criarEventoAgenda(d)} aoFechar={() => setCriando(false)} />
       )}
       {erro && <p className="text-sm text-red-600">{erro}</p>}
       {eventos.length === 0 && <p className="text-neutral-500">Nenhum evento na agenda por enquanto.</p>}
@@ -160,6 +173,7 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
         editando === e.id ? (
           <Formulario
             key={e.id}
+            tipos={!e.tipo_id || tipos.some((x) => x.id === e.tipo_id) ? tipos : [...tipos, { id: e.tipo_id, nome: e.tipo_nome ?? "", cor: e.tipo_cor, ativo: true }]}
             inicial={doEvento(e)}
             rotulo="Salvar"
             emSerie={!!e.serie_id}
@@ -170,15 +184,15 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
           <article
             key={e.id}
             className={`flex flex-col gap-1 rounded-xl border p-4 ${(() => {
-              const c = corDoEvento(e.tipo_agenda, e.cor);
+              const c = corDoEvento(e.tipo_cor, e.cor);
               return c ? CORES[c].card : "border-neutral-300 dark:border-neutral-700";
             })()}`}
           >
             <div className="flex items-start justify-between gap-2">
               <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
-              {e.tipo_agenda && (
+              {e.tipo_nome && e.tipo_nome !== e.titulo && (
                 <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-black/30 dark:text-neutral-200">
-                  {TIPOS[e.tipo_agenda]}
+                  {e.tipo_nome}
                 </span>
               )}
             </div>

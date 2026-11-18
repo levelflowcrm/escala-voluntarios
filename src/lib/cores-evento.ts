@@ -9,11 +9,8 @@ export const CORES: Record<string, { nome: string; card: string; bolinha: string
   cinza: { nome: "Cinza", card: "border-slate-300 bg-slate-200 dark:border-slate-700 dark:bg-slate-800/60", bolinha: "border-slate-400 bg-slate-300" },
 };
 
-/** Cor padrão por tipo: locações (eventos extras) ganham destaque mesmo sem escolha. */
-const PADRAO_DO_TIPO: Record<string, string> = { locacao: "pessego" };
-
-/** Cor efetiva do evento: a escolhida, senão a padrão do tipo, senão nenhuma. */
-export function corDoEvento(tipo: string | null, cor: string | null): string | null {
+/** Cor efetiva do evento: a escolhida no evento, senão a cor padrão do tipo (definida pelo master), senão nenhuma. */
+export function corDoEvento(corDoTipo: string | null, cor: string | null): string | null {
   if (cor && CORES[cor]) return cor;
-  return (tipo && PADRAO_DO_TIPO[tipo]) || null;
+  return corDoTipo && CORES[corDoTipo] ? corDoTipo : null;
 }

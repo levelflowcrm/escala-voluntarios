@@ -43,4 +43,5 @@ $PSQL -f supabase/tests/mensagens_app.sql
 $PSQL -f supabase/tests/vaga_aberta_aviso.sql
 $PSQL -f supabase/tests/disponibilidade_calendario.sql
 $PSQL -f supabase/tests/projecao_funcoes.sql
+$PSQL -f supabase/tests/tipos_de_evento.sql
 echo "OK: migrações, seed e testes passaram"
