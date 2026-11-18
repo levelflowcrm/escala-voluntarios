@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BotaoAgenda } from "../botao-agenda";
-import { fmtMes, limitesMes, mesAtual, mesValido, somarMes } from "@/lib/datas";
+import { fmtMes, limitesMes, primeiraMaiuscula, mesAtual, mesValido, somarMes } from "@/lib/datas";
 import { corDoEvento, CORES } from "@/lib/cores-evento";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -65,7 +65,7 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
       {!proximas && (
         <div className="flex items-center justify-between rounded-xl border border-neutral-200 px-2 dark:border-neutral-800">
           <Link href={setaMes(somarMes(mes, -1))} className="px-3 py-2 text-lg" aria-label="Mês anterior">‹</Link>
-          <span className="font-medium capitalize">{nomeMes}</span>
+          <span className="font-medium">{primeiraMaiuscula(nomeMes)}</span>
           <Link href={setaMes(somarMes(mes, 1))} className="px-3 py-2 text-lg" aria-label="Próximo mês">›</Link>
         </div>
       )}
@@ -80,7 +80,7 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
 
       {[...dias.entries()].map(([dia, escalas]) => (
         <section key={dia} className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium capitalize">{fmtDia.format(new Date(escalas[0].eventos.inicio)).replace(/-feira/, "")}</h2>
+          <h2 className="text-sm font-medium">{primeiraMaiuscula(fmtDia.format(new Date(escalas[0].eventos.inicio)).replace(/-feira/, ""))}</h2>
           {escalas.map((l) => {
             const cor = corDoEvento(l.eventos.tipo_agenda, l.eventos.cor);
             const papel = PAPEL[l.papel];

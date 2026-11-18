@@ -7,7 +7,7 @@ Combinadas com o coordenador da Transmissão em 04/11/2026.
 | Ministério | Coordenador | Funções |
 |---|---|---|
 | Transmissão | Luciano | DTV-Transmissão, Câmera Black, Câmera Grua, Câmera Móvel |
-| Projeção | (a definir) | (a definir com o coordenador) |
+| Projeção | (a definir) | Holyrics, Resolume (2 voluntários por culto/evento, 1 em cada) |
 | Iluminação | (a definir) | (a definir com o coordenador) |
 | Produção | (a definir) | (a definir com o coordenador) |
 

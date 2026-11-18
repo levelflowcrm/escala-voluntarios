@@ -8,6 +8,8 @@ insert into funcoes (id, ministerio_id, nome, ordem) values ('c38cd5f0-1a3a-55c4
 insert into funcoes (id, ministerio_id, nome, ordem) values ('440a709b-f96a-53ba-886f-e2dc91d0fd2a', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'Câmera Black', 2) on conflict do nothing;
 insert into funcoes (id, ministerio_id, nome, ordem) values ('0617c44c-1d09-57ef-930d-3a5a39335c89', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'Câmera Grua', 3) on conflict do nothing;
 insert into funcoes (id, ministerio_id, nome, ordem) values ('7cfdbb23-7803-54da-a235-385c88eff3a8', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'Câmera Móvel', 4) on conflict do nothing;
+insert into funcoes (ministerio_id, nome, ordem) values ('f91c1c12-0fc6-5845-957d-b4ff0f5f5f7b', 'Holyrics', 1) on conflict do nothing;
+insert into funcoes (ministerio_id, nome, ordem) values ('f91c1c12-0fc6-5845-957d-b4ff0f5f5f7b', 'Resolume', 2) on conflict do nothing;
 insert into tipos_evento (id, igreja_id, nome, dia_semana, hora) values ('e1ca9fd0-dee5-55f9-b6d3-145cf89a42ed', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Casamento Saudável', null, null) on conflict do nothing;
 insert into tipos_evento (id, igreja_id, nome, dia_semana, hora) values ('25c3be40-8089-522a-9f4e-bac2f7066df9', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Celebração da Ceia - Manhã', null, null) on conflict do nothing;
 insert into tipos_evento (id, igreja_id, nome, dia_semana, hora) values ('6ff42dc1-4aa5-5f0c-a4ef-b65b235c65b2', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Conferência Brasil - África', null, null) on conflict do nothing;

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CORES, corDoEvento } from "@/lib/cores-evento";
+import { primeiraMaiuscula } from "@/lib/datas";
 import { diaInicial, type DiaFaixa } from "@/lib/faixa-dias";
 
 export type EventoDoDia = {
@@ -36,7 +37,7 @@ export function FaixaDias({ faixa, eventos, minhas, hoje }: { faixa: DiaFaixa[];
 
   return (
     <section className="flex flex-col gap-3">
-      <p className="text-sm font-medium capitalize text-neutral-500">{tituloMes.format(asData(sel))}</p>
+      <p className="text-sm font-medium text-neutral-500">{primeiraMaiuscula(tituloMes.format(asData(sel)))}</p>
       <div className="-mx-4 flex snap-x gap-2 overflow-x-auto px-4 pb-2" role="listbox" aria-label="Dias">
         {faixa.map((d) => {
           const ativo = d.dia === sel;
@@ -66,7 +67,7 @@ export function FaixaDias({ faixa, eventos, minhas, hoje }: { faixa: DiaFaixa[];
         <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-pink-500" /> tem evento</span>
       </p>
 
-      <h2 className="text-sm font-medium capitalize">{tituloDia.format(asData(sel))}</h2>
+      <h2 className="text-sm font-medium">{primeiraMaiuscula(tituloDia.format(asData(sel)))}</h2>
       {doDia.length === 0 && <p className="text-sm text-neutral-500">Nenhum evento neste dia.</p>}
       {doDia.map((e) => {
         const cor = corDoEvento(e.tipo_agenda, e.cor);

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { alternarDia, aplicarAtalho, salvarSoDiasMarcados, type Atalho } from "./acoes";
+import { primeiraMaiuscula } from "@/lib/datas";
 
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const SEMANA = ["D", "S", "T", "Q", "Q", "S", "S"];
@@ -127,7 +128,7 @@ export function Calendario({
 
       <div className="flex items-center justify-between">
         <button disabled={mes <= hoje.slice(0, 7)} onClick={() => somarMes(-1)} className="h-9 w-9 rounded-lg border border-neutral-300 disabled:opacity-30 dark:border-neutral-700" aria-label="Mês anterior">‹</button>
-        <p className="font-medium capitalize">{MESES[m - 1]} de {ano}</p>
+        <p className="font-medium">{primeiraMaiuscula(MESES[m - 1])} de {ano}</p>
         <button disabled={mes >= limiteMax} onClick={() => somarMes(1)} className="h-9 w-9 rounded-lg border border-neutral-300 disabled:opacity-30 dark:border-neutral-700" aria-label="Próximo mês">›</button>
       </div>
 

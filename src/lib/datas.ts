@@ -21,6 +21,11 @@ export const fmtDataHora = {
   },
 };
 
+/** Só a primeira letra em maiúscula ("novembro de 2026" → "Novembro de 2026"); o CSS capitalize deixaria "De". */
+export function primeiraMaiuscula(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export const fmtMes = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, month: "long", year: "numeric" });
 
 /** "AAAA-MM" do mês atual no fuso da igreja. */
