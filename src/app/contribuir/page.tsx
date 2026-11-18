@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import QRCode from "qrcode";
-import { CONTRIBUICAO, codigoPix } from "@/lib/pix";
+import { CONTRIBUICAO } from "@/lib/pix";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { BotaoCopiar } from "./botao-copiar";
 
@@ -12,7 +12,7 @@ export default async function Contribuir() {
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const codigo = codigoPix(CONTRIBUICAO);
+  const codigo = CONTRIBUICAO.codigo;
   const qr = await QRCode.toString(codigo, { type: "svg", margin: 1, width: 192 });
 
   return (
@@ -42,16 +42,12 @@ export default async function Contribuir() {
           dangerouslySetInnerHTML={{ __html: qr }}
         />
         <p className="text-center text-sm text-neutral-500">
-          Abra o app do seu banco, escolha pagar com PIX e leia o QR Code, ou use uma das opções abaixo.
+          Abra o app do seu banco, escolha pagar com PIX e leia o QR Code, ou copie o código e use “PIX copia e cola”.
+          Você escolhe o valor.
         </p>
-        <div className="w-full">
-          <p className="text-xs text-neutral-500">Chave PIX (CPF)</p>
-          <p className="font-mono text-lg">{CONTRIBUICAO.chaveFormatada}</p>
-          <p className="text-xs text-neutral-500">Favorecido: {CONTRIBUICAO.nome}</p>
-        </div>
+        <p className="text-xs text-neutral-500">Favorecido: {CONTRIBUICAO.favorecido}</p>
         <div className="flex w-full flex-col gap-2">
-          <BotaoCopiar texto={CONTRIBUICAO.chave} rotulo="Copiar chave PIX" />
-          <BotaoCopiar texto={codigo} rotulo="Copiar código PIX (copia e cola)" secundario />
+          <BotaoCopiar texto={codigo} rotulo="Copiar código PIX (copia e cola)" />
         </div>
       </section>
 
