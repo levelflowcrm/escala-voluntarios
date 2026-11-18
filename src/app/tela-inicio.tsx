@@ -199,7 +199,6 @@ export function TelaInicio({
               titulo={`Servir: ${proximo.eventos.titulo}${proximo.funcoes ? ` · ${proximo.funcoes.nome}` : ""}`}
               inicio={proximo.eventos.inicio}
               descricao={[proximo.ministerios && `Ministério: ${proximo.ministerios.nome}`, proximo.funcoes && `Função: ${proximo.funcoes.nome}`, "Escala pelo Mais Conectados"].filter(Boolean).join("\n")}
-              icsHref={`/agenda/${proximo.id}`}
             />
           )}
           {proximo.status !== "recusado" && (
