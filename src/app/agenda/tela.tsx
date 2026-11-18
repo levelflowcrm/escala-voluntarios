@@ -193,7 +193,6 @@ export function TelaAgenda({ eventos, admin }: { eventos: EventoAgenda[]; admin:
                 duracaoMin={e.fim ? Math.round((new Date(e.fim).getTime() - new Date(e.inicio).getTime()) / 60_000) : undefined}
                 descricao={e.observacao ?? undefined}
                 local={e.local ?? undefined}
-                icsHref={`/agenda/evento/${e.id}`}
               />
               {admin && (
                 <>
