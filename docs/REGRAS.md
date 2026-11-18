@@ -83,6 +83,10 @@ As funções com menos gente habilitada são preenchidas primeiro.
 - O master também recebe um **aviso por WhatsApp** (mesma fila e limites dos outros avisos; precisa de celular válido no cadastro dele; não avisa sobre mensagem que ele mesmo enviou).
 - Diferente de "Sugestões", que vão para o coordenador do ministério.
 
+## Agenda da igreja (faixa de dias)
+
+- No topo de `/agenda`, todo voluntário vê uma faixa de 30 dias com rolagem lateral: pontinho rosa = há evento; dia preenchido de roxo = a pessoa está escalada (pendente ou confirmada; recusadas e trocadas não contam). Tocar no dia mostra os eventos dele, com horário, local e, se for o caso, a função e o ministério.
+
 ## Aniversariantes
 
 - O coordenador vê o ícone 🎂 no topo da tela inicial (`/aniversariantes`): quem faz aniversário hoje, nos próximos 30 dias (passando pela virada do ano) e todos do mês. Só aparecem os voluntários dos ministérios que ele coordena; a data vem do Perfil de cada pessoa (quem não preencheu é contado no rodapé).
