@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { CORES } from "@/lib/cores-evento";
 import type { TipoEvento } from "@/lib/tipos-evento";
 import { SeletorCor } from "../../seletor-cor";
-import { alternarTipoEvento, criarTipoEvento, editarTipoEvento } from "./acoes";
+import { alternarTipoEvento, criarTipoEvento, editarTipoEvento, excluirTipoEvento } from "./acoes";
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 
@@ -50,7 +50,7 @@ function Formulario({
   );
 }
 
-export function TelaTipos({ tipos }: { tipos: TipoEvento[] }) {
+export function TelaTipos({ tipos, usos }: { tipos: TipoEvento[]; usos: Record<string, number> }) {
   const [criando, setCriando] = useState(false);
   const [editando, setEditando] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export function TelaTipos({ tipos }: { tipos: TipoEvento[] }) {
               <p className="font-medium">{t.nome}</p>
               <p className="text-xs text-neutral-500">{t.ativo ? (t.cor && CORES[t.cor] ? `Cor padrão: ${CORES[t.cor].nome}` : "Sem cor padrão") : "Inativo (não aparece em novos eventos)"}</p>
             </div>
-            <div className="flex gap-3 text-sm">
+            <div className="flex flex-wrap justify-end gap-3 text-sm">
               <button onClick={() => setEditando(t.id)} className="text-neutral-600 underline dark:text-neutral-300">Editar</button>
               <button
                 disabled={ocupado}
@@ -87,6 +87,19 @@ export function TelaTipos({ tipos }: { tipos: TipoEvento[] }) {
                 className="text-neutral-600 underline dark:text-neutral-300"
               >
                 {t.ativo ? "Desativar" : "Reativar"}
+              </button>
+              <button
+                disabled={ocupado}
+                onClick={() => {
+                  const n = usos[t.id] ?? 0;
+                  const aviso = n > 0
+                    ? `“${t.nome}” está em ${n} evento(s). Eles continuam na agenda, mas ficam sem tipo. Excluir mesmo? Não dá para desfazer. (Para só esconder o tipo, use Desativar.)`
+                    : `Excluir o tipo “${t.nome}”? Não dá para desfazer.`;
+                  if (confirm(aviso)) iniciar(async () => setErro((await excluirTipoEvento(t.id)).erro));
+                }}
+                className="text-red-600 underline"
+              >
+                Excluir
               </button>
             </div>
           </article>

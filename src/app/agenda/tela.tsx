@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { fmtDataHora } from "@/lib/datas";
-import type { TipoEvento } from "@/lib/tipos-evento";
+import { emOrdemAlfabetica, type TipoEvento } from "@/lib/tipos-evento";
 import { CORES, corDoEvento } from "@/lib/cores-evento";
 import { BotaoAgenda } from "../botao-agenda";
 import { SeletorCor } from "../seletor-cor";
@@ -79,13 +79,13 @@ function Formulario({
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-violet-300 p-3 dark:border-violet-800">
-      <input className={campo} placeholder="Nome do evento" maxLength={120} value={d.titulo} onChange={mudar("titulo")} />
       <select className={campo} value={d.tipo} onChange={mudar("tipo")} aria-label="Tipo do evento">
         {!d.tipo && <option value="">Escolha o tipo do evento</option>}
-        {tipos.filter((t) => t.ativo || t.id === d.tipo).map((t) => (
+        {emOrdemAlfabetica(tipos.filter((t) => t.ativo || t.id === d.tipo)).map((t) => (
           <option key={t.id} value={t.id}>{t.nome}{t.ativo ? "" : " (inativo)"}</option>
         ))}
       </select>
+      <input className={campo} placeholder="Nome do evento (opcional: usa o nome do tipo)" maxLength={120} value={d.titulo} onChange={mudar("titulo")} />
       <SeletorCor valor={d.cor ?? ""} aoMudar={(cor) => setD({ ...d, cor })} />
       {!d.cor && corPadrao(tipos, d.tipo) && (
         <p className="text-xs text-neutral-500">Este tipo sai em {CORES[corPadrao(tipos, d.tipo) as string].nome.toLowerCase()} por padrão.</p>

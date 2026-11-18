@@ -31,9 +31,10 @@ export type DadosEvento = {
 
 export type Alcance = "este" | "proximos";
 
-function validar(d: DadosEvento) {
-  const titulo = d.titulo.trim();
-  if (!titulo) return { erro: "Dê um nome ao evento" } as const;
+/** Sem nome digitado, o evento leva o nome do tipo (ex.: tipo "Noite de Unção" → evento "Noite de Unção"). */
+function validar(d: DadosEvento, nomeDoTipo: string) {
+  const titulo = d.titulo.trim() || nomeDoTipo.trim();
+  if (!titulo) return { erro: "Escolha o tipo ou dê um nome ao evento" } as const;
   if (titulo.length > 120) return { erro: "Nome muito longo (máximo 120 letras)" } as const;
   if (!UUID.test(d.tipo)) return { erro: "Escolha o tipo do evento" } as const;
   if (d.cor && !CORES[d.cor]) return { erro: "Cor inválida" } as const;
@@ -53,8 +54,6 @@ function validar(d: DadosEvento) {
 
 /** Cria um evento (agenda + escala dos ministérios), com repetição opcional. Só o administrador master (a RLS barra os demais). */
 export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
-  const v = validar(d);
-  if (v.erro !== null) return { erro: v.erro };
   const repeticao = d.repeticao ?? "nenhuma";
   if (!REPETICOES[repeticao]) return { erro: "Repetição inválida" };
   if (repeticao !== "nenhuma" && !DATA.test(d.ate ?? "")) return { erro: "Informe até quando o evento se repete" };
@@ -63,8 +62,10 @@ export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
   const { data: master } = await supabase.rpc("sou_admin_master");
   if (!master) return { erro: "Só o administrador da igreja pode cadastrar eventos." };
   const { data: igrejaId } = await supabase.rpc("minha_igreja");
-  const { data: tipo } = await supabase.from("tipos_evento").select("id").eq("id", d.tipo).is("dia_semana", null).maybeSingle();
+  const { data: tipo } = await supabase.from("tipos_evento").select("id, nome").eq("id", d.tipo).is("dia_semana", null).maybeSingle();
   if (!tipo) return { erro: "Escolha o tipo do evento" };
+  const v = validar(d, tipo.nome);
+  if (v.erro !== null) return { erro: v.erro };
 
   const dias = gerarOcorrencias(d.dia, repeticao, d.ate ?? d.dia);
   const duracao = v.ok.fim ? new Date(v.ok.fim).getTime() - new Date(v.ok.inicio).getTime() : null;
@@ -88,9 +89,10 @@ export async function criarEventoAgenda(d: DadosEvento): Promise<R> {
 
 /** Edita um evento; com alcance "proximos", este e os seguintes da série (mantém o dia de cada um). */
 export async function editarEventoAgenda(id: string, d: DadosEvento, alcance: Alcance = "este"): Promise<R> {
-  const v = validar(d);
-  if (v.erro !== null) return { erro: v.erro };
   const supabase = await criarClienteServidor();
+  const { data: tipo } = await supabase.from("tipos_evento").select("nome").eq("id", d.tipo).maybeSingle();
+  const v = validar(d, tipo?.nome ?? "");
+  if (v.erro !== null) return { erro: v.erro };
   const { data: atual } = await supabase.from("eventos").select("id, serie_id, inicio").eq("id", id).maybeSingle();
   if (!atual) return { erro: "Evento não encontrado ou sem permissão." };
   const campos = { ...v.ok, convocacao_geral: !!d.convocacaoGeral };
