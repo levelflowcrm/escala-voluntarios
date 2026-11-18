@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { fmtDataHora } from "@/lib/datas";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { BotaoAcao } from "./botoes";
-import { cancelarTroca, responderTroca } from "./acoes";
 
 type Troca = {
   id: string;
@@ -46,8 +45,8 @@ export default async function Trocas() {
           <p>{t.titulo} · {t.funcao}</p>
           <p className="text-sm text-neutral-500">{t.ministerio} · <strong>{t.outra_pessoa}</strong> pediu para você cobrir</p>
           <div className="flex gap-2">
-            <BotaoAcao rotulo="Aceitar" destaque acao={() => responderTroca(t.id, true).then((r) => r)} />
-            <BotaoAcao rotulo="Não posso" acao={() => responderTroca(t.id, false)} />
+            <BotaoAcao rotulo="Aceitar" destaque operacao={{ tipo: "responderTroca", troca: t.id, aceitar: true }} />
+            <BotaoAcao rotulo="Não posso" operacao={{ tipo: "responderTroca", troca: t.id, aceitar: false }} />
           </div>
         </article>
       ))}
@@ -58,7 +57,7 @@ export default async function Trocas() {
           {quando(t)}
           <p>{t.titulo} · {t.funcao}</p>
           <p className="text-sm text-neutral-500">Aguardando <strong>{t.outra_pessoa}</strong> responder</p>
-          <BotaoAcao rotulo="Cancelar pedido" acao={() => cancelarTroca(t.id)} />
+          <BotaoAcao rotulo="Cancelar pedido" operacao={{ tipo: "cancelarTroca", troca: t.id }} />
         </article>
       ))}
     </main>

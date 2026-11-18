@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { fmtDataHora } from "@/lib/datas";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { abrirVaga, pedirTroca } from "../../acoes";
 import { BotaoAcao } from "../../botoes";
 
 export default async function NovaTroca({ params }: { params: Promise<{ escala: string }> }) {
@@ -38,7 +37,7 @@ export default async function NovaTroca({ params }: { params: Promise<{ escala: 
         <p className="text-sm text-neutral-500">
           Você deixa esta data e a vaga fica aberta. Os colegas aptos e disponíveis são avisados por WhatsApp e pelo app, e o primeiro que aceitar assume. O coordenador acompanha pelas vagas abertas.
         </p>
-        <BotaoAcao rotulo="Abrir a vaga" destaque acao={() => abrirVaga(escala)} voltarPara="/" confirmar="Abrir a vaga? Você deixa de ficar escalado(a) nesta data e os colegas aptos serão avisados." />
+        <BotaoAcao rotulo="Abrir a vaga" destaque operacao={{ tipo: "abrirVaga", escala }} voltarPara="/" confirmar="Abrir a vaga? Você deixa de ficar escalado(a) nesta data e os colegas aptos serão avisados." />
       </section>
 
       <section className="flex flex-col gap-2">
@@ -49,7 +48,7 @@ export default async function NovaTroca({ params }: { params: Promise<{ escala: 
       {lista.map((c) => (
         <div key={c.pessoa_id} className="flex items-center justify-between gap-3 rounded-xl border border-neutral-300 p-3 dark:border-neutral-700">
           <span className="font-medium">{c.nome}</span>
-          <BotaoAcao rotulo="Pedir" destaque acao={() => pedirTroca(escala, c.pessoa_id)} voltarPara="/trocas" />
+          <BotaoAcao rotulo="Pedir" destaque operacao={{ tipo: "pedirTroca", escala, colega: c.pessoa_id }} voltarPara="/trocas" />
         </div>
       ))}
     </main>

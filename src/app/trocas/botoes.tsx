@@ -2,17 +2,34 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { abrirVaga, cancelarTroca, pedirTroca, responderTroca } from "./acoes";
+
+/** Operação descrita por dados simples: funções não podem ser passadas de componente de servidor para cliente. */
+export type Operacao =
+  | { tipo: "abrirVaga"; escala: string }
+  | { tipo: "pedirTroca"; escala: string; colega: string }
+  | { tipo: "responderTroca"; troca: string; aceitar: boolean }
+  | { tipo: "cancelarTroca"; troca: string };
+
+function executar(o: Operacao): Promise<{ erro?: string }> {
+  switch (o.tipo) {
+    case "abrirVaga": return abrirVaga(o.escala);
+    case "pedirTroca": return pedirTroca(o.escala, o.colega);
+    case "responderTroca": return responderTroca(o.troca, o.aceitar);
+    case "cancelarTroca": return cancelarTroca(o.troca);
+  }
+}
 
 /** Botão genérico que roda uma ação de servidor e mostra o erro, se houver. */
 export function BotaoAcao({
   rotulo,
-  acao,
+  operacao,
   destaque = false,
   voltarPara,
   confirmar,
 }: {
   rotulo: string;
-  acao: () => Promise<{ erro?: string }>;
+  operacao: Operacao;
   destaque?: boolean;
   voltarPara?: string;
   confirmar?: string;
@@ -27,7 +44,7 @@ export function BotaoAcao({
         onClick={() => {
           if (confirmar && !window.confirm(confirmar)) return;
           iniciar(async () => {
-            const r = await acao();
+            const r = await executar(operacao);
             setErro(r.erro ?? null);
             if (!r.erro && voltarPara) router.push(voltarPara);
           });
