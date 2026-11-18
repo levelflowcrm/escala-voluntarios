@@ -36,16 +36,6 @@ export function IconeAniversariantes() {
   );
 }
 
-export function IconeSugestoes() {
-  return (
-    <Icone href="/sugestoes" nome="Sugestões">
-      <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
-      <path d="M9 18h6" />
-      <path d="M10 22h4" />
-    </Icone>
-  );
-}
-
 export function IconeAgenda() {
   return (
     <Icone href="/agenda" nome="Agenda da igreja">
@@ -64,10 +54,3 @@ export function IconePermissoes() {
   );
 }
 
-export function IconeContribuir() {
-  return (
-    <Icone href="/contribuir" nome="Apoie o Mais Conectados">
-      <path d="M12 21s-7-4.6-9.3-9.2C1.2 8.6 3 5 6.5 5c2 0 3.6 1.1 5.5 3 1.9-1.9 3.5-3 5.5-3C21 5 22.8 8.6 21.3 11.8 19 16.4 12 21 12 21Z" />
-    </Icone>
-  );
-}

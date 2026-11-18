@@ -7,7 +7,7 @@ import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
 import { Resposta } from "./resposta";
-import { IconeAgenda, IconeAniversariantes, IconeContribuir, IconePermissoes, IconeSugestoes, IconeEquilibrio } from "./icones-topo";
+import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } from "./icones-topo";
 import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
@@ -121,13 +121,10 @@ export function TelaInicio({
             <IconeAgenda />
             {coordenador && <IconeEquilibrio />}
             {coordenador && <IconeAniversariantes />}
-            <IconeSugestoes />
-            <IconeContribuir />
             <Sino novos={novosComunicados} />
           </div>
           <form action={sair} className="flex items-center gap-3">
             <Link href="/perfil" className="text-sm text-neutral-500 underline">Perfil</Link>
-            <Link href="/mensagens" className="text-sm text-neutral-500 underline">Erro ou ideia?</Link>
             <button className="text-sm text-neutral-500 underline">Sair</button>
           </form>
         </div>
@@ -303,6 +300,12 @@ export function TelaInicio({
           {historico.map((e) => cartao(e, false))}
         </section>
       )}
+
+      <footer className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-neutral-200 pt-4 text-xs text-neutral-400 dark:border-neutral-800">
+        <Link href="/sugestoes" className="underline">Sugestões ao time</Link>
+        <Link href="/mensagens" className="underline">Erro ou ideia do app</Link>
+        <Link href="/contribuir" className="underline">Apoie o Mais Conectados</Link>
+      </footer>
     </main>
   );
 }
