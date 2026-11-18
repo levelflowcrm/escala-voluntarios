@@ -14,10 +14,14 @@ function Icone({ href, nome, children }: { href: string; nome: string; children:
   );
 }
 
-export function IconeTermometro() {
+export function IconeEquilibrio() {
   return (
-    <Icone href="/termometro" nome="Termômetro do time">
-      <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+    <Icone href="/termometro" nome="Equilíbrio do time">
+      <path d="M7 20h10" />
+      <path d="M6 6l6-1 6 1" />
+      <path d="M12 3v17" />
+      <path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0" />
+      <path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0" />
     </Icone>
   );
 }

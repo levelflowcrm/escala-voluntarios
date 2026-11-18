@@ -32,4 +32,4 @@
 - [ ] Mural de vagas abertas
 
 ## Depois do piloto
-Check-in, roteiro do culto, painel de saúde da equipe, termômetro, quiz pós-culto e sugestões.
+Check-in, roteiro do culto, painel de saúde da equipe, equilíbrio do time, quiz pós-culto e sugestões.
