@@ -33,6 +33,8 @@ begin
   update tipos_evento set nome = 'Tipo renomeado' where id = t;
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FALHOU: master não renomeou'; end if;
+  select t2.nome into nome_atual from eventos e join tipos_evento t2 on t2.id = e.tipo_evento_id where e.id = ev;
+  if nome_atual <> 'Tipo renomeado' then raise exception 'FALHOU: evento não acompanhou o renome (%)', nome_atual; end if;
 
   perform set_config('request.jwt.claim.sub', uc::text, true);
   update tipos_evento set nome = 'Coord mexeu' where id = t;
@@ -47,11 +49,19 @@ begin
   update tipos_evento set ativo = false where id = t;
   get diagnostics n = row_count;
   if n <> 0 then raise exception 'FALHOU: voluntário desativou tipo'; end if;
+  delete from tipos_evento where id = t;
+  get diagnostics n = row_count;
+  if n <> 0 then raise exception 'FALHOU: voluntário excluiu tipo'; end if;
+
+  perform set_config('request.jwt.claim.sub', um::text, true);
+  delete from tipos_evento where id = t;
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FALHOU: master não excluiu o tipo'; end if;
 
   reset role;
   perform set_config('request.jwt.claim.sub', '', true);
-  select t2.nome into nome_atual from eventos e join tipos_evento t2 on t2.id = e.tipo_evento_id where e.id = ev;
-  if nome_atual <> 'Tipo renomeado' then raise exception 'FALHOU: evento não acompanhou o renome (%)', nome_atual; end if;
+  select count(*) into n from eventos where id = ev and tipo_evento_id is null;
+  if n <> 1 then raise exception 'FALHOU: evento deveria continuar existindo, sem tipo, depois da exclusão'; end if;
   alter table administradores disable trigger administradores_master;
   delete from administradores where pessoa_id = m;
   alter table administradores enable trigger administradores_master;

@@ -54,3 +54,11 @@ export async function alternarTipoEvento(id: string, ativo: boolean): Promise<R>
   atualizar();
   return error || !data?.length ? { erro: "Sem permissão para alterar esse tipo." } : { erro: null };
 }
+
+/** Exclui o tipo. Os eventos que o usavam continuam existindo, só ficam sem tipo (e sem a cor padrão dele). */
+export async function excluirTipoEvento(id: string): Promise<R> {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.from("tipos_evento").delete().eq("id", id).is("dia_semana", null).select("id");
+  atualizar();
+  return error || !data?.length ? { erro: "Não foi possível excluir (sem permissão ou tipo não encontrado)." } : { erro: null };
+}

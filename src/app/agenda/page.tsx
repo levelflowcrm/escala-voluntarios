@@ -4,7 +4,7 @@ import { diaNoFuso } from "@/lib/datas";
 import { montarFaixa } from "@/lib/faixa-dias";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { FaixaDias, type MinhaEscala } from "./faixa";
-import type { TipoEvento } from "@/lib/tipos-evento";
+import { emOrdemAlfabetica, type TipoEvento } from "@/lib/tipos-evento";
 import { TelaAgenda, type EventoAgenda } from "./tela";
 
 export default async function Agenda() {
@@ -31,7 +31,9 @@ export default async function Agenda() {
   });
   const { data: tiposBrutos } = await supabase.from("tipos_evento").select("id, nome, cor, ativo, dia_semana").order("nome");
   // Cultos fixos (com dia da semana) têm tela própria; aqui entram só os tipos de evento avulso
-  const tipos: TipoEvento[] = (tiposBrutos ?? []).filter((t) => t.dia_semana === null).map((t) => ({ id: t.id, nome: t.nome, cor: t.cor, ativo: t.ativo }));
+  const tipos: TipoEvento[] = emOrdemAlfabetica(
+    (tiposBrutos ?? []).filter((t) => t.dia_semana === null).map((t) => ({ id: t.id, nome: t.nome, cor: t.cor, ativo: t.ativo })),
+  );
 
   // Minhas escalas (pendentes e confirmadas) para destacar os dias em que eu sirvo
   const { data: minhasEscalas } = await supabase
