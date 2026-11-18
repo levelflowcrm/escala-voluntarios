@@ -51,6 +51,10 @@ export interface VoluntarioEntrada {
   funcoesAptas: string[];
   indisponibilidades?: Indisponibilidade[];
   bloqueios?: Bloqueio[];
+  /** Dias (AAAA-MM-DD) que a pessoa marcou no calendário como "posso servir": valem acima da regra semanal */
+  diasDisponiveis?: string[];
+  /** "Só sirvo nos dias que eu marcar": sem dia marcado, a pessoa não é sugerida */
+  soDiasMarcados?: boolean;
   /** Preferência da pessoa: máximo de serviços por mês (nulo = sem limite) */
   limitePorMes?: number | null;
   /** Quantas vezes serviu em cada função (afinidade): desempata a favor de quem já domina a função */
@@ -136,6 +140,14 @@ function bloqueado(v: VoluntarioEntrada, d: InfoData): boolean {
   return (v.bloqueios ?? []).some((b) => b.inicio <= d.dia && d.dia <= b.fim);
 }
 
+/** Mesma regra do banco (disponivel_no_momento): bloqueio > dia marcado > "só dias marcados" > regra semanal. */
+function disponivelNoDia(v: VoluntarioEntrada, d: InfoData): boolean {
+  if (bloqueado(v, d)) return false;
+  if ((v.diasDisponiveis ?? []).includes(d.dia)) return true;
+  if (v.soDiasMarcados) return false;
+  return !indisponivel(v, d);
+}
+
 export function sugerirEscala(
   eventos: EventoEntrada[],
   funcoes: FuncaoEntrada[],
@@ -175,7 +187,7 @@ export function sugerirEscala(
       voluntarios.filter((v) => {
         if (!v.funcoesAptas.includes(funcaoId)) return false;
         if (noEvento.has(v.id)) return false;
-        if (indisponivel(v, d) || bloqueado(v, d)) return false;
+        if (!disponivelNoDia(v, d)) return false;
         const noMes = servicos.get(v.id)!.filter((s) => s.mes === d.mes).length;
         const limite = Math.min(opcoes.limitePorMes ?? Infinity, v.limitePorMes ?? Infinity);
         if (noMes >= limite) return false;
