@@ -157,6 +157,12 @@ export function TelaInicio({
           </Link>
         )}
         <Link
+          href="/minhas-escalas"
+          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+        >
+          Minhas escalas
+        </Link>
+        <Link
           href="/disponibilidade"
           className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
         >
