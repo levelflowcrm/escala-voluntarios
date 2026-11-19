@@ -123,10 +123,13 @@ export default async function Inicio() {
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
 
+  const { data: verRepertorio } = await supabase.rpc("pode_ver_repertorio");
+
   return (
     <TelaInicio
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
+      repertorio={!!verRepertorio}
       admin={!!admin}
       proximas={proximas}
       historico={historico}

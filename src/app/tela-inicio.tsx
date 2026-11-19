@@ -41,6 +41,7 @@ export type Linha = {
 export function TelaInicio({
   nome,
   coordenador,
+  repertorio,
   admin = false,
   proximas,
   historico,
@@ -56,6 +57,7 @@ export function TelaInicio({
 }: {
   nome: string;
   coordenador: boolean;
+  repertorio: boolean;
   admin?: boolean;
   proximas: Linha[];
   historico: Linha[];
@@ -244,6 +246,12 @@ export function TelaInicio({
         <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
           🙌 Você serviu <strong>{servidasNoMes}</strong> {servidasNoMes === 1 ? "vez" : "vezes"} neste mês. Obrigado!
         </p>
+      )}
+
+      {repertorio && (
+        <Link href="/repertorio" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
+          🎵 Músicas dos próximos cultos. <strong>Ver repertório</strong>
+        </Link>
       )}
 
       {coordenador && (
