@@ -2,20 +2,23 @@
 \set ON_ERROR_STOP 1
 do $$
 declare
-  ig uuid; lv uuid; fl uuid; ev uuid; ev_fut uuid; c uuid; k uuid; l uuid; a1 uuid; a2 uuid; n int; soma int; r record;
-  uc uuid := gen_random_uuid(); uk uuid := gen_random_uuid(); ul uuid := gen_random_uuid();
+  ig uuid; lv uuid; fl uuid; ev uuid; ev_fut uuid; c uuid; k uuid; l uuid; adm uuid; a1 uuid; a2 uuid; n int; soma int; r record;
+  ua uuid := gen_random_uuid(); uc uuid := gen_random_uuid(); uk uuid := gen_random_uuid(); ul uuid := gen_random_uuid();
 begin
   select id, igreja_id into lv, ig from ministerios where nome = 'Louvor';
   select id into c from pessoas where nome = 'Thamires';  -- facilitadora do Louvor
   select id into k from pessoas where nome = 'Marcos';    -- voluntário comum
   select id into l from pessoas where nome = 'Sérgio';    -- voluntário do Louvor, escalado
+  select id into adm from pessoas where nome = 'Diogo';   -- administrador
+  update pessoas set auth_user_id = ua where id = adm;
+  insert into administradores (pessoa_id, master) values (adm, false) on conflict do nothing;
   update pessoas set auth_user_id = uc where id = c;
   update pessoas set auth_user_id = uk where id = k;
   update pessoas set auth_user_id = ul where id = l;
   insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (c, lv, 'coordenador'), (l, lv, 'voluntario')
     on conflict (pessoa_id, ministerio_id) do update set papel = excluded.papel;
   delete from membros_ministerio where pessoa_id = k;
-  delete from escalas where pessoa_id in (c, k, l);
+  delete from escalas where pessoa_id in (c, k, l, adm);
   select id into fl from funcoes where ministerio_id = lv limit 1;
   if fl is null then insert into funcoes (ministerio_id, nome) values (lv, 'Vocal metricas') returning id into fl; end if;
   select id into a1 from areas_contagem where igreja_id = ig and nome = 'Louvor';
@@ -41,9 +44,15 @@ begin
   perform set_config('request.jwt.claim.sub', ul::text, true);
   if pode_ver_metricas() then raise exception 'FALHOU: voluntário do Louvor vê painel'; end if;
 
-  -- Facilitador lança
+  -- Facilitador (coordenador de ministério) também NÃO acessa: só administrador
   perform set_config('request.jwt.claim.sub', uc::text, true);
-  if not pode_ver_metricas() then raise exception 'FALHOU: facilitador não acessa'; end if;
+  if pode_ver_metricas() then raise exception 'FALHOU: facilitador acessou o painel'; end if;
+  begin perform salvar_metricas(ev, '{"online": 10}'); raise exception 'FALHOU: facilitador lançou métricas';
+  exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
+
+  -- Administrador lança
+  perform set_config('request.jwt.claim.sub', ua::text, true);
+  if not pode_ver_metricas() then raise exception 'FALHOU: administrador não acessa'; end if;
   begin perform salvar_metricas(ev_fut, '{"online": 10}'); raise exception 'FALHOU: lançou em culto distante';
   exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
   begin perform salvar_metricas(ev, '{"nave_vazias": 1500, "galeria_vazias": 600}'); raise exception 'FALHOU: vazias acima de 2055';
@@ -82,6 +91,7 @@ begin
 
   delete from eventos where id in (ev, ev_fut);
   perform set_config('request.jwt.claim.sub', '', true);
-  update pessoas set auth_user_id = null where id in (c, k, l);
+  delete from administradores where pessoa_id = adm;
+  update pessoas set auth_user_id = null where id in (c, k, l, adm);
   raise notice 'Métricas dos cultos: OK';
 end $$;

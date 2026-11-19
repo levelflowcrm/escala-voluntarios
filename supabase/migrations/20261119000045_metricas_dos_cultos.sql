@@ -5,7 +5,7 @@
 --   * Presentes = cadeiras da igreja (2055) - vazias da Nave - vazias da Galeria.
 --   * Contagem AUTO de voluntários = quem apertou "Cheguei" (escalas.chegou_em).
 --   * Valor em branco = "ainda não contado" (diferente de zero).
---   * Quem lança e vê: administradores e coordenadores (facilitadores) de qualquer ministério.
+--   * Quem lança e vê: só administradores.
 --   * Ninguém grava direto nas tabelas: só pela função salvar_metricas.
 -- =============================================================================
 create table areas_contagem (
@@ -67,7 +67,7 @@ create trigger igrejas_metricas_padrao after insert on igrejas
 
 create function pode_ver_metricas() returns boolean
 language sql stable security definer set search_path = public as $$
-  select coalesce(sou_admin() or sou_coordenador_algum(), false)
+  select coalesce(sou_admin(), false)
 $$;
 
 alter table areas_contagem enable row level security;
@@ -91,7 +91,7 @@ language plpgsql security definer set search_path = public as $$
 declare
   ig uuid := minha_igreja(); ev record; cad int; nave int; gal int; x jsonb; aid uuid; q int;
 begin
-  if not pode_ver_metricas() then raise exception 'Só administradores e facilitadores lançam as contagens'; end if;
+  if not pode_ver_metricas() then raise exception 'Só administradores lançam as contagens'; end if;
   select id, inicio into ev from eventos where id = p_evento and igreja_id = ig;
   if not found then raise exception 'Evento não encontrado'; end if;
   if ev.inicio > now() + interval '12 hours' then raise exception 'Esse evento ainda não começou: lance a contagem no dia'; end if;

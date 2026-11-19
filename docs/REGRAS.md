@@ -178,7 +178,7 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 
 ## Métricas dos cultos (painel gerencial)
 
-- **Quem lança e vê:** administradores e facilitadores (coordenadores) de qualquer ministério. Voluntários comuns não veem.
+- **Quem lança e vê:** só administradores. Facilitadores e voluntários não veem.
 - **Ficha de contagem por evento** (`/metricas/[evento]`, abre 12 h antes do início): voluntários por área (First, Louvor, Intercessão, Cozinha, Crianças, Enfermaria, Backstage, Mídia, Diaconia), online (YouTube), visitantes, Sim pra Jesus, cadeiras vazias da Nave e da Galeria, carros e motos.
 - **Presentes = 2.055 cadeiras − vazias da Nave − vazias da Galeria.** Só existe quando os dois setores foram contados. Campo em branco = "ainda não contado" (não é zero e não entra nas médias).
 - **Contagem manual** = soma das áreas. **Contagem auto** = voluntários escalados que apertaram **Cheguei** (aparecem lado a lado).
