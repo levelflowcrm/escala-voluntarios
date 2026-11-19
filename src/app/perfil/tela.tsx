@@ -4,17 +4,20 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { salvarPerfil, type DadosPerfil } from "./acoes";
 import { Aparencia } from "./aparencia";
+import { FotoPerfil } from "./foto";
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 
 export function TelaPerfil({
   nome,
+  foto,
   email,
   inicial,
   ministerios,
   funcoes,
 }: {
   nome: string;
+  foto: string | null;
   email: string;
   inicial: DadosPerfil;
   ministerios: { nome: string; coordenador: boolean }[];
@@ -33,6 +36,8 @@ export function TelaPerfil({
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Meu perfil</h1>
       <p className="text-neutral-500">{nome}{email && ` · ${email}`}</p>
+
+      <FotoPerfil nome={nome} inicial={foto} />
 
       <label className="flex flex-col gap-1 text-sm">
         Nome completo

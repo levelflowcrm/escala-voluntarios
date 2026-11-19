@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
-import { limitesMes, mesAtual } from "@/lib/datas";
+import { proximosAniversarios } from "@/lib/aniversarios";
+import { diaNoFuso, limitesMes, mesAtual } from "@/lib/datas";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
 const CAMPOS = "id, papel, status, motivo, chegou_em, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
@@ -123,10 +124,19 @@ export default async function Inicio() {
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
 
+  // Surpresa de aniversário (aparece a partir das 9h, no próprio aparelho)
+  const hojeSp = diaNoFuso(new Date());
+  const [{ data: meus }, { data: fotoLinha }] = await Promise.all([
+    supabase.rpc("meus_dados").maybeSingle<{ nome: string; aniversario: string | null }>(),
+    supabase.from("fotos_perfil").select("foto").eq("pessoa_id", pessoaId).maybeSingle(),
+  ]);
+  const aniversarioHoje = meus ? proximosAniversarios([{ nome: meus.nome, aniversario: meus.aniversario }], hojeSp, 0)[0]?.faltam === 0 : false;
+
   return (
     <TelaInicio
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
+      parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null } : null}
       admin={!!admin}
       proximas={proximas}
       historico={historico}
