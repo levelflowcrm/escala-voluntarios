@@ -175,6 +175,12 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - No **dia do aniversário, a partir das 9h (Brasília)**, ao abrir o app, aparece uma **surpresa em tela cheia** com a foto, confetes e a felicitação; fecha com "Amém, obrigado!" e não repete no mesmo dia. Sem foto, mostra a inicial e convida a adicionar. Respeita "reduzir movimento" do aparelho.
 - Às **9h** uma rotina (Vercel Cron, 12:00 UTC) envia **um WhatsApp de parabéns** a quem faz aniversário (29/02 comemora em 28/02 nos anos não bissextos), uma vez por ano, convidando a abrir o app.
 
+## Time de hoje
+
+- Na tela inicial, no dia do evento (de 6 h depois do início até 16 h antes), aparece o cartão **"Time de hoje · <ministério>"** com a **foto** de quem serve junto **no mesmo ministério e no mesmo evento** (nome e função embaixo). Quem ainda não confirmou aparece mais claro; quem não tem foto mostra a inicial; aniversariante ganha 🎂.
+- Só aparece com a escala **publicada** e só para quem está escalado (pendente/confirmado). Quem recusou não vê o time, e ninguém vê a foto de quem não serve junto. Não há opção de esconder a foto; o Perfil avisa que os colegas de escala a veem.
+- A tela usa uma **miniatura** (~96 px) para ser leve; a foto grande só aparece na surpresa de aniversário.
+
 ## Tipos de evento
 
 - Os tipos (Conferência, Batismo, Noite de Unção, Reunião Backstage…) ficam na tabela `tipos_evento` e são gerenciados pelo **master** em Agenda > Gerenciar tipos de evento: criar, renomear, escolher cor padrão e desativar.

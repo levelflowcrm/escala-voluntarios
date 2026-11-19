@@ -4,6 +4,8 @@ import { CartaoMaisFeliz } from "./cartao-maisfeliz";
 import { BotaoCheguei } from "./botao-cheguei";
 import Link from "next/link";
 import { Parabens } from "./parabens";
+import { TimeDeHoje } from "./time-de-hoje";
+import type { GrupoTime } from "@/lib/time-de-hoje";
 import { CORES } from "@/lib/cores-evento";
 import { diasAte, fmtDataHora } from "@/lib/datas";
 import { sair } from "./acoes";
@@ -44,6 +46,7 @@ export function TelaInicio({
   coordenador,
   repertorio,
   parabens = null,
+  timeDeHoje = [],
   admin = false,
   proximas,
   historico,
@@ -60,6 +63,7 @@ export function TelaInicio({
   nome: string;
   coordenador: boolean;
   repertorio: boolean;
+  timeDeHoje?: GrupoTime[];
   parabens?: { nome: string; dia: string; foto: string | null; igreja: string } | null;
   admin?: boolean;
   proximas: Linha[];
@@ -180,6 +184,8 @@ export function TelaInicio({
       </nav>
 
       {maisFeliz && <CartaoMaisFeliz key={maisFeliz.eventoId} eventoId={maisFeliz.eventoId} titulo={maisFeliz.titulo} />}
+
+      <TimeDeHoje grupos={timeDeHoje} />
 
       {proximo && (
         <section className="flex flex-col gap-3 rounded-2xl bg-violet-600 p-5 text-white">

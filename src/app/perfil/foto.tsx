@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { reduzirFoto } from "@/lib/foto";
+import { MAX_MINIATURA, reduzirFoto } from "@/lib/foto";
 import { removerFoto, salvarFoto } from "./foto-acoes";
 
 /** Foto do perfil: escolher/tirar, ajustar para quadrado e salvar. A foto aparece na surpresa de aniversário. */
@@ -19,7 +19,8 @@ export function FotoPerfil({ nome, inicial }: { nome: string; inicial: string | 
     iniciar(async () => {
       try {
         const url = await reduzirFoto(arquivo);
-        const r = await salvarFoto(url);
+        const mini = await reduzirFoto(arquivo, 96, MAX_MINIATURA);
+        const r = await salvarFoto(url, mini);
         if (r.erro) setErro(r.erro);
         else setFoto(url);
       } catch {
@@ -53,7 +54,7 @@ export function FotoPerfil({ nome, inicial }: { nome: string; inicial: string | 
           </button>
         )}
         {erro && <p className="text-sm text-red-600">{erro}</p>}
-        <p className="text-xs text-neutral-500">Só você vê. Usamos no seu aniversário, às 9h. 🎂</p>
+        <p className="text-xs text-neutral-500">Seus colegas de escala veem sua foto no “Time de hoje”, e usamos no seu aniversário, às 9h. 🎂</p>
       </div>
     </section>
   );
