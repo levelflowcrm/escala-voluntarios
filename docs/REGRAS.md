@@ -172,9 +172,9 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 ## Biblioteca de músicas do Louvor
 
 - A **biblioteca** (`/biblioteca`) é o acervo da igreja: título, artista, **tom padrão**, links de **letra, cifra, vídeo e áudio** (só http/https) e observação. Não repete a mesma música (mesmo título + artista, sem diferença de maiúscula/acento).
-- **Quem mexe:** só o facilitador do Louvor (e o administrador) cadastra, edita e exclui. **Quem vê:** Louvor, Projeção e administradores. Não há importação por planilha (decisão do Luciano).
+- **Quem mexe:** só o facilitador do Louvor (e o administrador) cadastra, edita e exclui. **Quem vê a biblioteca:** só o Louvor e os administradores (tom e links são do Louvor). Não há importação por planilha (decisão do Luciano).
 - No **repertório do culto** o facilitador escolhe a música da biblioteca (preenche artista e tom) e pode mudar o **tom só daquele culto**, sem alterar o cadastro. Música digitada que ainda não existe **entra na biblioteca sozinha**.
-- O **tom é só do Louvor**: não aparece no WhatsApp nem na tela da Projeção, e mudar só o tom grava em silêncio (sem novo horário e sem avisar a Projeção). Quem vê o repertório abre a letra, cifra, vídeo e áudio direto do app.
+- O **tom é só do Louvor**: não aparece no WhatsApp nem na tela da Projeção, e mudar só o tom grava em silêncio (sem novo horário e sem avisar a Projeção). A **Projeção vê só o título e o artista** de cada música do culto (sem tom e sem links de letra, cifra, vídeo ou áudio); o Louvor abre os links direto do app.
 - Excluir uma música da biblioteca **não apaga** os repertórios que já a usaram (ficam só sem o link).
 
 ## Foto de perfil e aniversário

@@ -38,10 +38,11 @@ begin
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FALHOU: facilitador não editou'; end if;
 
-  -- Voluntário da Projeção vê, mas não grava nem exclui
+  -- Voluntário da Projeção NÃO vê a biblioteca (nem tom nem links), e não grava nem exclui
   perform set_config('request.jwt.claim.sub', ud::text, true);
   select count(*) into n from musicas;
-  if n <> 1 then raise exception 'FALHOU: Projeção deveria ver 1 música, viu %', n; end if;
+  if n <> 0 then raise exception 'FALHOU: Projeção não deveria ver a biblioteca, viu %', n; end if;
+  if pode_ver_biblioteca() then raise exception 'FALHOU: Projeção com acesso à biblioteca'; end if;
   begin insert into musicas (igreja_id, titulo) values (ig, 'Intrusa'); raise exception 'FALHOU: Projeção cadastrou música';
   exception when insufficient_privilege then null; end;
   update musicas set titulo = 'Alterada' where id = id1;

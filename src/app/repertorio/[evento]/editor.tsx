@@ -23,7 +23,7 @@ function Leitura({ rotulo, lista, biblioteca, veTom }: { rotulo: string; lista: 
             {veTom && m.tom && <span className="ml-2 rounded-lg bg-pink-100 px-2 py-0.5 text-sm font-semibold text-pink-800 dark:bg-pink-950 dark:text-pink-300">{m.tom}</span>}
           </p>
           <div className="flex flex-wrap gap-2">
-            {LINKS.filter((l) => m.musicaId && biblioteca.get(m.musicaId)?.[l.campo]).map((l) => (
+            {LINKS.filter((l) => veTom && m.musicaId && biblioteca.get(m.musicaId)?.[l.campo]).map((l) => (
               <a key={l.campo} href={biblioteca.get(m.musicaId as string)?.[l.campo] as string} target="_blank" rel="noopener noreferrer" className="rounded-full border border-neutral-300 px-3 py-0.5 text-sm dark:border-neutral-700">
                 {l.icone} {l.rotulo}
               </a>

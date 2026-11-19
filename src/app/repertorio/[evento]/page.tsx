@@ -20,7 +20,7 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
   const [{ data: rep }, { data: linhas }, { data: lib }] = await Promise.all([
     supabase.from("repertorios").select("atualizado_em").eq("evento_id", evento).maybeSingle(),
     supabase.from("repertorio_musicas").select("bloco, ordem, titulo, artista, tom, musica_id").eq("evento_id", evento),
-    supabase.from("musicas").select("id, titulo, artista, tom, link_letra, link_cifra, link_video, link_audio, observacao").order("titulo").limit(2000),
+    edita ? supabase.from("musicas").select("id, titulo, artista, tom, link_letra, link_cifra, link_video, link_audio, observacao").order("titulo").limit(2000) : Promise.resolve({ data: [] as MusicaBiblioteca[] }),
   ]);
   const ordemBloco = { abertura: 1, ofertorio: 2, encerramento: 3 } as const;
   const musicas: Musica[] = (linhas ?? [])
