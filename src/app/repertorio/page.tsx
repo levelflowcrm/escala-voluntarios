@@ -16,9 +16,9 @@ export default async function Repertorios() {
   const desde = new Date(Date.now() - 12 * 3_600_000).toISOString();
   const [{ data: eventos }, { data: reps }] = await Promise.all([
     supabase.from("eventos").select("id, titulo, inicio").gte("inicio", desde).order("inicio").limit(40),
-    supabase.from("repertorios").select("evento_id, atualizado_em"),
+    supabase.from("repertorios").select("evento_id, atualizado_em, publicado, programado_para"),
   ]);
-  const atualizado = new Map((reps ?? []).map((r) => [r.evento_id, r.atualizado_em as string]));
+  const estado = new Map((reps ?? []).map((r) => [r.evento_id, r]));
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 py-8">
@@ -36,7 +36,8 @@ export default async function Repertorios() {
       )}
       {(eventos ?? []).length === 0 && <p className="text-neutral-500">Nenhum evento próximo.</p>}
       {(eventos ?? []).map((e) => {
-        const quando = atualizado.get(e.id);
+        const r = estado.get(e.id);
+        const quando = r?.publicado ? (r.atualizado_em as string) : null;
         return (
           <Link
             key={e.id}
@@ -45,8 +46,8 @@ export default async function Repertorios() {
           >
             <p className="font-medium capitalize">{fmtDataHora.format(new Date(e.inicio))}</p>
             <p>{e.titulo}</p>
-            <p className={`text-sm ${quando ? "text-emerald-700 dark:text-emerald-400" : "text-neutral-500"}`}>
-              {quando ? `🎵 Atualizado em ${formatarAtualizacao(quando)}` : edita ? "Sem repertório ainda" : "Repertório ainda não enviado"}
+            <p className={`text-sm ${quando ? "text-emerald-700 dark:text-emerald-400" : r ? "text-amber-700 dark:text-amber-300" : "text-neutral-500"}`}>
+              {quando ? `🎵 Atualizado em ${formatarAtualizacao(quando)}` : r ? (r.programado_para ? "⏰ Programado para 7h30 do dia" : "📝 Rascunho (ninguém foi avisado)") : edita ? "Sem repertório ainda" : "Repertório ainda não enviado"}
             </p>
           </Link>
         );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatarAtualizacao, validarRepertorio, type Musica } from "./repertorio";
+import { formatarAtualizacao, podeProgramar, validarRepertorio, type Musica } from "./repertorio";
 
 const m = (bloco: Musica["bloco"], titulo = "Música"): Musica => ({ bloco, titulo, artista: "", tom: "" });
 const base = [m("abertura"), m("abertura"), m("abertura"), m("encerramento")];
@@ -33,4 +33,15 @@ describe("formatarAtualizacao", () => {
     expect(formatarAtualizacao("2026-11-18T22:13:00Z")).toBe("18/nov às 19:13");
     expect(formatarAtualizacao("2026-12-01T02:05:00Z")).toBe("30/nov às 23:05");
   });
+});
+
+describe("podeProgramar (7h30 do dia do culto)", () => {
+  const culto = "2026-11-22T22:00:00Z"; // domingo 19h em Brasília
+  it("dias antes do culto: pode", () => expect(podeProgramar(culto, new Date("2026-11-20T15:00:00Z"))).toBe(true));
+  it("no dia do culto antes das 7h30: pode", () => expect(podeProgramar(culto, new Date("2026-11-22T10:00:00Z"))).toBe(true)); // 7h00
+  it("no dia do culto depois das 7h30: não pode", () => {
+    expect(podeProgramar(culto, new Date("2026-11-22T10:30:00Z"))).toBe(false); // 7h30
+    expect(podeProgramar(culto, new Date("2026-11-22T14:00:00Z"))).toBe(false);
+  });
+  it("culto que já passou: não pode", () => expect(podeProgramar(culto, new Date("2026-11-23T12:00:00Z"))).toBe(false));
 });

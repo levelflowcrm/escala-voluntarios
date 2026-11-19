@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { fmtDataHora } from "@/lib/datas";
 import type { MusicaBiblioteca } from "@/lib/musicas";
-import { formatarAtualizacao, type Musica } from "@/lib/repertorio";
+import { formatarAtualizacao, podeProgramar, type Musica } from "@/lib/repertorio";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { EditorRepertorio } from "./editor";
 
@@ -18,7 +18,7 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
   const { data: ev } = await supabase.from("eventos").select("id, titulo, inicio").eq("id", evento).maybeSingle();
   if (!ev) notFound();
   const [{ data: rep }, { data: linhas }, { data: lib }] = await Promise.all([
-    supabase.from("repertorios").select("atualizado_em").eq("evento_id", evento).maybeSingle(),
+    supabase.from("repertorios").select("atualizado_em, publicado, programado_para").eq("evento_id", evento).maybeSingle(),
     supabase.from("repertorio_musicas").select("bloco, ordem, titulo, artista, tom, musica_id").eq("evento_id", evento),
     edita ? supabase.from("musicas").select("id, titulo, artista, tom, link_letra, link_cifra, link_video, link_audio, observacao").order("titulo").limit(2000) : Promise.resolve({ data: [] as MusicaBiblioteca[] }),
   ]);
@@ -33,7 +33,11 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
       <Link href="/repertorio" className="text-sm text-neutral-500 underline">← Repertório dos cultos</Link>
       <h1 className="text-2xl font-semibold">{ev.titulo}</h1>
       <p className="capitalize text-neutral-500">{fmtDataHora.format(new Date(ev.inicio))}</p>
-      {rep ? (
+      {rep && !rep.publicado ? (
+        <p className="rounded-xl bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          {rep.programado_para ? "⏰ Programado: o aviso sai às 7h30 do dia do culto." : "📝 Rascunho: ninguém foi avisado e só você vê."}
+        </p>
+      ) : rep ? (
         <p className="rounded-xl bg-emerald-50 px-4 py-2 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
           🎵 Atualizado em <strong>{formatarAtualizacao(rep.atualizado_em)}</strong>
         </p>
@@ -42,7 +46,7 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
           Repertório ainda não enviado.
         </p>
       )}
-      <EditorRepertorio evento={evento} inicial={musicas} atualizadoEm={rep?.atualizado_em ?? null} podeEditar={!!edita && !passou} veTom={!!edita} biblioteca={(lib ?? []) as MusicaBiblioteca[]} />
+      <EditorRepertorio evento={evento} inicial={musicas} publicado={rep?.publicado ?? false} programadoPara={rep?.programado_para ?? null} podeProgramar={podeProgramar(ev.inicio)} podeEditar={!!edita && !passou} veTom={!!edita} biblioteca={(lib ?? []) as MusicaBiblioteca[]} />
     </main>
   );
 }

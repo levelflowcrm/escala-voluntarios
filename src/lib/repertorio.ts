@@ -1,4 +1,4 @@
-import { FUSO } from "./datas";
+import { diaNoFuso, FUSO } from "./datas";
 import { TOM_VALIDO } from "./musicas";
 
 export type Bloco = "abertura" | "ofertorio" | "encerramento";
@@ -30,4 +30,18 @@ export function validarRepertorio(musicas: Musica[]): string | null {
   if (por("ofertorio").length > 1) return "O ofertório tem no máximo 1 música (e é opcional).";
   if (por("encerramento").length !== 1) return "O encerramento precisa ter 1 música.";
   return null;
+}
+
+export type Modo = "rascunho" | "agora" | "programar";
+
+/** O repertório programado sai às 7h30 (Brasília) do dia do culto. */
+export function podeProgramar(inicio: string | Date, agora: Date = new Date()): boolean {
+  const dia = diaNoFuso(typeof inicio === "string" ? new Date(inicio) : inicio);
+  const hoje = diaNoFuso(agora);
+  if (dia > hoje) return true;
+  if (dia < hoje) return false;
+  const p = new Intl.DateTimeFormat("en-GB", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(agora);
+  const h = Number(p.find((x) => x.type === "hour")?.value);
+  const m = Number(p.find((x) => x.type === "minute")?.value);
+  return h * 60 + m < 7 * 60 + 30;
 }
