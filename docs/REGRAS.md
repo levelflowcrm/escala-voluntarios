@@ -176,6 +176,15 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - Depois de **publicado**, só existe **Atualizar e notificar agora**: toda mudança avisa na hora e guarda o horário "atualizado em". Se nada mudou, ninguém é avisado; mudar só o tom não avisa.
 - Enquanto for rascunho ou estiver programado, a Projeção e o Louvor não veem o repertório.
 
+## Métricas dos cultos (painel gerencial)
+
+- **Quem lança e vê:** administradores e facilitadores (coordenadores) de qualquer ministério. Voluntários comuns não veem.
+- **Ficha de contagem por evento** (`/metricas/[evento]`, abre 12 h antes do início): voluntários por área (First, Louvor, Intercessão, Cozinha, Crianças, Enfermaria, Backstage, Mídia, Diaconia), online (YouTube), visitantes, Sim pra Jesus, cadeiras vazias da Nave e da Galeria, carros e motos.
+- **Presentes = 2.055 cadeiras − vazias da Nave − vazias da Galeria.** Só existe quando os dois setores foram contados. Campo em branco = "ainda não contado" (não é zero e não entra nas médias).
+- **Contagem manual** = soma das áreas. **Contagem auto** = voluntários escalados que apertaram **Cheguei** (aparecem lado a lado).
+- **Painel** (`/metricas`): filtros por período (30/90/180/365 dias) e tipo de evento; médias com variação contra o período anterior de mesmo tamanho; gráficos por culto; média de voluntários por área; tabela dos eventos com atalho para lançar/corrigir.
+- Total de cadeiras e lista de áreas ficam em tabelas (`metricas_config`, `areas_contagem`); ainda não há tela para editar (por ora, pelo Supabase).
+
 ## Biblioteca de músicas do Louvor
 
 - A **biblioteca** (`/biblioteca`) é o acervo da igreja: título, artista, **tom padrão**, links de **letra, cifra, vídeo e áudio** (só http/https) e observação. Não repete a mesma música (mesmo título + artista, sem diferença de maiúscula/acento).

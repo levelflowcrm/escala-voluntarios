@@ -128,6 +128,7 @@ export default async function Inicio() {
   const { data: timeLinhas } = await supabase.rpc("time_de_hoje");
   const timeDeHoje = agruparTime((timeLinhas ?? []) as LinhaTime[]);
   const { data: verRepertorio } = await supabase.rpc("pode_ver_repertorio");
+  const { data: verMetricas } = await supabase.rpc("pode_ver_metricas");
   // Surpresa de aniversário (aparece a partir das 9h, no próprio aparelho)
   const hojeSp = diaNoFuso(new Date());
   const [{ data: meus }, { data: fotoLinha }, { data: igrejaLinha }] = await Promise.all([
@@ -144,6 +145,7 @@ export default async function Inicio() {
       coordenador={!!coordenador}
       timeDeHoje={timeDeHoje}
       repertorio={!!verRepertorio}
+      metricas={!!verMetricas}
       parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null, igreja: nomeIgreja.replace(/^Igreja\s+/, "") } : null}
       admin={!!admin}
       proximas={proximas}
