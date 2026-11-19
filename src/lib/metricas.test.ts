@@ -48,6 +48,9 @@ describe("resumir", () => {
   it("totais e maior público", () => {
     expect(r.visitantesTotal).toBe(30);
     expect(r.simPraJesusTotal).toBe(5);
+    expect(r.presentesTotal).toBe(2500);
+    expect(r.cultosComPublico).toBe(2);
+    expect(r.onlineTotal).toBe(800);
     expect(r.presentesMax?.valor).toBe(1500);
     expect(r.ocupacaoMedia).toBe(60.8);
   });
@@ -59,7 +62,8 @@ describe("resumir", () => {
   it("lista vazia não quebra", () => {
     const v = resumir([]);
     expect(v.presentesMedia).toBeNull();
-    expect(v.visitantesTotal).toBe(0);
+    expect(v.visitantesTotal).toBeNull(); // nada contado: traço, não zero
+    expect(v.simPraJesusTotal).toBeNull();
     expect(v.presentesMax).toBeNull();
   });
 });

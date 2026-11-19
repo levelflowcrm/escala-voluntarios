@@ -43,17 +43,21 @@ export function veiculos(f: Pick<Ficha, "carros" | "motos">): number | null {
 
 const valores = (xs: (number | null)[]) => xs.filter((x): x is number => x != null);
 const soma = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+const somaOuNulo = (xs: number[]) => (xs.length === 0 ? null : soma(xs));
 const media = (xs: number[]) => (xs.length === 0 ? null : Math.round((soma(xs) / xs.length) * 10) / 10);
 
 export type Resumo = {
   eventos: number; // eventos no período
   contados: number; // com ficha lançada
   presentesMedia: number | null;
+  presentesTotal: number | null; // soma dos públicos (quem passou pelo culto, somando todos os cultos)
+  cultosComPublico: number;
   presentesMax: { valor: number; titulo: string; inicio: string } | null;
   ocupacaoMedia: number | null;
   onlineMedia: number | null;
-  visitantesTotal: number;
-  simPraJesusTotal: number;
+  onlineTotal: number | null;
+  visitantesTotal: number | null;
+  simPraJesusTotal: number | null;
   voluntariosManualMedia: number | null;
   voluntariosAutoMedia: number | null;
   carrosMedia: number | null;
@@ -72,11 +76,14 @@ export function resumir(fichas: Ficha[], total = CADEIRAS_PADRAO): Resumo {
     eventos: fichas.length,
     contados: fichas.filter((f) => f.contado).length,
     presentesMedia: media(pres.map((x) => x.p)),
+    presentesTotal: pres.length === 0 ? null : soma(pres.map((x) => x.p)),
+    cultosComPublico: pres.length,
     presentesMax: maior ? { valor: maior.p, titulo: maior.f.titulo, inicio: maior.f.inicio } : null,
     ocupacaoMedia: media(pres.map((x) => x.p)) == null ? null : Math.round(((media(pres.map((x) => x.p)) as number) / total) * 1000) / 10,
     onlineMedia: media(valores(fichas.map((f) => f.online))),
-    visitantesTotal: soma(valores(fichas.map((f) => f.visitantes))),
-    simPraJesusTotal: soma(valores(fichas.map((f) => f.simPraJesus))),
+    onlineTotal: somaOuNulo(valores(fichas.map((f) => f.online))),
+    visitantesTotal: somaOuNulo(valores(fichas.map((f) => f.visitantes))),
+    simPraJesusTotal: somaOuNulo(valores(fichas.map((f) => f.simPraJesus))),
     voluntariosManualMedia: media(valores(fichas.map(voluntariosManual))),
     voluntariosAutoMedia: media(valores(fichas.map((f) => f.autoPresentes)).filter((n) => n > 0)),
     carrosMedia: media(valores(fichas.map((f) => f.carros))),
