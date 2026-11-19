@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { LINKS, type MusicaBiblioteca, TONS } from "@/lib/musicas";
-import { formatarAtualizacao, LIMITES, type Musica } from "@/lib/repertorio";
+import { formatarAtualizacao, LIMITES, type Modo, type Musica } from "@/lib/repertorio";
 import { salvarRepertorio } from "../acoes";
 
 type Linha = { titulo: string; artista: string; tom: string; musicaId: string | null };
@@ -38,14 +38,18 @@ function Leitura({ rotulo, lista, biblioteca, veTom }: { rotulo: string; lista: 
 export function EditorRepertorio({
   evento,
   inicial,
-  atualizadoEm,
+  publicado,
+  programadoPara,
+  podeProgramar,
   podeEditar,
   veTom,
   biblioteca,
 }: {
   evento: string;
   inicial: Musica[];
-  atualizadoEm: string | null;
+  publicado: boolean;
+  programadoPara: string | null;
+  podeProgramar: boolean;
   podeEditar: boolean;
   veTom: boolean;
   biblioteca: MusicaBiblioteca[];
@@ -68,7 +72,8 @@ export function EditorRepertorio({
   const [ofertorio, setOfertorio] = useState<Linha>(() => doBloco("ofertorio")[0] ?? vazia());
   const [encerramento, setEncerramento] = useState<Linha>(() => doBloco("encerramento")[0] ?? vazia());
   const [erro, setErro] = useState<string | null>(null);
-  const [salvoEm, setSalvoEm] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [jaPublicado, setJaPublicado] = useState(publicado);
   const [ocupado, iniciar] = useTransition();
 
   if (!podeEditar) {
@@ -84,7 +89,7 @@ export function EditorRepertorio({
 
   const mudar = (i: number, k: keyof Linha, v: string) => setAbertura((l) => l.map((x, j) => (j === i ? aplicar(x, k, v) : x)));
 
-  function salvar() {
+  function salvar(modo: Modo) {
     const musicas: Musica[] = [
       ...abertura.map((l) => ({ bloco: "abertura" as const, ...l })),
       ...(temOfertorio ? [{ bloco: "ofertorio" as const, ...ofertorio }] : []),
@@ -92,9 +97,18 @@ export function EditorRepertorio({
     ];
     setErro(null);
     iniciar(async () => {
-      const r = await salvarRepertorio(evento, musicas);
+      const r = await salvarRepertorio(evento, musicas, modo);
       if (r.erro) setErro(r.erro);
-      else setSalvoEm(r.atualizadoEm ?? null);
+      else {
+        if (modo === "agora") setJaPublicado(true);
+        setAviso(
+          modo === "agora"
+            ? `Salvo. Louvor e Projeção escalados foram avisados. Atualizado em ${formatarAtualizacao(r.atualizadoEm ?? new Date())}.`
+            : modo === "programar"
+              ? "Programado: o aviso sai às 7h30 do dia do culto. Até lá só você vê o repertório."
+              : "Rascunho salvo. Ninguém foi avisado e só você vê.",
+        );
+      }
     });
   }
 
@@ -142,11 +156,34 @@ export function EditorRepertorio({
       </section>
 
       {erro && <p className="text-sm text-red-600">{erro}</p>}
-      {salvoEm && !erro && <p className="text-sm text-emerald-700 dark:text-emerald-400">Salvo. A Projeção foi avisada. Atualizado em {formatarAtualizacao(salvoEm)}.</p>}
-      <button onClick={salvar} disabled={ocupado} className="h-12 rounded-xl bg-violet-600 font-medium text-white disabled:opacity-60">
-        {ocupado ? "Salvando…" : atualizadoEm || salvoEm ? "Atualizar repertório" : "Enviar repertório"}
-      </button>
-      <p className="text-xs text-neutral-500">Cada alteração guarda o horário e avisa a Projeção por WhatsApp. Se nada mudou, ninguém é avisado de novo.</p>
+      {aviso && !erro && <p className="text-sm text-emerald-700 dark:text-emerald-400">{aviso}</p>}
+      {!jaPublicado && programadoPara && !aviso && (
+        <p className="rounded-xl bg-violet-50 px-4 py-2 text-sm text-violet-800 dark:bg-violet-950/40 dark:text-violet-300">⏰ Programado: o aviso sai às 7h30 do dia do culto.</p>
+      )}
+      {jaPublicado ? (
+        <button onClick={() => salvar("agora")} disabled={ocupado} className="h-12 rounded-xl bg-violet-600 font-medium text-white disabled:opacity-60">
+          {ocupado ? "Salvando…" : "Atualizar e notificar agora"}
+        </button>
+      ) : (
+        <>
+          <button onClick={() => salvar("agora")} disabled={ocupado} className="h-12 rounded-xl bg-violet-600 font-medium text-white disabled:opacity-60">
+            {ocupado ? "Salvando…" : "Notificar agora"}
+          </button>
+          {podeProgramar && (
+            <button onClick={() => salvar("programar")} disabled={ocupado} className="h-12 rounded-xl border border-violet-600 font-medium text-violet-700 disabled:opacity-60 dark:text-violet-300">
+              Programar para 7h30 do dia do culto
+            </button>
+          )}
+          <button onClick={() => salvar("rascunho")} disabled={ocupado} className="h-11 rounded-xl border border-neutral-300 text-sm disabled:opacity-60 dark:border-neutral-700">
+            Salvar rascunho (sem avisar)
+          </button>
+        </>
+      )}
+      <p className="text-xs text-neutral-500">
+        {jaPublicado
+          ? "Cada alteração guarda o horário e avisa a equipe de Louvor escalada e a Projeção escalada por WhatsApp. Se nada mudou, ninguém é avisado de novo."
+          : "Quem recebe o aviso: a equipe de Louvor e a Projeção escalados no culto. Rascunho e programação ficam invisíveis para eles até o aviso sair."}
+      </p>
     </>
   );
 }

@@ -169,6 +169,13 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - **Aviso à Projeção:** quem está escalado na Projeção naquele evento recebe o repertório por WhatsApp (completo, com o horário). Sem ninguém escalado, avisam-se os facilitadores da Projeção. Vale o limite de 4 mensagens por dia por pessoa.
 - Quem vê: administradores, Louvor e Projeção. Só o facilitador do Louvor e os administradores gravam (função `salvar_repertorio`).
 
+## Aviso do repertório (rascunho, agora, programar)
+
+- O facilitador do Louvor salva de três jeitos: **Salvar rascunho** (sem avisar; só ele vê), **Notificar agora** (publica e avisa na hora) e **Programar para 7h30 do dia do culto** (publica e avisa na rotina das 7h30 do dia). Programar só aparece se ainda der tempo (antes das 7h30 do dia do culto).
+- **Quem recebe:** a **equipe de Louvor escalada** no culto e a **Projeção escalada** no culto (sem ninguém da Projeção escalado, os facilitadores da Projeção). Quem recusou a escala e quem salvou o repertório não recebem. Não vai para os outros voluntários.
+- Depois de **publicado**, só existe **Atualizar e notificar agora**: toda mudança avisa na hora e guarda o horário "atualizado em". Se nada mudou, ninguém é avisado; mudar só o tom não avisa.
+- Enquanto for rascunho ou estiver programado, a Projeção e o Louvor não veem o repertório.
+
 ## Biblioteca de músicas do Louvor
 
 - A **biblioteca** (`/biblioteca`) é o acervo da igreja: título, artista, **tom padrão**, links de **letra, cifra, vídeo e áudio** (só http/https) e observação. Não repete a mesma música (mesmo título + artista, sem diferença de maiúscula/acento).
@@ -181,7 +188,7 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 
 - Cada pessoa pode ter **uma foto** no Perfil (Adicionar/Trocar/Remover foto). O app recorta em quadrado e reduz para ~320 px antes de salvar. **Só a própria pessoa vê a foto** (por enquanto).
 - No **dia do aniversário, a partir das 9h (Brasília)**, ao abrir o app, aparece uma **surpresa em tela cheia** com a foto, confetes e a felicitação; fecha com "Amém, obrigado!" e não repete no mesmo dia. Sem foto, mostra a inicial e convida a adicionar. Respeita "reduzir movimento" do aparelho.
-- Às **9h** uma rotina (Vercel Cron, 12:00 UTC) envia **um WhatsApp de parabéns** a quem faz aniversário (29/02 comemora em 28/02 nos anos não bissextos), uma vez por ano, convidando a abrir o app.
+- Na rotina da manhã (**7h30**, Vercel Cron 10:30 UTC) sai **um WhatsApp de parabéns** a quem faz aniversário (29/02 comemora em 28/02 nos anos não bissextos), uma vez por ano, convidando a abrir o app.
 
 ## Time de hoje
 
