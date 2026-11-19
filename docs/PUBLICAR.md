@@ -20,7 +20,7 @@ correspondente de `supabase/migrations/` (`..._vincular_conta.sql` e
 
 ---
 
-## 2. Cadastrar o e-mail do coordenador
+## 2. Cadastrar o e-mail do facilitador
 
 O login só funciona para quem tem e-mail cadastrado em `pessoas`. Troque o
 e-mail abaixo pelo seu (o mesmo que vai usar para entrar, de preferência uma

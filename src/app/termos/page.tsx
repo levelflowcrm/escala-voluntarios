@@ -18,7 +18,7 @@ export default function Termos() {
 
       <h2 className="mt-4 text-xl font-semibold">2. Quem pode usar</h2>
       <p>
-        O acesso é liberado pela coordenação da sua igreja, usando o e-mail que ela cadastrou para você. Entre com a conta
+        O acesso é liberado pelos facilitadores da sua igreja, usando o e-mail que ela cadastrou para você. Entre com a conta
         Google desse e-mail. Cada pessoa usa apenas a própria conta.
       </p>
 
@@ -27,19 +27,19 @@ export default function Termos() {
         <li>Manter seus dados de contato corretos e responder às escalas com antecedência.</li>
         <li>Usar o aplicativo apenas para a organização dos serviços da igreja.</li>
         <li>Não tentar acessar dados de outras pessoas ou igrejas, nem prejudicar o funcionamento do serviço.</li>
-        <li>Coordenadores: publicar comunicados e escalas com respeito e apenas para o time do ministério.</li>
+        <li>Facilitadores: publicar comunicados e escalas com respeito e apenas para o time do ministério.</li>
       </ul>
 
       <h2 className="mt-4 text-xl font-semibold">4. Avisos e mensagens</h2>
       <p>
         Ao usar o aplicativo, você aceita receber avisos sobre o serviço no próprio app e por WhatsApp, no celular cadastrado
         (lembretes de escala, trocas, vagas abertas e comunicados). São mensagens do serviço, sem publicidade. Para parar de
-        receber mensagens no WhatsApp, avise a coordenação ou o contato abaixo.
+        receber mensagens no WhatsApp, avise o seu facilitador ou o contato abaixo.
       </p>
 
       <h2 className="mt-4 text-xl font-semibold">4.1. Pontuação e MaisFeliz</h2>
       <p>
-        A pontuação reconhece quem serve com constância: você vê a sua e os coordenadores dos seus ministérios veem a do
+        A pontuação reconhece quem serve com constância: você vê a sua e os facilitadores dos seus ministérios veem a do
         time, sem ranking público. No MaisFeliz, sua reação é anônima e o líder vê apenas um resumo.
       </p>
 
@@ -47,12 +47,12 @@ export default function Termos() {
       <p>
         Trabalhamos para manter o aplicativo no ar e seguro, mas ele pode ficar indisponível por manutenção ou falhas de
         terceiros. O serviço é oferecido como está, e a organização final da escala continua sendo responsabilidade da
-        coordenação de cada ministério.
+        facilitador de cada ministério.
       </p>
 
       <h2 className="mt-4 text-xl font-semibold">6. Encerramento</h2>
       <p>
-        Você pode deixar de usar o aplicativo a qualquer momento e pedir a exclusão dos seus dados. A coordenação pode
+        Você pode deixar de usar o aplicativo a qualquer momento e pedir a exclusão dos seus dados. Os facilitadores podem
         remover o acesso de quem deixou de servir.
       </p>
 

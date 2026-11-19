@@ -42,6 +42,7 @@ export type Linha = {
 export function TelaInicio({
   nome,
   coordenador,
+  repertorio,
   parabens = null,
   admin = false,
   proximas,
@@ -58,6 +59,7 @@ export function TelaInicio({
 }: {
   nome: string;
   coordenador: boolean;
+  repertorio: boolean;
   parabens?: { nome: string; dia: string; foto: string | null } | null;
   admin?: boolean;
   proximas: Linha[];
@@ -250,6 +252,12 @@ export function TelaInicio({
         </p>
       )}
 
+      {repertorio && (
+        <Link href="/repertorio" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
+          🎵 Músicas dos próximos cultos. <strong>Ver repertório</strong>
+        </Link>
+      )}
+
       {coordenador && (
         <Link href="/maisfeliz" className="rounded-xl bg-violet-50 px-4 py-3 text-sm dark:bg-violet-950/40">
           😊 Como o time se sentiu nos cultos. <strong>Ver MaisFeliz</strong>
@@ -293,7 +301,7 @@ export function TelaInicio({
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Minhas próximas escalas</h2>
         {proximas.length === 0 && (
-          <p className="text-neutral-500">Nenhuma escala marcada. Quando o coordenador publicar, ela aparece aqui.</p>
+          <p className="text-neutral-500">Nenhuma escala marcada. Quando o facilitador publicar, ela aparece aqui.</p>
         )}
         {proximas.map((e) => cartao(e, true))}
       </section>

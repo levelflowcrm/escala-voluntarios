@@ -26,7 +26,7 @@ export default async function Vagas() {
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Vagas abertas</h1>
       <p className="text-sm text-neutral-500">
-        Quando alguém recusa, a data volta para o mural e qualquer voluntário apto pode assumir — sem o coordenador
+        Quando alguém recusa, a data volta para o mural e qualquer voluntário apto pode assumir — sem o facilitador
         precisar caçar substituto no grupo.
       </p>
       {lista.length === 0 && <p className="text-neutral-500">Nenhuma vaga aberta para você agora. 🙌</p>}

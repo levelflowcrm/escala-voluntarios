@@ -120,7 +120,7 @@ export function TelaDisponibilidade({
         </Link>
         <h1 className="text-2xl font-semibold">Minha disponibilidade</h1>
         <p className="text-sm text-neutral-500">
-          O coordenador só sugere você nos dias em que você pode. Mudou algo? É só ajustar aqui.
+          O facilitador só sugere você nos dias em que você pode. Mudou algo? É só ajustar aqui.
         </p>
       </header>
 

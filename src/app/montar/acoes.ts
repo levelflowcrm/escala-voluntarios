@@ -262,7 +262,7 @@ export async function publicar(ministerioId: string, mes: string): Promise<Resul
   return { erro: null, aviso: data.length ? `${data.length} eventos publicados.` : "Já estava tudo publicado." };
 }
 
-/** O coordenador dispensa (ou volta a escalar) um evento para o PRÓPRIO ministério. A função do banco confere a permissão. */
+/** O facilitador dispensa (ou volta a escalar) um evento para o PRÓPRIO ministério. A função do banco confere a permissão. */
 export async function dispensarEvento(eventoId: string, ministerioId: string, dispensar: boolean): Promise<Resultado> {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.rpc("dispensar_evento", { p_evento: eventoId, p_ministerio: ministerioId, p_dispensar: dispensar });
@@ -321,9 +321,9 @@ export async function cancelarCulto(eventoId: string, motivo: string): Promise<R
   return error ? { erro: "Não foi possível cancelar agora." } : { erro: null, aviso: "Culto cancelado. Para voltar atrás, remova a pausa em Cultos fixos e gere os cultos do mês." };
 }
 
-/** "Criar automático": (master) cria os cultos fixos do mês e preenche todas as vagas (rascunho; o coordenador revisa e publica). */
+/** "Criar automático": (master) cria os cultos fixos do mês e preenche todas as vagas (rascunho; o facilitador revisa e publica). */
 export async function criarAutomatico(ministerioId: string, mes: string): Promise<Resultado> {
-  // Os cultos do mês só o master cria; o coordenador usa os que já existem
+  // Os cultos do mês só o master cria; o facilitador usa os que já existem
   const supabase = await criarClienteServidor();
   const { data: master } = await supabase.rpc("sou_admin_master");
   let cultos: Resultado = { erro: null };

@@ -122,7 +122,7 @@ export function Calendario({
         <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${so ? "border-violet-600 bg-violet-600 text-white" : "border-neutral-400"}`}>{so ? "✓" : ""}</span>
         <span>
           <span className="block font-medium">Só sirvo nos dias que eu marcar</span>
-          <span className="block text-sm text-neutral-500">Fora dos dias marcados, o coordenador não me sugere.</span>
+          <span className="block text-sm text-neutral-500">Fora dos dias marcados, o facilitador não me sugere.</span>
         </span>
       </button>
 

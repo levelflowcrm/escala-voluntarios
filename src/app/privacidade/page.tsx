@@ -52,23 +52,23 @@ export default function Privacidade() {
 
       <h2 className="mt-4 text-xl font-semibold">3. Quem vê seus dados</h2>
       <p>
-        Os coordenadores dos ministérios em que você serve e os demais voluntários da mesma igreja veem seu nome e sua
-        escala. Seu celular, e-mail e aniversário ficam visíveis apenas para a coordenação. Pessoas de outras igrejas não
+        Os facilitadores dos ministérios em que você serve e os demais voluntários da mesma igreja veem seu nome e sua
+        escala. Seu celular, e-mail e aniversário ficam visíveis apenas para os facilitadores. Pessoas de outras igrejas não
         têm acesso.
       </p>
       <p>
-        <strong>Pontuação:</strong> você vê a sua, e os coordenadores dos seus ministérios veem a do time. Não há ranking
+        <strong>Pontuação:</strong> você vê a sua, e os facilitadores dos seus ministérios veem a do time. Não há ranking
         público. <strong>MaisFeliz:</strong> o líder vê só o resumo por culto (contagem dos emojis e média), e apenas quando há
-        três respostas ou mais, para ninguém ser identificado. <strong>Cheguei:</strong> o coordenador vê quem já avisou que
+        três respostas ou mais, para ninguém ser identificado. <strong>Cheguei:</strong> o facilitador vê quem já avisou que
         chegou.
       </p>
 
       <h2 className="mt-4 text-xl font-semibold">3.1. Avisos pelo aplicativo e pelo WhatsApp</h2>
       <p>
         Para que a escala funcione, enviamos avisos sobre o serviço: lembretes de escala, pedidos de troca, vagas abertas,
-        comunicados e avisos de chegada para a coordenação. Eles aparecem no aplicativo (sininho) e também por mensagem de
+        comunicados e avisos de chegada para os facilitadores. Eles aparecem no aplicativo (sininho) e também por mensagem de
         WhatsApp para o celular cadastrado. Enviamos apenas mensagens ligadas ao serviço, nunca publicidade. Se você não
-        quiser receber mensagens no WhatsApp, avise a coordenação ou escreva para o contato abaixo e interrompemos o envio
+        quiser receber mensagens no WhatsApp, avise o seu facilitador ou escreva para o contato abaixo e interrompemos o envio
         para o seu número, e os avisos continuam no aplicativo.
       </p>
 
@@ -89,7 +89,7 @@ export default function Privacidade() {
       <p>
         Você pode pedir confirmação de que tratamos seus dados, acesso, correção, exclusão, portabilidade e informação
         sobre compartilhamento, além de revogar o consentimento. Parte dos dados de contato você mesmo edita na tela
-        &quot;Meu perfil&quot;. Para os demais pedidos, fale com a coordenação da sua igreja ou escreva para o contato abaixo.
+        &quot;Meu perfil&quot;. Para os demais pedidos, fale com o seu facilitador ou escreva para o contato abaixo.
       </p>
 
       <h2 className="mt-4 text-xl font-semibold">7. Contato</h2>

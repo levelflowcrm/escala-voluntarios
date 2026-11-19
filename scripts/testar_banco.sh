@@ -44,5 +44,6 @@ $PSQL -f supabase/tests/vaga_aberta_aviso.sql
 $PSQL -f supabase/tests/disponibilidade_calendario.sql
 $PSQL -f supabase/tests/projecao_funcoes.sql
 $PSQL -f supabase/tests/tipos_de_evento.sql
+$PSQL -f supabase/tests/louvor_repertorio.sql
 $PSQL -f supabase/tests/foto_e_aniversario.sql
 echo "OK: migrações, seed e testes passaram"

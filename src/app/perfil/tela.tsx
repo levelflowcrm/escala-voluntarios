@@ -71,7 +71,7 @@ export function TelaPerfil({
         <h2 className="text-sm font-medium text-neutral-500">Onde eu sirvo</h2>
         {ministerios.length === 0 && <p className="text-neutral-500">Nenhum ministério ainda.</p>}
         {ministerios.map((m) => (
-          <p key={m.nome}>{m.nome}{m.coordenador && <span className="ml-2 text-xs text-violet-600">coordenador(a)</span>}</p>
+          <p key={m.nome}>{m.nome}{m.coordenador && <span className="ml-2 text-xs text-violet-600">facilitador(a)</span>}</p>
         ))}
         {funcoes.length > 0 && <h3 className="mt-2 text-sm font-medium text-neutral-500">Minhas habilidades</h3>}
         {[...new Set(funcoes.map((f) => f.area))].map((area) => (
@@ -80,7 +80,7 @@ export function TelaPerfil({
             {funcoes.filter((f) => f.area === area).map((f) => (f.apto ? f.nome : `${f.nome} (aprendiz)`)).join(", ")}
           </p>
         ))}
-        {funcoes.length > 0 && <p className="text-xs text-neutral-400">As habilidades são definidas pelo seu coordenador.</p>}
+        {funcoes.length > 0 && <p className="text-xs text-neutral-400">As habilidades são definidas pelo seu facilitador.</p>}
       </section>
     </main>
   );

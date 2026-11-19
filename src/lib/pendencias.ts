@@ -19,7 +19,7 @@ export type Pendencias = {
 const DIA_MS = 86_400_000;
 
 /**
- * O que o coordenador precisa resolver:
+ * O que o facilitador precisa resolver:
  *  - vagas abertas: alguém recusou e ninguém ocupa a função (só em escalas publicadas);
  *  - sem resposta: pedido pendente de evento nos próximos `dias` dias (só publicadas).
  */

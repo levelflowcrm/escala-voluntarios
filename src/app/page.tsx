@@ -49,7 +49,7 @@ export default async function Inicio() {
     .select("id", { count: "exact", head: true })
     .gt("criado_em", desde)
     .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
-  // Coordenador: quem avisou "Cheguei" depois da última visita também acende o sino.
+  // Facilitador: quem avisou "Cheguei" depois da última visita também acende o sino.
   let chegadasNovas = 0;
   if (coordenador) {
     const { data: ch } = await supabase.rpc("chegadas_do_dia");
@@ -87,7 +87,7 @@ export default async function Inicio() {
 
   const servidasNoMes = doMes?.length ?? 0;
 
-  // Coordenador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
+  // Facilitador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
   let pendencias = null;
   if (coordenador) {
     const limite = new Date(Date.now() + 30 * 86_400_000).toISOString();
@@ -124,6 +124,7 @@ export default async function Inicio() {
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
 
+  const { data: verRepertorio } = await supabase.rpc("pode_ver_repertorio");
   // Surpresa de aniversário (aparece a partir das 9h, no próprio aparelho)
   const hojeSp = diaNoFuso(new Date());
   const [{ data: meus }, { data: fotoLinha }] = await Promise.all([
@@ -136,6 +137,7 @@ export default async function Inicio() {
     <TelaInicio
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
+      repertorio={!!verRepertorio}
       parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null } : null}
       admin={!!admin}
       proximas={proximas}
