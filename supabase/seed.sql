@@ -4,6 +4,7 @@ insert into igrejas (id, nome, slug, latitude, longitude) values ('a24c98fb-99c5
 insert into ministerios (id, igreja_id, nome, cor) values ('2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Transmissão', '#7c3aed') on conflict do nothing;
 insert into ministerios (id, igreja_id, nome, cor) values ('f91c1c12-0fc6-5845-957d-b4ff0f5f5f7b', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Projeção', '#0891b2') on conflict do nothing;
 insert into ministerios (id, igreja_id, nome, cor) values ('a1ce891a-2292-51dc-8d24-4a241c2b3bb8', 'a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Iluminação', '#d97706') on conflict do nothing;
+insert into ministerios (igreja_id, nome, cor) values ('a24c98fb-99c5-54f2-8666-2c3209e073e1', 'Louvor', '#db2777') on conflict do nothing;
 insert into funcoes (id, ministerio_id, nome, ordem) values ('c38cd5f0-1a3a-55c4-98de-c9c557b167cc', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'DTV-Transmissão', 1) on conflict do nothing;
 insert into funcoes (id, ministerio_id, nome, ordem) values ('440a709b-f96a-53ba-886f-e2dc91d0fd2a', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'Câmera Black', 2) on conflict do nothing;
 insert into funcoes (id, ministerio_id, nome, ordem) values ('0617c44c-1d09-57ef-930d-3a5a39335c89', '2a6b37de-3f99-58a6-9876-13c1ba67b3d8', 'Câmera Grua', 3) on conflict do nothing;

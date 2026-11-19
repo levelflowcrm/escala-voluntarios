@@ -161,6 +161,14 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 
 - **Boas-vindas:** ao ganhar um celular válido (cadastro ou correção), a pessoa recebe uma única mensagem explicando os avisos e, se ainda não entrou no app, como entrar com o Google. Só uma vez por pessoa; trocar de número depois não repete.
 
+## Louvor e repertório do culto
+
+- **Louvor** é um ministério do app, por enquanto só com o facilitador (o time e as funções vêm depois). O master define o facilitador em Permissões.
+- O facilitador do Louvor (e o administrador) monta o **repertório** de cada evento em `/repertorio`: **abertura de 3 a 4 músicas, ofertório opcional (0 ou 1) e 1 de encerramento**. Cada música tem título e, se quiser, artista.
+- Cada gravação que **muda algo** guarda o horário (**"atualizado em 18/nov às 19:13"**, horário de Brasília), que aparece para todos que enxergam o repertório. Gravar igual não muda o horário nem avisa de novo. Dá para atualizar até 12 horas depois do início do evento.
+- **Aviso à Projeção:** quem está escalado na Projeção naquele evento recebe o repertório por WhatsApp (completo, com o horário). Sem ninguém escalado, avisam-se os facilitadores da Projeção. Vale o limite de 4 mensagens por dia por pessoa.
+- Quem vê: administradores, Louvor e Projeção. Só o facilitador do Louvor e os administradores gravam (função `salvar_repertorio`).
+
 ## Tipos de evento
 
 - Os tipos (Conferência, Batismo, Noite de Unção, Reunião Backstage…) ficam na tabela `tipos_evento` e são gerenciados pelo **master** em Agenda > Gerenciar tipos de evento: criar, renomear, escolher cor padrão e desativar.
