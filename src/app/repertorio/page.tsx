@@ -29,7 +29,7 @@ export default async function Repertorios() {
           : "As músicas de cada culto, definidas pelo Louvor. Se mudar, você é avisado e o horário da última atualização aparece aqui."}
       </p>
       <Link href="/biblioteca" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
-        📚 Biblioteca de músicas: tom, letra, cifra e vídeo. <span className="underline">Abrir</span>
+        📚 Biblioteca de músicas: letra, cifra, vídeo e áudio. <span className="underline">Abrir</span>
       </Link>
       {(eventos ?? []).length === 0 && <p className="text-neutral-500">Nenhum evento próximo.</p>}
       {(eventos ?? []).map((e) => {

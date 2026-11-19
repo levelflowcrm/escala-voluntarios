@@ -24,7 +24,7 @@ export default async function Biblioteca() {
       <p className="text-sm text-neutral-500">
         {edita
           ? "As músicas da igreja, com tom, letra, cifra, vídeo e áudio. Quem você escolhe no repertório do culto já vem daqui, e música nova digitada no repertório entra aqui sozinha."
-          : "As músicas do Louvor, com tom e links de letra, cifra, vídeo e áudio."}
+          : "As músicas do Louvor, com links de letra, cifra, vídeo e áudio."}
       </p>
       <TelaBiblioteca musicas={(data ?? []) as MusicaBiblioteca[]} podeEditar={!!edita} />
     </main>

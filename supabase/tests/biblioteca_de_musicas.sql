@@ -3,7 +3,7 @@
 \set ON_ERROR_STOP 1
 do $$
 declare
-  ig uuid; lv uuid; pj uuid; f uuid; ev uuid; c uuid; d uuid; k uuid; n int; txt text; mid uuid; id1 uuid;
+  ig uuid; lv uuid; pj uuid; f uuid; ev uuid; c uuid; d uuid; k uuid; n int; txt text; mid uuid; id1 uuid; t1 timestamptz;
   uc uuid := gen_random_uuid(); ud uuid := gen_random_uuid(); uk uuid := gen_random_uuid();
 begin
   select id, igreja_id into lv, ig from ministerios where nome = 'Louvor';
@@ -77,8 +77,26 @@ begin
   if (select tom from musicas where id = id1) <> 'A' then raise exception 'FALHOU: o tom do culto mudou o cadastro da música'; end if;
   reset role;
   select texto into txt from fila_whatsapp where tipo = 'repertorio' and pessoa_id = d;
-  if txt is null or txt not like '%1. Grande é o Senhor — Adhemar de Campos (tom Bb)%' or txt not like '%Encerramento: Final (tom D)%' then
-    raise exception 'FALHOU: WhatsApp sem o tom (%)', txt;
+  if txt is null or txt not like '%1. Grande é o Senhor — Adhemar de Campos%' or txt not like '%Encerramento: Final%' or txt like '%tom%' then
+    raise exception 'FALHOU: WhatsApp deveria ter as músicas e nunca o tom (%)', txt;
+  end if;
+
+  -- Mudar só o tom: grava, mas sem novo horário e sem novo aviso à Projeção
+  select atualizado_em into t1 from repertorios where evento_id = ev;
+  select count(*) into n from fila_whatsapp where tipo = 'repertorio';
+  set local role authenticated;
+  perform set_config('request.jwt.claim.sub', uc::text, true);
+  perform salvar_repertorio(ev, jsonb_build_array(
+    jsonb_build_object('bloco','abertura','titulo','Grande é o Senhor','artista','Adhemar de Campos','tom','C','musica_id', id1),
+    jsonb_build_object('bloco','abertura','titulo','Música Nova','artista','Banda X','tom','C'),
+    jsonb_build_object('bloco','abertura','titulo','Outra'),
+    jsonb_build_object('bloco','encerramento','titulo','Final','tom','E')));
+  reset role;
+  if (select atualizado_em from repertorios where evento_id = ev) <> t1 then raise exception 'FALHOU: mudar só o tom alterou o horário'; end if;
+  if (select count(*) from fila_whatsapp where tipo = 'repertorio') <> n then raise exception 'FALHOU: mudar só o tom avisou a Projeção'; end if;
+  if not exists (select 1 from repertorio_musicas where evento_id = ev and titulo = 'Grande é o Senhor' and tom = 'C')
+     or not exists (select 1 from repertorio_musicas where evento_id = ev and titulo = 'Final' and tom = 'E') then
+    raise exception 'FALHOU: não gravou o novo tom em silêncio';
   end if;
 
   -- Excluir música da biblioteca não apaga o repertório que já a usou

@@ -42,7 +42,7 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
           Repertório ainda não enviado.
         </p>
       )}
-      <EditorRepertorio evento={evento} inicial={musicas} atualizadoEm={rep?.atualizado_em ?? null} podeEditar={!!edita && !passou} biblioteca={(lib ?? []) as MusicaBiblioteca[]} />
+      <EditorRepertorio evento={evento} inicial={musicas} atualizadoEm={rep?.atualizado_em ?? null} podeEditar={!!edita && !passou} veTom={!!edita} biblioteca={(lib ?? []) as MusicaBiblioteca[]} />
     </main>
   );
 }

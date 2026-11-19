@@ -4,7 +4,7 @@
 --     Só o facilitador do Louvor (e o administrador) cadastra, edita e exclui; Louvor, Projeção e administradores veem.
 --   * repertorio_musicas ganha o vínculo com a biblioteca e o TOM daquele culto (o cadastro não muda).
 --   * salvar_repertorio: aceita musica_id/tom e cadastra na biblioteca a música digitada que ainda não existe.
---   * O texto do WhatsApp para a Projeção passa a mostrar o tom: "1. Título — Artista (tom G)".
+--   * O tom é só do Louvor: não aparece no WhatsApp nem na tela da Projeção, e mudar só o tom não gera novo horário nem aviso.
 -- =============================================================================
 create table musicas (
   id          uuid primary key default gen_random_uuid(),
@@ -39,13 +39,13 @@ alter table repertorio_musicas
 create or replace function texto_repertorio(p_evento uuid) returns text
 language sql stable security definer set search_path = public as $$
   select coalesce(string_agg(linha, E'\n' order by ord), '') from (
-    select 1 as ord, 'Abertura:' || E'\n' || string_agg(rm.ordem || '. ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), '') || coalesce(' (tom ' || rm.tom || ')', ''), E'\n' order by rm.ordem) as linha
+    select 1 as ord, 'Abertura:' || E'\n' || string_agg(rm.ordem || '. ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), ''), E'\n' order by rm.ordem) as linha
       from repertorio_musicas rm where rm.evento_id = p_evento and rm.bloco = 'abertura' having count(*) > 0
     union all
-    select 2, 'Ofertório: ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), '') || coalesce(' (tom ' || rm.tom || ')', '')
+    select 2, 'Ofertório: ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), '')
       from repertorio_musicas rm where rm.evento_id = p_evento and rm.bloco = 'ofertorio'
     union all
-    select 3, 'Encerramento: ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), '') || coalesce(' (tom ' || rm.tom || ')', '')
+    select 3, 'Encerramento: ' || rm.titulo || coalesce(' — ' || nullif(btrim(rm.artista), ''), '')
       from repertorio_musicas rm where rm.evento_id = p_evento and rm.bloco = 'encerramento'
   ) t
 $$;
@@ -81,14 +81,20 @@ begin
   end loop;
 
   -- Nada mudou? Não mexe no horário nem avisa de novo.
-  select string_agg((case e->>'bloco' when 'abertura' then '1' when 'ofertorio' then '2' else '3' end) || '|' || btrim(e->>'titulo') || '|' || btrim(coalesce(e->>'artista', '')) || '|' || btrim(coalesce(e->>'tom', '')), E'\n' order by i)
+  select string_agg((case e->>'bloco' when 'abertura' then '1' when 'ofertorio' then '2' else '3' end) || '|' || btrim(e->>'titulo') || '|' || btrim(coalesce(e->>'artista', '')), E'\n' order by i)
     into novo from jsonb_array_elements(p_musicas) with ordinality as t(e, i);
-  select string_agg((case bloco when 'abertura' then '1' when 'ofertorio' then '2' else '3' end) || '|' || titulo || '|' || coalesce(btrim(artista), '') || '|' || coalesce(tom, ''), E'\n'
+  select string_agg((case bloco when 'abertura' then '1' when 'ofertorio' then '2' else '3' end) || '|' || titulo || '|' || coalesce(btrim(artista), ''), E'\n'
          order by case bloco when 'abertura' then 1 when 'ofertorio' then 2 else 3 end, ordem)
     into antigo from repertorio_musicas where evento_id = p_evento;
   select atualizado_em into atual from repertorios where evento_id = p_evento;
   ja_tinha := atual is not null;
-  if ja_tinha and antigo is not distinct from novo then return atual; end if;
+  if ja_tinha and antigo is not distinct from novo then
+    -- Só o tom (ou o vínculo com a biblioteca) mudou: grava em silêncio, sem novo horário e sem avisar a Projeção
+    update repertorio_musicas rm set tom = nullif(btrim(coalesce(s.e->>'tom', '')), '')
+      from (select e, row_number() over (partition by e->>'bloco' order by i) as ord from jsonb_array_elements(p_musicas) with ordinality as t(e, i)) s
+     where rm.evento_id = p_evento and rm.bloco = s.e->>'bloco' and rm.ordem = s.ord;
+    return atual;
+  end if;
 
   insert into repertorios (evento_id, igreja_id, atualizado_em, atualizado_por) values (p_evento, ig, agora, eu)
     on conflict (evento_id) do update set atualizado_em = agora, atualizado_por = eu;

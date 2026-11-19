@@ -79,7 +79,7 @@ export function TelaBiblioteca({ musicas, podeEditar }: { musicas: MusicaBibliot
                 <h2 className="font-medium">{m.titulo}</h2>
                 {m.artista && <p className="text-sm text-neutral-500">{m.artista}</p>}
               </div>
-              {m.tom && <span className="rounded-lg bg-pink-100 px-2 py-1 text-sm font-semibold text-pink-800 dark:bg-pink-950 dark:text-pink-300">{m.tom}</span>}
+              {podeEditar && m.tom && <span className="rounded-lg bg-pink-100 px-2 py-1 text-sm font-semibold text-pink-800 dark:bg-pink-950 dark:text-pink-300">{m.tom}</span>}
             </div>
             <div className="flex flex-wrap gap-2">
               {LINKS.filter((l) => m[l.campo]).map((l) => (

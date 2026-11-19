@@ -9,7 +9,7 @@ type Linha = { titulo: string; artista: string; tom: string; musicaId: string | 
 const vazia = (): Linha => ({ titulo: "", artista: "", tom: "", musicaId: null });
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 
-function Leitura({ rotulo, lista, biblioteca }: { rotulo: string; lista: Musica[]; biblioteca: Map<string, MusicaBiblioteca> }) {
+function Leitura({ rotulo, lista, biblioteca, veTom }: { rotulo: string; lista: Musica[]; biblioteca: Map<string, MusicaBiblioteca>; veTom: boolean }) {
   if (lista.length === 0) return null;
   return (
     <section className="flex flex-col gap-1 rounded-xl border border-neutral-300 p-4 dark:border-neutral-700">
@@ -20,7 +20,7 @@ function Leitura({ rotulo, lista, biblioteca }: { rotulo: string; lista: Musica[
             {lista.length > 1 && <span className="mr-2 text-neutral-400">{i + 1}.</span>}
             {m.titulo}
             {m.artista && <span className="text-neutral-500"> — {m.artista}</span>}
-            {m.tom && <span className="ml-2 rounded-lg bg-pink-100 px-2 py-0.5 text-sm font-semibold text-pink-800 dark:bg-pink-950 dark:text-pink-300">{m.tom}</span>}
+            {veTom && m.tom && <span className="ml-2 rounded-lg bg-pink-100 px-2 py-0.5 text-sm font-semibold text-pink-800 dark:bg-pink-950 dark:text-pink-300">{m.tom}</span>}
           </p>
           <div className="flex flex-wrap gap-2">
             {LINKS.filter((l) => m.musicaId && biblioteca.get(m.musicaId)?.[l.campo]).map((l) => (
@@ -40,12 +40,14 @@ export function EditorRepertorio({
   inicial,
   atualizadoEm,
   podeEditar,
+  veTom,
   biblioteca,
 }: {
   evento: string;
   inicial: Musica[];
   atualizadoEm: string | null;
   podeEditar: boolean;
+  veTom: boolean;
   biblioteca: MusicaBiblioteca[];
 }) {
   // Digitar/escolher um título da biblioteca preenche artista e tom padrão e vincula a música
@@ -73,9 +75,9 @@ export function EditorRepertorio({
     if (inicial.length === 0) return null;
     return (
       <>
-        <Leitura rotulo="Abertura" lista={inicial.filter((m) => m.bloco === "abertura")} biblioteca={porId} />
-        <Leitura rotulo="Ofertório" lista={inicial.filter((m) => m.bloco === "ofertorio")} biblioteca={porId} />
-        <Leitura rotulo="Encerramento" lista={inicial.filter((m) => m.bloco === "encerramento")} biblioteca={porId} />
+        <Leitura rotulo="Abertura" lista={inicial.filter((m) => m.bloco === "abertura")} biblioteca={porId} veTom={veTom} />
+        <Leitura rotulo="Ofertório" lista={inicial.filter((m) => m.bloco === "ofertorio")} biblioteca={porId} veTom={veTom} />
+        <Leitura rotulo="Encerramento" lista={inicial.filter((m) => m.bloco === "encerramento")} biblioteca={porId} veTom={veTom} />
       </>
     );
   }
