@@ -54,7 +54,7 @@ export function FotoPerfil({ nome, inicial }: { nome: string; inicial: string | 
           </button>
         )}
         {erro && <p className="text-sm text-red-600">{erro}</p>}
-        <p className="text-xs text-neutral-500">Seus colegas de escala veem sua foto no “Time de hoje”, e usamos no seu aniversário. 🎂</p>
+        <p className="text-xs text-neutral-500">Sua foto aparece no “Time de hoje” para quem serve com você e na surpresa de aniversário. 🎂</p>
       </div>
     </section>
   );
