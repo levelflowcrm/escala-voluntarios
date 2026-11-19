@@ -8,7 +8,7 @@ import { BarrasLista, Colunas, Numero } from "./graficos";
 
 const dm = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, day: "2-digit", month: "2-digit" });
 
-export default async function Metricas({ searchParams }: { searchParams: Promise<{ periodo?: string; tipo?: string }> }) {
+export default async function Metricas({ searchParams }: { searchParams: Promise<{ periodo?: string; tipo?: string; serie?: string }> }) {
   const sp = await searchParams;
   const supabase = await criarClienteServidor();
   const { data: eu } = await supabase.rpc("minha_pessoa");
@@ -34,6 +34,15 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
       const v = valor(f);
       return { rotulo: dm.format(new Date(f.inicio)), valor: v, dica: `${f.titulo} · ${fmtDataHora.format(new Date(f.inicio))}: ${v == null ? "não contado" : `${fmtNum(v)} ${unidade}`}` };
     });
+  const SERIES = [
+    { id: "presentes", nome: "Presentes", unidade: "presentes", valor: (f: (typeof fichas)[number]) => presentes(f, ctx.cadeiras) },
+    { id: "online", nome: "Online", unidade: "online", valor: (f: (typeof fichas)[number]) => f.online },
+    { id: "sim", nome: "Sim pra Jesus", unidade: "decisões", valor: (f: (typeof fichas)[number]) => f.simPraJesus },
+    { id: "voluntarios", nome: "Voluntários", unidade: "voluntários", valor: voluntariosManual },
+    { id: "veiculos", nome: "Veículos", unidade: "veículos", valor: veiculos },
+  ];
+  const serie = SERIES.find((s) => s.id === sp.serie) ?? SERIES[0];
+  const href = (o: { serie: string }) => `/metricas?${new URLSearchParams({ periodo: String(periodo), ...(tipo ? { tipo } : {}), serie: o.serie })}`;
   const semFicha = fichas.filter((f) => !f.contado).length;
 
   return (
@@ -66,15 +75,16 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
       ) : (
         <>
           <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Numero destaque rotulo="Presentes (média)" valor={fmtNum(r.presentesMedia)} variacao={variacao(r.presentesMedia, ant.presentesMedia)}
-              detalhe={r.ocupacaoMedia != null ? `${fmtNum(r.ocupacaoMedia, 1)}% das cadeiras${r.presentesMax ? ` · maior: ${fmtNum(r.presentesMax.valor)}` : ""}` : "Conte as cadeiras vazias da Nave e da Galeria"} />
-            <Numero rotulo="Online (média)" valor={fmtNum(r.onlineMedia)} variacao={variacao(r.onlineMedia, ant.onlineMedia)} detalhe="Assistindo no YouTube" />
-            <Numero rotulo="Sim pra Jesus" valor={fmtNum(r.simPraJesusTotal)} variacao={variacao(r.simPraJesusTotal, ant.simPraJesusTotal)} detalhe="No apelo, no período" />
-            <Numero rotulo="Visitantes" valor={fmtNum(r.visitantesTotal)} variacao={variacao(r.visitantesTotal, ant.visitantesTotal)} detalhe="No período" />
-            <Numero rotulo="Voluntários (média)" valor={fmtNum(r.voluntariosManualMedia, 1)} variacao={variacao(r.voluntariosManualMedia, ant.voluntariosManualMedia)}
-              detalhe={<>Contagem manual · auto (Cheguei): {fmtNum(r.voluntariosAutoMedia, 1)}{r.voluntariosPor100 != null && <> · {fmtNum(r.voluntariosPor100, 1)} por 100 presentes</>}</>} />
-            <Numero rotulo="Estacionamento (média)" valor={`${fmtNum(r.carrosMedia)} 🚗`} detalhe={`${fmtNum(r.motosMedia)} 🏍️ motos`} />
+            <Numero destaque rotulo="Presentes · média por culto" valor={fmtNum(r.presentesMedia)} variacao={variacao(r.presentesMedia, ant.presentesMedia)}
+              detalhe={r.presentesTotal != null ? `Total: ${fmtNum(r.presentesTotal)} em ${r.cultosComPublico} ${r.cultosComPublico === 1 ? "culto" : "cultos"} · ${fmtNum(r.ocupacaoMedia, 1)}% das cadeiras` : "Conte as cadeiras vazias da Nave e da Galeria"} />
+            <Numero rotulo="Online · média por culto" valor={fmtNum(r.onlineMedia)} variacao={variacao(r.onlineMedia, ant.onlineMedia)} detalhe={r.onlineTotal != null ? `Total: ${fmtNum(r.onlineTotal)} · YouTube` : "YouTube"} />
+            <Numero rotulo="Sim pra Jesus · total" valor={fmtNum(r.simPraJesusTotal)} variacao={variacao(r.simPraJesusTotal, ant.simPraJesusTotal)} detalhe="Decisões no apelo, no período" />
+            <Numero rotulo="Visitantes · total" valor={fmtNum(r.visitantesTotal)} variacao={variacao(r.visitantesTotal, ant.visitantesTotal)} detalhe="No período" />
+            <Numero rotulo="Voluntários · média por culto" valor={fmtNum(r.voluntariosManualMedia, 1)} variacao={variacao(r.voluntariosManualMedia, ant.voluntariosManualMedia)}
+              detalhe={<>Manual · auto (Cheguei): {fmtNum(r.voluntariosAutoMedia, 1)}{r.voluntariosPor100 != null && <> · {fmtNum(r.voluntariosPor100, 1)} por 100 presentes</>}</>} />
+            <Numero rotulo="Estacionamento · média" valor={`${fmtNum(r.carrosMedia)} 🚗`} detalhe={`${fmtNum(r.motosMedia)} 🏍️ motos`} />
           </section>
+          <p className="-mt-3 text-xs text-neutral-500">Média = soma dividida pelos cultos que foram contados, para comparar períodos com quantidades diferentes de cultos. Sim pra Jesus e visitantes aparecem como total.</p>
 
           {semFicha > 0 && (
             <p className="rounded-xl bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
@@ -82,28 +92,14 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
             </p>
           )}
 
-          <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-            <h2 className="font-medium">Presentes por culto</h2>
-            <Colunas titulo="Presentes por culto" itens={itens((f) => presentes(f, ctx.cadeiras), "presentes")} referencia={{ valor: ctx.cadeiras, rotulo: `${fmtNum(ctx.cadeiras)} cadeiras` }} />
+          <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
+            <div className="flex flex-wrap gap-2 text-sm">
+              {SERIES.map((s) => (
+                <Link key={s.id} href={href({ serie: s.id })} className={`rounded-full px-3 py-1 ${s.id === serie.id ? "bg-blue-600 text-white" : "border border-neutral-300 dark:border-neutral-700"}`}>{s.nome}</Link>
+              ))}
+            </div>
+            <Colunas titulo={`${serie.nome} por culto`} itens={itens(serie.valor, serie.unidade)} referencia={serie.id === "presentes" ? { valor: ctx.cadeiras, rotulo: `${fmtNum(ctx.cadeiras)} cadeiras` } : undefined} />
           </section>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-              <h2 className="font-medium">Online (YouTube)</h2>
-              <Colunas titulo="Online por culto" itens={itens((f) => f.online, "online")} />
-            </section>
-            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-              <h2 className="font-medium">Sim pra Jesus</h2>
-              <Colunas titulo="Sim pra Jesus por culto" itens={itens((f) => f.simPraJesus, "decisões")} />
-            </section>
-            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-              <h2 className="font-medium">Voluntários (contagem manual)</h2>
-              <Colunas titulo="Voluntários por culto" itens={itens(voluntariosManual, "voluntários")} />
-            </section>
-            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-              <h2 className="font-medium">Veículos (carros + motos)</h2>
-              <Colunas titulo="Veículos por culto" itens={itens(veiculos, "veículos")} />
-            </section>
-          </div>
 
           <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
             <h2 className="font-medium">Voluntários por área (média por culto)</h2>
@@ -113,9 +109,15 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
           <section className="flex flex-col gap-2">
             <h2 className="font-medium">Eventos do período</h2>
             <div className="overflow-x-auto rounded-2xl border border-neutral-200 dark:border-neutral-800">
-              <table className="w-full min-w-[34rem] text-sm">
+              <table className="w-full min-w-[30rem] text-sm">
                 <thead className="text-left text-xs uppercase text-neutral-500">
-                  <tr><th className="p-3">Evento</th><th className="p-3 text-right">Presentes</th><th className="p-3 text-right">Online</th><th className="p-3 text-right">Volunt.</th><th className="p-3 text-right">Auto</th><th className="p-3 text-right">Sim</th></tr>
+                  <tr>
+                    <th className="p-3">Evento</th>
+                    <th className="p-3 text-right">Presentes</th>
+                    <th className="p-3 text-right">Voluntários<br /><span className="font-normal normal-case">manual · auto</span></th>
+                    <th className="p-3 text-right">Online</th>
+                    <th className="p-3 text-right">Sim</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {[...fichas].reverse().map((f) => {
@@ -124,9 +126,8 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
                       <tr key={f.id} className="border-t border-neutral-200 dark:border-neutral-800">
                         <td className="p-3"><Link href={`/metricas/${f.id}`} className="underline">{f.titulo}</Link><br /><span className="text-xs capitalize text-neutral-500">{fmtDataHora.format(new Date(f.inicio))}{f.contado ? "" : " · sem contagem"}</span></td>
                         <td className="p-3 text-right tabular-nums">{fmtNum(p)}{p != null && <span className="block text-xs text-neutral-500">{fmtNum(ocupacao(p, ctx.cadeiras), 1)}%</span>}</td>
+                        <td className="p-3 text-right tabular-nums">{fmtNum(voluntariosManual(f))} <span className="text-neutral-400">·</span> {fmtNum(f.autoPresentes)}</td>
                         <td className="p-3 text-right tabular-nums">{fmtNum(f.online)}</td>
-                        <td className="p-3 text-right tabular-nums">{fmtNum(voluntariosManual(f))}</td>
-                        <td className="p-3 text-right tabular-nums">{fmtNum(f.autoPresentes)}</td>
                         <td className="p-3 text-right tabular-nums">{fmtNum(f.simPraJesus)}</td>
                       </tr>
                     );

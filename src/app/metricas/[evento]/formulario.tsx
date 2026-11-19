@@ -12,15 +12,14 @@ type Inicial = {
 
 const txt = (n: number | null | undefined) => (n == null ? "" : String(n));
 
-function Campo({ rotulo, dica, valor, aoMudar, erro }: { rotulo: string; dica?: string; valor: string; aoMudar: (v: string) => void; erro?: boolean }) {
+function Campo({ rotulo, valor, aoMudar, erro }: { rotulo: string; valor: string; aoMudar: (v: string) => void; erro?: boolean }) {
   return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="font-medium">{rotulo}</span>
+    <label className="flex min-w-0 flex-col gap-1 text-xs font-medium text-neutral-600 dark:text-neutral-300">
+      <span className="truncate">{rotulo}</span>
       <input
         inputMode="numeric" value={valor} onChange={(e) => aoMudar(e.target.value)} placeholder="–"
-        className={`h-12 rounded-xl border bg-transparent px-3 text-lg tabular-nums ${erro ? "border-rose-500" : "border-neutral-300 dark:border-neutral-700"}`}
+        className={`h-11 w-full rounded-lg border bg-transparent px-2 text-base font-normal tabular-nums text-inherit ${erro ? "border-rose-500" : "border-neutral-300 dark:border-neutral-700"}`}
       />
-      {dica && <span className="text-xs text-neutral-500">{dica}</span>}
     </label>
   );
 }
@@ -61,53 +60,47 @@ export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto }: {
 
   const set = (k: keyof typeof v) => (x: string) => setV((o) => ({ ...o, [k]: x }));
   return (
-    <div className="flex flex-col gap-6">
-      <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-        <h2 className="font-medium">Público presente</h2>
-        <p className="text-xs text-neutral-500">Conte as cadeiras vazias de cada setor. Deixe em branco o que ainda não contou.</p>
-        <div className="grid grid-cols-2 gap-3">
-          <Campo rotulo="Nave: vazias" valor={v.nave} aoMudar={set("nave")} erro={nave.erro} />
-          <Campo rotulo="Galeria: vazias" valor={v.galeria} aoMudar={set("galeria")} erro={galeria.erro} />
+    <div className="flex flex-col gap-3">
+      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-3 dark:border-neutral-800">
+        <h2 className="text-sm font-semibold">Cadeiras vazias</h2>
+        <div className="grid grid-cols-3 items-end gap-2">
+          <Campo rotulo="Nave" valor={v.nave} aoMudar={set("nave")} erro={nave.erro} />
+          <Campo rotulo="Galeria" valor={v.galeria} aoMudar={set("galeria")} erro={galeria.erro} />
+          <div className="flex h-11 flex-col justify-center rounded-lg bg-blue-50 px-2 dark:bg-blue-950/30">
+            <span className="text-[10px] uppercase leading-none text-neutral-500">Presentes</span>
+            <span className="text-lg font-semibold leading-tight tabular-nums">{fmtNum(pres)}</span>
+          </div>
         </div>
-        <div className="rounded-xl bg-blue-50 px-4 py-3 dark:bg-blue-950/30">
-          <p className="text-xs uppercase tracking-wide text-neutral-500">Presentes</p>
-          <p className="text-3xl font-semibold tabular-nums">{fmtNum(pres)}</p>
-          <p className="text-xs text-neutral-500">{pres == null ? "Preencha Nave e Galeria" : `${fmtNum(cadeiras)} cadeiras − ${fmtNum(nave.valor)} − ${fmtNum(galeria.valor)} · ${fmtNum(ocupacao(pres, cadeiras), 1)}% de ocupação`}</p>
-        </div>
+        {pres != null && <p className="text-xs text-neutral-500">{fmtNum(cadeiras)} − {fmtNum(nave.valor)} − {fmtNum(galeria.valor)} · {fmtNum(ocupacao(pres, cadeiras), 1)}% de ocupação</p>}
       </section>
 
-      <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-        <h2 className="font-medium">Voluntários por área</h2>
-        <div className="grid grid-cols-2 gap-3">
+      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-3 dark:border-neutral-800">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="text-sm font-semibold">Voluntários por área</h2>
+          <p className="text-xs text-neutral-500">Manual <strong className="text-base tabular-nums text-inherit">{fmtNum(manual)}</strong> · Auto <strong className="text-base tabular-nums text-inherit">{fmtNum(auto.presentes)}</strong>{auto.escalados != null && <span> de {fmtNum(auto.escalados)}</span>}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
           {areas.map((a) => (
             <Campo key={a.id} rotulo={a.nome} valor={qtdAreas[a.id] ?? ""} aoMudar={(x) => setQtdAreas((o) => ({ ...o, [a.id]: x }))} erro={areasNum.find((z) => z.id === a.id)?.erro} />
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-blue-50 px-4 py-3 dark:bg-blue-950/30">
-            <p className="text-xs uppercase tracking-wide text-neutral-500">Contagem manual</p>
-            <p className="text-3xl font-semibold tabular-nums">{fmtNum(manual)}</p>
-          </div>
-          <div className="rounded-xl bg-neutral-100 px-4 py-3 dark:bg-neutral-900">
-            <p className="text-xs uppercase tracking-wide text-neutral-500">Contagem auto</p>
-            <p className="text-3xl font-semibold tabular-nums">{fmtNum(auto.presentes)}</p>
-            <p className="text-xs text-neutral-500">{auto.escalados == null ? "Sem escalados" : `apertaram Cheguei, de ${fmtNum(auto.escalados)} escalados`}</p>
-          </div>
+      </section>
+
+      <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 p-3 dark:border-neutral-800">
+        <h2 className="text-sm font-semibold">Outras contagens</h2>
+        <div className="grid grid-cols-3 gap-2">
+          <Campo rotulo="Online" valor={v.online} aoMudar={set("online")} erro={campos[0].erro} />
+          <Campo rotulo="Visitantes" valor={v.visitantes} aoMudar={set("visitantes")} erro={campos[1].erro} />
+          <Campo rotulo="Sim pra Jesus" valor={v.sim} aoMudar={set("sim")} erro={campos[2].erro} />
+          <Campo rotulo="Carros" valor={v.carros} aoMudar={set("carros")} erro={campos[5].erro} />
+          <Campo rotulo="Motos" valor={v.motos} aoMudar={set("motos")} erro={campos[6].erro} />
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-3 rounded-2xl border border-neutral-200 p-4 dark:border-neutral-800">
-        <h2 className="col-span-2 font-medium">Outras contagens</h2>
-        <Campo rotulo="Online (YouTube)" valor={v.online} aoMudar={set("online")} erro={campos[0].erro} />
-        <Campo rotulo="Visitantes" valor={v.visitantes} aoMudar={set("visitantes")} erro={campos[1].erro} />
-        <Campo rotulo="Sim pra Jesus" dica="Decisões no apelo" valor={v.sim} aoMudar={set("sim")} erro={campos[2].erro} />
-        <span />
-        <Campo rotulo="Carros" valor={v.carros} aoMudar={set("carros")} erro={campos[5].erro} />
-        <Campo rotulo="Motos" valor={v.motos} aoMudar={set("motos")} erro={campos[6].erro} />
-      </section>
-
-      {msg && <p className={`text-sm ${msg.ok ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{msg.texto}</p>}
-      <button onClick={salvar} disabled={ocupado} className="h-12 rounded-xl bg-blue-600 font-medium text-white disabled:opacity-60">{ocupado ? "Salvando…" : "Salvar contagem"}</button>
+      <div className="sticky bottom-0 -mx-4 flex flex-col gap-2 bg-white/95 px-4 pb-4 pt-2 backdrop-blur dark:bg-black/90">
+        {msg && <p className={`text-sm ${msg.ok ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{msg.texto}</p>}
+        <button onClick={salvar} disabled={ocupado} className="h-12 rounded-xl bg-blue-600 font-medium text-white disabled:opacity-60">{ocupado ? "Salvando…" : "Salvar contagem"}</button>
+      </div>
     </div>
   );
 }
