@@ -23,10 +23,10 @@ SQL Editor do Supabase **antes** do merge que as usa.
 ## Telas prontas
 
 - Início (minhas escalas, Confirmar / Não posso)
-- Montar escala (coordenador): criar cultos, sugerir, publicar, definir titular
+- Montar escala (facilitador): criar cultos, sugerir, publicar, definir titular
 - Minha disponibilidade (turnos, viagens/ausências)
 - Vagas abertas (assumir data recusada por outro voluntário)
-- Voluntários (coordenador cadastra o e-mail de login de cada um)
+- Voluntários (facilitador cadastra o e-mail de login de cada um)
 - Meu perfil (nome completo, celular, aniversário)
 
 ## Próximos passos
@@ -39,16 +39,16 @@ SQL Editor do Supabase **antes** do merge que as usa.
 4. Ficam de fora do escopo: o **Quiz** (decidido em 16/11). Pendentes: WhatsApp D-1
    (depende da integração SprintHub/Uazapi) e extras do calendário (novo evento,
    "Você serviu este mês").
-5. Cadastro de funções de Projeção e Iluminação e seus coordenadores.
+5. Cadastro de funções de Projeção e Iluminação e seus facilitadores.
 
 ## Pendências de segurança
 
 - Revogar o token `sbp_fc48...` colado no chat antes
   (https://supabase.com/dashboard/account/tokens).
-- Contas vazias barradas (migração 29, 17/11): só e-mail já cadastrado em `pessoas` consegue criar conta de login. O coordenador precisa cadastrar o e-mail **antes** do primeiro acesso; quem tentar sem cadastro vê a mensagem na tela de entrada.
+- Contas vazias barradas (migração 29, 17/11): só e-mail já cadastrado em `pessoas` consegue criar conta de login. O facilitador precisa cadastrar o e-mail **antes** do primeiro acesso; quem tentar sem cadastro vê a mensagem na tela de entrada.
 - Login: **só Google** (decidido em 16/11). O link por e-mail foi removido porque o e-mail padrão do Supabase só atende a equipe do projeto. Se algum voluntário não tiver conta Google, configurar SMTP próprio (Resend/Brevo) e reativar.
 - A proteção de colunas de `pessoas` já existe (migração `20261116000003`, teste `protege_pessoas.sql`).
 
 ## Eventos (17/11)
 
-Todo evento aparece na Agenda e na escala; só o master cria/edita eventos, cultos fixos e pausas; cada coordenador pode dispensar o evento para o próprio ministério (migração 30). Ver `docs/REGRAS.md`, seção Eventos.
+Todo evento aparece na Agenda e na escala; só o master cria/edita eventos, cultos fixos e pausas; cada facilitador pode dispensar o evento para o próprio ministério (migração 30). Ver `docs/REGRAS.md`, seção Eventos.

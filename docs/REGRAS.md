@@ -1,15 +1,15 @@
 # Regras de negócio
 
-Combinadas com o coordenador da Transmissão em 04/11/2026.
+Combinadas com o facilitador da Transmissão em 04/11/2026.
 
 ## Ministérios do piloto
 
-| Ministério | Coordenador | Funções |
+| Ministério | Facilitador | Funções |
 |---|---|---|
 | Transmissão | Luciano | DTV-Transmissão, Câmera Black, Câmera Grua, Câmera Móvel |
 | Projeção | (a definir) | Holyrics, Resolume (2 voluntários por culto/evento, 1 em cada) |
-| Iluminação | (a definir) | (a definir com o coordenador) |
-| Produção | (a definir) | (a definir com o coordenador) |
+| Iluminação | (a definir) | (a definir com o facilitador) |
+| Produção | (a definir) | (a definir com o facilitador) |
 
 ## Escala
 
@@ -29,7 +29,7 @@ Combinadas com o coordenador da Transmissão em 04/11/2026.
    toda, com confirmação de presença.
 7. Quem **recusa** libera a vaga para outra pessoa, e o histórico da recusa
    fica guardado.
-8. A escala fica em **rascunho** (só o coordenador vê) até ser **publicada**.
+8. A escala fica em **rascunho** (só o facilitador vê) até ser **publicada**.
 
 ## Sugestão automática
 
@@ -67,7 +67,7 @@ As funções com menos gente habilitada são preenchidas primeiro.
 
 ## Pendências para confirmar
 
-- Coordenadores e funções de Projeção e Iluminação.
+- Facilitadores e funções de Projeção e Iluminação.
 
 ## Disponibilidade
 
@@ -86,17 +86,17 @@ Atalhos: **Todos os dias**, **Só fins de semana** (sábado e domingo) e **Só d
 
 ## Eventos
 
-- **Só o administrador master** (levelflowcrm@gmail.com) cria, altera, cancela e colore eventos, cultos fixos e pausas. Coordenadores não criam eventos.
+- **Só o administrador master** (levelflowcrm@gmail.com) cria, altera, cancela e colore eventos, cultos fixos e pausas. Facilitadores não criam eventos.
 - **Todo evento entra na Agenda da igreja e na escala de todos os ministérios** (o antigo "só agenda" deixou de existir).
-- **Dispensar:** o coordenador pode dispensar um evento para o PRÓPRIO ministério ("Meu time não serve neste evento"). O evento some da escala dele, fica em "Dispensados" e dá para voltar a escalar. Não dá para dispensar com gente escalada (tire as pessoas antes); recusas antigas são limpas.
-- **Voluntário em vários ministérios:** cada coordenador monta o seu time, mas a mesma pessoa **nunca** fica duas vezes no mesmo evento (o banco barra). Na escolha da vaga, quem já foi escalado por outro ministério aparece desativado com "já escalado em <ministério>", e o "Criar automático" também pula essas pessoas.
+- **Dispensar:** o facilitador pode dispensar um evento para o PRÓPRIO ministério ("Meu time não serve neste evento"). O evento some da escala dele, fica em "Dispensados" e dá para voltar a escalar. Não dá para dispensar com gente escalada (tire as pessoas antes); recusas antigas são limpas.
+- **Voluntário em vários ministérios:** cada facilitador monta o seu time, mas a mesma pessoa **nunca** fica duas vezes no mesmo evento (o banco barra). Na escolha da vaga, quem já foi escalado por outro ministério aparece desativado com "já escalado em <ministério>", e o "Criar automático" também pula essas pessoas.
 
 ## Erros e sugestões do app
 
 - Qualquer pessoa cadastrada registra um **erro** ou uma **sugestão** sobre o próprio app em `/mensagens` (link "Erro ou ideia do app" no rodapé da tela inicial). O nome do autor vai junto.
 - Quem recebe e acompanha (Nova → Vista → Resolvida) é **só o administrador master** (levelflowcrm@gmail.com); na tela inicial dele aparece um aviso com as mensagens novas. O autor vê só o que enviou.
 - O master também recebe um **aviso por WhatsApp** (mesma fila e limites dos outros avisos; precisa de celular válido no cadastro dele; não avisa sobre mensagem que ele mesmo enviou).
-- Diferente de "Sugestões", que vão para o coordenador do ministério.
+- Diferente de "Sugestões", que vão para o facilitador do ministério.
 
 ## Minhas escalas
 
@@ -108,16 +108,16 @@ Atalhos: **Todos os dias**, **Só fins de semana** (sábado e domingo) e **Só d
 
 ## Permissões
 
-- A tela mostra, para cada pessoa, o que ela é no app (Administrador master, Administrador, Coordenador, Voluntário ou Sem time) e em quais times está (com "· coordena" onde coordena). Quem não tem nenhuma marcação é usuário comum; participar de um time é definido em Voluntários, e desmarcar a coordenação deixa a pessoa no time como voluntária.
+- A tela mostra, para cada pessoa, o que ela é no app (Administrador master, Administrador, Facilitador, Voluntário ou Sem time) e em quais times está (com "· coordena" onde coordena). Quem não tem nenhuma marcação é usuário comum; participar de um time é definido em Voluntários, e desmarcar a coordenação deixa a pessoa no time como voluntária.
 
 ## Aniversariantes
 
-- O coordenador vê o ícone 🎂 no topo da tela inicial (`/aniversariantes`): quem faz aniversário hoje, nos próximos 30 dias (passando pela virada do ano) e todos do mês. Só aparecem os voluntários dos ministérios que ele coordena; a data vem do Perfil de cada pessoa (quem não preencheu é contado no rodapé).
+- O facilitador vê o ícone 🎂 no topo da tela inicial (`/aniversariantes`): quem faz aniversário hoje, nos próximos 30 dias (passando pela virada do ano) e todos do mês. Só aparecem os voluntários dos ministérios que ele coordena; a data vem do Perfil de cada pessoa (quem não preencheu é contado no rodapé).
 
 ## Pontuação do voluntário
 
 Janela dos **últimos 90 dias**, só de escalas publicadas. Cada pessoa vê a
-própria; o coordenador vê a de quem está nos ministérios que coordena. Não há
+própria; o facilitador vê a de quem está nos ministérios que facilita. Não há
 ranking público.
 
 | Item | Pontos |
@@ -145,12 +145,12 @@ resumo por culto, com 3 respostas ou mais. Na rotina diária das 21h (Brasília;
 ## Cheguei
 
 O botão abre 3 h antes do início e fecha 4 h depois. Marca a escala como
-confirmada e avisa o coordenador (sino e "Chegadas de hoje").
+confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 
 ## Avisos por WhatsApp
-- **Ligado por padrão para todos com celular cadastrado** (sem opção de desligar no perfil); o sino do app continua. Quem pedir para parar: o coordenador limpa o celular na tela Voluntários.
+- **Ligado por padrão para todos com celular cadastrado** (sem opção de desligar no perfil); o sino do app continua. Quem pedir para parar: o facilitador limpa o celular na tela Voluntários.
 - O banco só **enfileira** (`fila_whatsapp`, privada); o app envia pela Uazapi (instância "Mais Conectados") logo após a ação e numa rotina diária (21h, horário de Brasília; o plano gratuito da Vercel roda uma vez por dia, em qualquer minuto dessa hora).
-- Quando avisa: **chegada** (coordenadores do ministério), **troca pedida** (colega) e **troca aceita/recusada** (quem pediu), **escala publicada** (quem foi escalado, 1 mensagem por pessoa por ministério por hora), **lembrete de véspera** (1 mensagem por pessoa com a lista do dia seguinte; pede confirmação se faltar).
+- Quando avisa: **chegada** (facilitadores do ministério), **troca pedida** (colega) e **troca aceita/recusada** (quem pediu), **escala publicada** (quem foi escalado, 1 mensagem por pessoa por ministério por hora), **lembrete de véspera** (1 mensagem por pessoa com a lista do dia seguinte; pede confirmação se faltar).
 - Proteções: interruptor `WHATSAPP_ATIVO` (só `true` envia); máx. 10 envios por ação / 30 por rotina; máx. 4 mensagens por pessoa por dia; mensagem com mais de 12 h na fila expira em vez de ser enviada atrasada; textos variam; sem celular válido, não entra na fila.
 - Ainda não avisa: vagas abertas (próximo passo, para não gerar volume).
 
@@ -167,3 +167,7 @@ confirmada e avisa o coordenador (sino e "Chegadas de hoje").
 - Renomear vale para os eventos já criados (eles apontam para o tipo, não para o texto). Desativar tira o tipo da lista de novos eventos, sem apagar o histórico.
 - A cor do evento: a escolhida no evento, senão a cor padrão do tipo, senão nenhuma.
 - Cultos fixos da semana (com dia e hora) continuam em Cultos fixos e não aparecem na lista de tipos da agenda.
+
+## Nome do papel: facilitador
+
+- Na tela e nas mensagens, quem cuida de um ministério se chama **facilitador** (antes "coordenador"). No banco o papel continua gravado como `coordenador`, só o texto mudou.

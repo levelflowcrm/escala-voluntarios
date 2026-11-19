@@ -12,7 +12,7 @@ export default async function SemCadastro() {
       <h1 className="text-xl font-semibold">Quase lá!</h1>
       <p className="text-neutral-500">
         O e-mail <strong className="text-neutral-800 dark:text-neutral-200">{user?.email}</strong> ainda não está ligado
-        a nenhum voluntário. Mande esse e-mail para o coordenador do seu ministério cadastrar, e depois entre de novo.
+        a nenhum voluntário. Mande esse e-mail para o facilitador do seu ministério cadastrar, e depois entre de novo.
       </p>
       <form action={sair}>
         <button className="h-11 w-full rounded-xl border border-neutral-300 font-medium dark:border-neutral-700">

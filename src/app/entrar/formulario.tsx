@@ -27,7 +27,7 @@ export function FormularioEntrar() {
         </svg>
         Entrar com Google
       </button>
-      <p className="text-center text-xs text-neutral-500">Use o mesmo e-mail Google que o seu coordenador cadastrou.</p>
+      <p className="text-center text-xs text-neutral-500">Use o mesmo e-mail Google que o seu facilitador cadastrou.</p>
     </div>
   );
 }

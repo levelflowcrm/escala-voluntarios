@@ -48,7 +48,7 @@ export default async function Inicio() {
     .select("id", { count: "exact", head: true })
     .gt("criado_em", desde)
     .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
-  // Coordenador: quem avisou "Cheguei" depois da última visita também acende o sino.
+  // Facilitador: quem avisou "Cheguei" depois da última visita também acende o sino.
   let chegadasNovas = 0;
   if (coordenador) {
     const { data: ch } = await supabase.rpc("chegadas_do_dia");
@@ -86,7 +86,7 @@ export default async function Inicio() {
 
   const servidasNoMes = doMes?.length ?? 0;
 
-  // Coordenador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
+  // Facilitador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
   let pendencias = null;
   if (coordenador) {
     const limite = new Date(Date.now() + 30 * 86_400_000).toISOString();

@@ -289,7 +289,7 @@ export function TelaInicio({
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-neutral-500">Minhas próximas escalas</h2>
         {proximas.length === 0 && (
-          <p className="text-neutral-500">Nenhuma escala marcada. Quando o coordenador publicar, ela aparece aqui.</p>
+          <p className="text-neutral-500">Nenhuma escala marcada. Quando o facilitador publicar, ela aparece aqui.</p>
         )}
         {proximas.map((e) => cartao(e, true))}
       </section>

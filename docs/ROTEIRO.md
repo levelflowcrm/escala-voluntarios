@@ -16,7 +16,7 @@
 
 ## Etapa 2 – Montar escala
 - [ ] Gerar os cultos fixos do mês e adicionar eventos especiais
-- [ ] Calendário do coordenador com o status de cada evento
+- [ ] Calendário do facilitador com o status de cada evento
 - [ ] Botão "Sugerir escala do mês" e ajustes manuais
 - [ ] Contador de serviços por pessoa enquanto monta
 

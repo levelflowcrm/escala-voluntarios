@@ -18,7 +18,7 @@ export type PessoaPerm = {
 function funcaoNoApp(p: PessoaPerm): string {
   if (p.master) return "Administrador master";
   if (p.admin) return "Administrador";
-  if (p.coordena.length > 0) return "Coordenador";
+  if (p.coordena.length > 0) return "Facilitador";
   return p.times.length > 0 ? "Voluntário" : "Sem time";
 }
 
@@ -83,7 +83,7 @@ export function TelaPermissoes({
                       : "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                   }`}
                 >
-                  {x.nome}{x.papel === "coordenador" ? " · coordena" : ""}
+                  {x.nome}{x.papel === "coordenador" ? " · facilita" : ""}
                 </span>
               ))}
           </div>
@@ -100,7 +100,7 @@ export function TelaPermissoes({
             {ministerios.map((m) => (
               <Chave
                 key={m.id}
-                rotulo={`Coordena ${m.nome}`}
+                rotulo={`Facilita ${m.nome}`}
                 ligado={p.coordena.includes(m.id)}
                 desabilitado={ocupado}
                 aoMudar={() => rodar(() => definirCoordenador(p.pessoa_id, m.id, !p.coordena.includes(m.id)))}
