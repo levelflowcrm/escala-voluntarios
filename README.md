@@ -1,6 +1,6 @@
 # Escala de Voluntários
 
-App para gerenciar a escala dos voluntários da igreja: coordenadores montam a
+App para gerenciar a escala dos voluntários da igreja: facilitadores montam a
 escala com sugestão automática, e voluntários confirmam, recusam e informam a
 própria disponibilidade.
 
@@ -26,7 +26,7 @@ scripts/
 src/lib/escala/
   sugerir.ts         motor de sugestão automática da escala
 docs/
-  REGRAS.md          regras de negócio combinadas com os coordenadores
+  REGRAS.md          regras de negócio combinadas com os facilitadores
   ROTEIRO.md         etapas do projeto
   PUBLICAR.md        passo a passo para colocar no ar (Supabase, Vercel, Google)
 ```

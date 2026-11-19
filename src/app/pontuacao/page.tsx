@@ -92,7 +92,7 @@ export default async function PaginaPontuacao() {
           <strong>{p?.sequencia ?? 0}</strong>
         </p>
         <p className="mt-2 text-xs text-neutral-500">
-          Só você e o seu coordenador veem a sua pontuação. Não existe ranking público: a ideia é reconhecer quem serve com constância, não competir.
+          Só você e o seu facilitador veem a sua pontuação. Não existe ranking público: a ideia é reconhecer quem serve com constância, não competir.
         </p>
       </section>
 

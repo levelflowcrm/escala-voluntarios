@@ -38,7 +38,7 @@ function Formulario({ ministerios }: { ministerios: { id: string; nome: string }
           ))}
         </select>
       )}
-      <textarea className={`${campo} py-2`} rows={4} maxLength={1000} placeholder="Conte para a coordenação" value={texto} onChange={(e) => setTexto(e.target.value)} />
+      <textarea className={`${campo} py-2`} rows={4} maxLength={1000} placeholder="Conte para o facilitador" value={texto} onChange={(e) => setTexto(e.target.value)} />
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={anonima} onChange={(e) => setAnonima(e.target.checked)} className="h-4 w-4" />
         Enviar sem me identificar

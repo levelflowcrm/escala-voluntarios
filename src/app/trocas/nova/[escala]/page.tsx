@@ -35,7 +35,7 @@ export default async function NovaTroca({ params }: { params: Promise<{ escala: 
       <section className="flex flex-col gap-2 rounded-2xl border border-violet-300 p-4 dark:border-violet-800">
         <h2 className="font-medium">Abrir a vaga para o time</h2>
         <p className="text-sm text-neutral-500">
-          Você deixa esta data e a vaga fica aberta. Os colegas aptos e disponíveis são avisados por WhatsApp e pelo app, e o primeiro que aceitar assume. O coordenador acompanha pelas vagas abertas.
+          Você deixa esta data e a vaga fica aberta. Os colegas aptos e disponíveis são avisados por WhatsApp e pelo app, e o primeiro que aceitar assume. O facilitador acompanha pelas vagas abertas.
         </p>
         <BotaoAcao rotulo="Abrir a vaga" destaque operacao={{ tipo: "abrirVaga", escala }} voltarPara="/" confirmar="Abrir a vaga? Você deixa de ficar escalado(a) nesta data e os colegas aptos serão avisados." />
       </section>

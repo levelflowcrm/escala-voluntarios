@@ -18,7 +18,7 @@ export async function publicar(ministerioId: string, titulo: string, texto: stri
   const { error } = await supabase
     .from("comunicados")
     .insert({ ministerio_id: ministerioId, autor_id: eu, titulo: titulo.trim(), texto: texto.trim() });
-  if (error) return { erro: "Não foi possível publicar (só coordenadores publicam)" };
+  if (error) return { erro: "Não foi possível publicar (só facilitadores publicam)" };
   atualizar();
   return { erro: null };
 }

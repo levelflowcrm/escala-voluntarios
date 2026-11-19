@@ -16,7 +16,7 @@ export default async function Permissoes() {
     supabase.from("ministerios").select("id, nome").order("nome"),
     supabase.from("membros_ministerio").select("pessoa_id, ministerio_id, papel"),
   ]);
-  // Em quais times cada pessoa está (como voluntário ou coordenador)
+  // Em quais times cada pessoa está (como voluntário ou facilitador)
   const times: Record<string, { ministerioId: string; papel: string }[]> = {};
   for (const m of (membros ?? []) as { pessoa_id: string; ministerio_id: string; papel: string }[]) {
     (times[m.pessoa_id] ??= []).push({ ministerioId: m.ministerio_id, papel: m.papel });
@@ -27,7 +27,7 @@ export default async function Permissoes() {
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Permissões</h1>
       <p className="text-sm text-neutral-500">
-        Administradores têm acesso total. Coordenadores montam a escala do ministério e cuidam do time.
+        Administradores têm acesso total. Facilitadores montam a escala do ministério e cuidam do time.
         {!master && " Só o administrador master promove outros administradores."}
       </p>
       <TelaPermissoes

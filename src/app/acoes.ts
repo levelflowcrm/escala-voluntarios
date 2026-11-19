@@ -37,7 +37,7 @@ export async function registrarChegada(escalaId: string, lat: number, lng: numbe
     p_lng: lng,
     p_precisao: precisao !== null && Number.isFinite(precisao) ? precisao : null,
   });
-  if (!error) after(() => despacharFila()); // avisa os coordenadores por WhatsApp
+  if (!error) after(() => despacharFila()); // avisa os facilitadores por WhatsApp
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }

@@ -27,7 +27,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
       {erro && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           {erro === "sem-cadastro"
-            ? "Este e-mail ainda não está cadastrado. Peça ao coordenador do seu ministério para cadastrar o seu Gmail e entre de novo."
+            ? "Este e-mail ainda não está cadastrado. Peça ao facilitador do seu ministério para cadastrar o seu Gmail e entre de novo."
             : "Não foi possível entrar. Tente de novo com o botão abaixo."}
         </p>
       )}
@@ -45,7 +45,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
           <li>informar disponibilidade e receber comunicados e avisos do seu ministério.</li>
         </ul>
         <p className="text-neutral-500">
-          O acesso é liberado pela coordenação da sua igreja. Usamos apenas seu nome e e-mail do Google para identificar você.
+          O acesso é liberado pelos facilitadores da sua igreja. Usamos apenas seu nome e e-mail do Google para identificar você.
         </p>
       </section>
       <p className="text-center text-xs text-neutral-500">

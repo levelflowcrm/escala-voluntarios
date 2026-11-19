@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { salvarPreferencias } from "./acoes";
 
-/** Preferências: limite de serviços por mês e recado ao coordenador. */
+/** Preferências: limite de serviços por mês e recado ao facilitador. */
 export function Preferencias({ limite, observacao }: { limite: number | null; observacao: string }) {
   const [valor, setValor] = useState(limite === null ? "" : String(limite));
   const [nota, setNota] = useState(observacao);
@@ -24,11 +24,11 @@ export function Preferencias({ limite, observacao }: { limite: number | null; ob
         </select>
       </label>
       <label className="flex flex-col gap-1 text-sm">
-        Recado para o coordenador (opcional)
+        Recado para o facilitador (opcional)
         <textarea className={`${campo} h-20 py-2`} maxLength={200} value={nota} onChange={(e) => setNota(e.target.value)} placeholder="Ex.: prefiro cultos de domingo" />
       </label>
       <p className="text-xs text-neutral-500">
-        A sugestão automática respeita o limite. O coordenador ainda pode te escalar manualmente se precisar.
+        A sugestão automática respeita o limite. O facilitador ainda pode te escalar manualmente se precisar.
       </p>
       <button
         disabled={ocupado}

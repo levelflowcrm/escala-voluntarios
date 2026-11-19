@@ -72,7 +72,7 @@ export default async function Montar({ searchParams }: { searchParams: Promise<{
     funcoes: { nome: string } | null;
   };
   const lista = (escalas ?? []) as unknown as LinhaEscala[];
-  // Quem já está escalado por OUTRO ministério em cada evento (o coordenador vê antes de tentar escalar)
+  // Quem já está escalado por OUTRO ministério em cada evento (o facilitador vê antes de tentar escalar)
   const ocupadosPorEvento = new Map<string, Record<string, string>>();
   for (const o of (escaladosPeriodo ?? []) as { evento_id: string; pessoa_id: string; ministerio_id: string; ministerio: string }[]) {
     if (o.ministerio_id === ministerio.id) continue;
