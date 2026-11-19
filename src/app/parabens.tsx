@@ -14,7 +14,7 @@ function horaEmBrasilia(): number {
  * Surpresa de aniversário: a partir das 9h (horário de Brasília), no dia do aniversário, a pessoa vê a própria foto
  * com uma chuva de confetes. Aparece uma vez por dia (lembra no aparelho); respeita "reduzir movimento".
  */
-export function Parabens({ nome, dia, foto }: { nome: string; dia: string; foto: string | null }) {
+export function Parabens({ nome, dia, foto, igreja }: { nome: string; dia: string; foto: string | null; igreja: string }) {
   const [aberto, setAberto] = useState(false);
   const chave = `parabens:${dia}`;
 
@@ -71,7 +71,7 @@ export function Parabens({ nome, dia, foto }: { nome: string; dia: string; foto:
         )}
         <h2 className="text-3xl font-bold">Feliz aniversário, {nome}! 🎂</h2>
         <p className="text-neutral-600 dark:text-neutral-300">
-          A igreja agradece a Deus pela sua vida e por você servir com a gente. Que o seu novo ano seja cheio de graça e alegria. 🎉
+          A {igreja} agradece a Deus pela sua vida e por você servir com a gente. Que o seu novo ano seja cheio de graça e alegria. 🎉
         </p>
         <button onClick={fechar} className="h-12 w-full rounded-xl bg-violet-600 font-medium text-white">Amém, obrigado! 🙏</button>
         {!foto && (

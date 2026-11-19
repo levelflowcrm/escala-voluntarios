@@ -127,10 +127,12 @@ export default async function Inicio() {
   const { data: verRepertorio } = await supabase.rpc("pode_ver_repertorio");
   // Surpresa de aniversário (aparece a partir das 9h, no próprio aparelho)
   const hojeSp = diaNoFuso(new Date());
-  const [{ data: meus }, { data: fotoLinha }] = await Promise.all([
+  const [{ data: meus }, { data: fotoLinha }, { data: igrejaLinha }] = await Promise.all([
     supabase.rpc("meus_dados").maybeSingle<{ nome: string; aniversario: string | null }>(),
     supabase.from("fotos_perfil").select("foto").eq("pessoa_id", pessoaId).maybeSingle(),
+    supabase.from("igrejas").select("nome").maybeSingle<{ nome: string }>(),
   ]);
+  const nomeIgreja = igrejaLinha?.nome ?? "sua igreja";
   const aniversarioHoje = meus ? proximosAniversarios([{ nome: meus.nome, aniversario: meus.aniversario }], hojeSp, 0)[0]?.faltam === 0 : false;
 
   return (
@@ -138,7 +140,7 @@ export default async function Inicio() {
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
       repertorio={!!verRepertorio}
-      parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null } : null}
+      parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null, igreja: nomeIgreja.replace(/^Igreja\s+/, "") } : null}
       admin={!!admin}
       proximas={proximas}
       historico={historico}

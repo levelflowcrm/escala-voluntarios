@@ -60,7 +60,7 @@ export function TelaInicio({
   nome: string;
   coordenador: boolean;
   repertorio: boolean;
-  parabens?: { nome: string; dia: string; foto: string | null } | null;
+  parabens?: { nome: string; dia: string; foto: string | null; igreja: string } | null;
   admin?: boolean;
   proximas: Linha[];
   historico: Linha[];
@@ -107,7 +107,7 @@ export function TelaInicio({
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
-      {parabens && <Parabens nome={parabens.nome} dia={parabens.dia} foto={parabens.foto} />}
+      {parabens && <Parabens nome={parabens.nome} dia={parabens.dia} foto={parabens.foto} igreja={parabens.igreja} />}
       <header className="flex items-start justify-between">
         <div>
           <p className="flex items-center gap-2 text-sm text-neutral-500">
