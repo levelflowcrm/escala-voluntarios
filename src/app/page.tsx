@@ -3,6 +3,7 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
 import { proximosAniversarios } from "@/lib/aniversarios";
 import { diaNoFuso, limitesMes, mesAtual } from "@/lib/datas";
+import { agruparTime, type LinhaTime } from "@/lib/time-de-hoje";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
 const CAMPOS = "id, papel, status, motivo, chegou_em, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
@@ -124,6 +125,8 @@ export default async function Inicio() {
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
 
+  const { data: timeLinhas } = await supabase.rpc("time_de_hoje");
+  const timeDeHoje = agruparTime((timeLinhas ?? []) as LinhaTime[]);
   const { data: verRepertorio } = await supabase.rpc("pode_ver_repertorio");
   // Surpresa de aniversário (aparece a partir das 9h, no próprio aparelho)
   const hojeSp = diaNoFuso(new Date());
@@ -139,6 +142,7 @@ export default async function Inicio() {
     <TelaInicio
       nome={pessoa?.nome ?? ""}
       coordenador={!!coordenador}
+      timeDeHoje={timeDeHoje}
       repertorio={!!verRepertorio}
       parabens={aniversarioHoje ? { nome: (pessoa?.nome ?? "").split(" ")[0], dia: hojeSp, foto: fotoLinha?.foto ?? null, igreja: nomeIgreja.replace(/^Igreja\s+/, "") } : null}
       admin={!!admin}
