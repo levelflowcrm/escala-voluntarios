@@ -169,6 +169,14 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - **Aviso à Projeção:** quem está escalado na Projeção naquele evento recebe o repertório por WhatsApp (completo, com o horário). Sem ninguém escalado, avisam-se os facilitadores da Projeção. Vale o limite de 4 mensagens por dia por pessoa.
 - Quem vê: administradores, Louvor e Projeção. Só o facilitador do Louvor e os administradores gravam (função `salvar_repertorio`).
 
+## Biblioteca de músicas do Louvor
+
+- A **biblioteca** (`/biblioteca`) é o acervo da igreja: título, artista, **tom padrão**, links de **letra, cifra, vídeo e áudio** (só http/https) e observação. Não repete a mesma música (mesmo título + artista, sem diferença de maiúscula/acento).
+- **Quem mexe:** só o facilitador do Louvor (e o administrador) cadastra, edita e exclui. **Quem vê:** Louvor, Projeção e administradores. Não há importação por planilha (decisão do Luciano).
+- No **repertório do culto** o facilitador escolhe a música da biblioteca (preenche artista e tom) e pode mudar o **tom só daquele culto**, sem alterar o cadastro. Música digitada que ainda não existe **entra na biblioteca sozinha**.
+- O **tom é só do Louvor**: não aparece no WhatsApp nem na tela da Projeção, e mudar só o tom grava em silêncio (sem novo horário e sem avisar a Projeção). Quem vê o repertório abre a letra, cifra, vídeo e áudio direto do app.
+- Excluir uma música da biblioteca **não apaga** os repertórios que já a usaram (ficam só sem o link).
+
 ## Foto de perfil e aniversário
 
 - Cada pessoa pode ter **uma foto** no Perfil (Adicionar/Trocar/Remover foto). O app recorta em quadrado e reduz para ~320 px antes de salvar. **Só a própria pessoa vê a foto** (por enquanto).

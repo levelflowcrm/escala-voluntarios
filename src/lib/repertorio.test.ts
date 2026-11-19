@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { formatarAtualizacao, validarRepertorio, type Musica } from "./repertorio";
 
-const m = (bloco: Musica["bloco"], titulo = "Música"): Musica => ({ bloco, titulo, artista: "" });
+const m = (bloco: Musica["bloco"], titulo = "Música"): Musica => ({ bloco, titulo, artista: "", tom: "" });
 const base = [m("abertura"), m("abertura"), m("abertura"), m("encerramento")];
 
 describe("validarRepertorio", () => {
+  it("confere o tom de cada música", () => {
+    expect(validarRepertorio([{ ...m("abertura"), tom: "Bb" }, m("abertura"), m("abertura"), m("encerramento")])).toBeNull();
+    expect(validarRepertorio([{ ...m("abertura"), tom: "X" }, m("abertura"), m("abertura"), m("encerramento")])).toMatch(/Tom inválido/);
+  });
   it("aceita 3 de abertura + encerramento, com ou sem ofertório", () => {
     expect(validarRepertorio(base)).toBeNull();
     expect(validarRepertorio([...base, m("ofertorio")])).toBeNull();

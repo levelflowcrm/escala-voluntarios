@@ -1,7 +1,8 @@
 import { FUSO } from "./datas";
+import { TOM_VALIDO } from "./musicas";
 
 export type Bloco = "abertura" | "ofertorio" | "encerramento";
-export type Musica = { bloco: Bloco; titulo: string; artista: string };
+export type Musica = { bloco: Bloco; titulo: string; artista: string; tom: string; musicaId?: string | null };
 
 export const LIMITES = { aberturaMin: 3, aberturaMax: 4 } as const;
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
@@ -23,6 +24,7 @@ export function validarRepertorio(musicas: Musica[]): string | null {
   const por = (b: Bloco) => musicas.filter((m) => m.bloco === b);
   if (musicas.some((m) => !m.titulo.trim())) return "Preencha o título de todas as músicas (ou remova a linha vazia).";
   if (musicas.some((m) => m.titulo.trim().length > 120 || m.artista.trim().length > 120)) return "Título ou artista muito longo (máximo 120 letras).";
+  if (musicas.some((m) => m.tom.trim() && !TOM_VALIDO.test(m.tom.trim()))) return "Tom inválido. Use, por exemplo: G, Bb, F#m.";
   const ab = por("abertura").length;
   if (ab < LIMITES.aberturaMin || ab > LIMITES.aberturaMax) return `A abertura precisa ter de ${LIMITES.aberturaMin} a ${LIMITES.aberturaMax} músicas.`;
   if (por("ofertorio").length > 1) return "O ofertório tem no máximo 1 música (e é opcional).";
