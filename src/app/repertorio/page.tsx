@@ -11,6 +11,7 @@ export default async function Repertorios() {
   const { data: pode } = await supabase.rpc("pode_ver_repertorio");
   if (!pode) redirect("/");
   const { data: edita } = await supabase.rpc("pode_editar_repertorio");
+  const { data: biblioteca } = await supabase.rpc("pode_ver_biblioteca");
 
   const desde = new Date(Date.now() - 12 * 3_600_000).toISOString();
   const [{ data: eventos }, { data: reps }] = await Promise.all([
@@ -28,9 +29,11 @@ export default async function Repertorios() {
           ? "Monte as músicas de cada culto: de 3 a 4 de abertura, 1 no ofertório (opcional) e 1 de encerramento. A Projeção é avisada a cada alteração."
           : "As músicas de cada culto, definidas pelo Louvor. Se mudar, você é avisado e o horário da última atualização aparece aqui."}
       </p>
-      <Link href="/biblioteca" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
-        📚 Biblioteca de músicas: letra, cifra, vídeo e áudio. <span className="underline">Abrir</span>
-      </Link>
+      {biblioteca && (
+        <Link href="/biblioteca" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
+          📚 Biblioteca de músicas: tom, letra, cifra e vídeo. <span className="underline">Abrir</span>
+        </Link>
+      )}
       {(eventos ?? []).length === 0 && <p className="text-neutral-500">Nenhum evento próximo.</p>}
       {(eventos ?? []).map((e) => {
         const quando = atualizado.get(e.id);
