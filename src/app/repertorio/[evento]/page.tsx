@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { fmtDataHora } from "@/lib/datas";
+import type { MusicaBiblioteca } from "@/lib/musicas";
 import { formatarAtualizacao, type Musica } from "@/lib/repertorio";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { EditorRepertorio } from "./editor";
@@ -16,14 +17,15 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
 
   const { data: ev } = await supabase.from("eventos").select("id, titulo, inicio").eq("id", evento).maybeSingle();
   if (!ev) notFound();
-  const [{ data: rep }, { data: linhas }] = await Promise.all([
+  const [{ data: rep }, { data: linhas }, { data: lib }] = await Promise.all([
     supabase.from("repertorios").select("atualizado_em").eq("evento_id", evento).maybeSingle(),
-    supabase.from("repertorio_musicas").select("bloco, ordem, titulo, artista").eq("evento_id", evento),
+    supabase.from("repertorio_musicas").select("bloco, ordem, titulo, artista, tom, musica_id").eq("evento_id", evento),
+    supabase.from("musicas").select("id, titulo, artista, tom, link_letra, link_cifra, link_video, link_audio, observacao").order("titulo").limit(2000),
   ]);
   const ordemBloco = { abertura: 1, ofertorio: 2, encerramento: 3 } as const;
   const musicas: Musica[] = (linhas ?? [])
     .sort((a, b) => ordemBloco[a.bloco as keyof typeof ordemBloco] - ordemBloco[b.bloco as keyof typeof ordemBloco] || a.ordem - b.ordem)
-    .map((m) => ({ bloco: m.bloco as Musica["bloco"], titulo: m.titulo, artista: m.artista ?? "" }));
+    .map((m) => ({ bloco: m.bloco as Musica["bloco"], titulo: m.titulo, artista: m.artista ?? "", tom: m.tom ?? "", musicaId: m.musica_id }));
   const passou = new Date(ev.inicio).getTime() < Date.now() - 12 * 3_600_000;
 
   return (
@@ -40,7 +42,7 @@ export default async function RepertorioDoEvento({ params }: { params: Promise<{
           Repertório ainda não enviado.
         </p>
       )}
-      <EditorRepertorio evento={evento} inicial={musicas} atualizadoEm={rep?.atualizado_em ?? null} podeEditar={!!edita && !passou} />
+      <EditorRepertorio evento={evento} inicial={musicas} atualizadoEm={rep?.atualizado_em ?? null} podeEditar={!!edita && !passou} biblioteca={(lib ?? []) as MusicaBiblioteca[]} />
     </main>
   );
 }

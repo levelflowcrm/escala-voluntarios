@@ -15,11 +15,12 @@ export async function salvarRepertorio(evento: string, musicas: Musica[]): Promi
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.rpc("salvar_repertorio", {
     p_evento: evento,
-    p_musicas: musicas.map((m) => ({ bloco: m.bloco, titulo: m.titulo.trim(), artista: m.artista.trim() })),
+    p_musicas: musicas.map((m) => ({ bloco: m.bloco, titulo: m.titulo.trim(), artista: m.artista.trim(), tom: m.tom.trim(), musica_id: m.musicaId ?? null })),
   });
   if (error) return { erro: error.message };
   after(() => despacharFila());
   revalidatePath("/repertorio");
+  revalidatePath("/biblioteca");
   revalidatePath(`/repertorio/${evento}`);
   return { erro: null, atualizadoEm: data as string };
 }
