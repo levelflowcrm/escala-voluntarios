@@ -169,6 +169,12 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - **Aviso à Projeção:** quem está escalado na Projeção naquele evento recebe o repertório por WhatsApp (completo, com o horário). Sem ninguém escalado, avisam-se os facilitadores da Projeção. Vale o limite de 4 mensagens por dia por pessoa.
 - Quem vê: administradores, Louvor e Projeção. Só o facilitador do Louvor e os administradores gravam (função `salvar_repertorio`).
 
+## Foto de perfil e aniversário
+
+- Cada pessoa pode ter **uma foto** no Perfil (Adicionar/Trocar/Remover foto). O app recorta em quadrado e reduz para ~320 px antes de salvar. **Só a própria pessoa vê a foto** (por enquanto).
+- No **dia do aniversário, a partir das 9h (Brasília)**, ao abrir o app, aparece uma **surpresa em tela cheia** com a foto, confetes e a felicitação; fecha com "Amém, obrigado!" e não repete no mesmo dia. Sem foto, mostra a inicial e convida a adicionar. Respeita "reduzir movimento" do aparelho.
+- Às **9h** uma rotina (Vercel Cron, 12:00 UTC) envia **um WhatsApp de parabéns** a quem faz aniversário (29/02 comemora em 28/02 nos anos não bissextos), uma vez por ano, convidando a abrir o app.
+
 ## Tipos de evento
 
 - Os tipos (Conferência, Batismo, Noite de Unção, Reunião Backstage…) ficam na tabela `tipos_evento` e são gerenciados pelo **master** em Agenda > Gerenciar tipos de evento: criar, renomear, escolher cor padrão e desativar.
