@@ -9,6 +9,12 @@ declare
   ud uuid := gen_random_uuid(); uco uuid := gen_random_uuid();
   n int; r record;
 begin
+  -- A janela do MaisFeliz abre 1 h depois do início e fecha à meia-noite do mesmo dia: logo depois da meia-noite
+  -- (antes de 01h05, horário de Brasília) não existe culto que já esteja avaliável hoje, então o cenário é impossível.
+  if (now() at time zone 'America/Sao_Paulo')::time < time '01:05' then
+    raise notice 'MaisFeliz: PULADO (antes de 01h05 em Brasília a janela de avaliação não existe)';
+    return;
+  end if;
   select id, igreja_id into tm, ig from ministerios where nome = 'Transmissão';
   select id into f1 from funcoes where nome = 'Câmera Black';
   select id into f2 from funcoes where nome = 'Câmera Grua';

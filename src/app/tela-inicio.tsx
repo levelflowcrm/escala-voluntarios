@@ -45,6 +45,7 @@ export function TelaInicio({
   nome,
   coordenador,
   repertorio,
+  metricas,
   parabens = null,
   timeDeHoje = [],
   admin = false,
@@ -63,6 +64,7 @@ export function TelaInicio({
   nome: string;
   coordenador: boolean;
   repertorio: boolean;
+  metricas: boolean;
   timeDeHoje?: GrupoTime[];
   parabens?: { nome: string; dia: string; foto: string | null; igreja: string } | null;
   admin?: boolean;
@@ -261,6 +263,12 @@ export function TelaInicio({
       {repertorio && (
         <Link href="/repertorio" className="rounded-xl bg-pink-50 px-4 py-3 text-sm dark:bg-pink-950/30">
           🎵 Músicas dos próximos cultos. <strong>Ver repertório</strong>
+        </Link>
+      )}
+
+      {metricas && (
+        <Link href="/metricas" className="rounded-xl bg-blue-50 px-4 py-3 text-sm dark:bg-blue-950/30">
+          📊 Público, voluntários, online e decisões. <strong>Ver métricas dos cultos</strong>
         </Link>
       )}
 
