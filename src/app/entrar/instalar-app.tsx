@@ -32,26 +32,34 @@ export function InstalarApp() {
   if (instalado || (!evento && !ios)) return null;
 
   return (
-    <section className="flex flex-col gap-2 rounded-xl bg-violet-50 p-4 text-sm dark:bg-violet-950">
-      <h2 className="font-medium">Instale o app no seu celular</h2>
-      {evento ? (
-        <>
-          <p className="text-neutral-600 dark:text-neutral-300">Fica na tela inicial, abre em tela cheia e é mais rápido de usar.</p>
-          <button
-            type="button"
-            onClick={async () => {
-              await evento.prompt();
-              setEvento(null);
-            }}
-            className="rounded-lg bg-violet-600 px-4 py-2 font-medium text-white"
-          >
-            Instalar app
-          </button>
-        </>
-      ) : (
-        <p className="text-neutral-600 dark:text-neutral-300">
-          No Safari, toque em <strong>Compartilhar</strong> (o quadrado com a seta) e depois em <strong>Adicionar à Tela de Início</strong>.
-        </p>
+    <section className="flex flex-col gap-3 rounded-2xl bg-white/10 p-4 text-sm ring-1 ring-white/15 backdrop-blur">
+      <div className="flex items-center gap-3">
+        <svg viewBox="0 0 24 24" className="h-10 w-10 shrink-0 text-orange-400" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <rect x="6" y="2" width="12" height="20" rx="2.5" />
+          <path d="M12 8v6m-3-3 3 3 3-3" />
+        </svg>
+        <div>
+          <h2 className="text-base font-semibold">Instale o app no seu celular</h2>
+          {evento ? (
+            <p className="text-blue-100/75">Fica na tela inicial, abre em tela cheia e é mais rápido de usar.</p>
+          ) : (
+            <p className="text-blue-100/75">
+              No Safari, toque em <strong>Compartilhar</strong> (o quadrado com a seta) e depois em <strong>Adicionar à Tela de Início</strong>.
+            </p>
+          )}
+        </div>
+      </div>
+      {evento && (
+        <button
+          type="button"
+          onClick={async () => {
+            await evento.prompt();
+            setEvento(null);
+          }}
+          className="rounded-xl bg-orange-500 px-4 py-3 text-base font-semibold text-white hover:bg-orange-400"
+        >
+          Instalar app
+        </button>
       )}
     </section>
   );
