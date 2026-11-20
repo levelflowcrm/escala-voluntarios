@@ -5,15 +5,11 @@ import { InstalarApp } from "./instalar-app";
 
 export const metadata = { title: "Entrar · Mais Conectados" };
 
-/** Ondas laranja/azul e uma cruz em luz suave ao fundo: só enfeite, sem imagem externa. */
+/** Ondas laranja/azul e um brilho suave ao fundo: só enfeite, sem imagem externa. */
 function FundoEntrar() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-gradient-to-b from-[#0a2a5e] via-[#071a3d] to-[#040d22]">
       <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-orange-400/25 blur-3xl" />
-      <svg viewBox="0 0 120 160" className="absolute -right-4 top-6 h-64 w-48 text-orange-200/20" fill="currentColor">
-        <rect x="52" y="0" width="16" height="160" rx="2" />
-        <rect x="14" y="40" width="92" height="16" rx="2" />
-      </svg>
       <svg viewBox="0 0 400 160" preserveAspectRatio="none" className="absolute left-0 top-0 h-28 w-48">
         <path d="M0 0H400C300 20 160 70 0 150Z" fill="#ff8a00" />
       </svg>
@@ -47,7 +43,7 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
         </div>
 
         <div>
-          <p className="text-4xl font-extrabold leading-[1.1] tracking-tight">
+          <p className="text-4xl font-bold leading-[1.1]">
             Servir é o que
             <br />
             nos <span className="text-orange-400 underline decoration-orange-400 decoration-4 underline-offset-8">conecta</span>
