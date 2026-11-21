@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { clienteServico, despacharFila, MAX_POR_RODADA_CRON, whatsappAtivo } from "@/lib/whatsapp";
+import { clienteServico, despacharFila, MAX_POR_RODADA_CRON, ORCAMENTO_CRON_MS, whatsappAtivo } from "@/lib/whatsapp";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -18,6 +18,6 @@ export async function GET(req: Request) {
   const { data: lembretes, error } = await db.rpc("enfileirar_lembretes");
   // Lembrete do MaisFeliz (quem serviu hoje e ainda não avaliou); falha aqui não impede o envio da fila
   const { data: maisfeliz } = await db.rpc("enfileirar_lembretes_maisfeliz");
-  const r = await despacharFila(MAX_POR_RODADA_CRON);
+  const r = await despacharFila(MAX_POR_RODADA_CRON, ORCAMENTO_CRON_MS);
   return NextResponse.json({ ok: !error, lembretes: lembretes ?? 0, maisfeliz: maisfeliz ?? 0, enviados: r.enviados, ...(r.motivo ? { motivo: r.motivo } : {}) });
 }

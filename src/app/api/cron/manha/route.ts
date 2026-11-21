@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { clienteServico, despacharFila, MAX_POR_RODADA_CRON, whatsappAtivo } from "@/lib/whatsapp";
+import { clienteServico, despacharFila, MAX_POR_RODADA_CRON, ORCAMENTO_CRON_MS, whatsappAtivo } from "@/lib/whatsapp";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -21,6 +21,6 @@ export async function GET(req: Request) {
   const { data: repertorios, error } = await db.rpc("enviar_repertorios_programados");
   // Falha no aniversário não impede o envio da fila
   const { data: aniversarios } = await db.rpc("enfileirar_aniversarios");
-  const r = await despacharFila(MAX_POR_RODADA_CRON);
+  const r = await despacharFila(MAX_POR_RODADA_CRON, ORCAMENTO_CRON_MS);
   return NextResponse.json({ ok: !error, repertorios: repertorios ?? 0, aniversarios: aniversarios ?? 0, enviados: r.enviados, ...(r.motivo ? { motivo: r.motivo } : {}) });
 }
