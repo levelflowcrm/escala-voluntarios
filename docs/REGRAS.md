@@ -218,7 +218,7 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 
 ## Ocorrências (21/11)
 
-- Qualquer voluntário do ministério registra uma ocorrência: tipo (equipamento, transmissão/sinal, equipe, outro), gravidade (só para registro, precisa de atenção, urgente), o culto em que aconteceu e o relato.
+- Qualquer voluntário de qualquer ministério registra uma ocorrência: tipo (equipamento ou material; som, imagem ou transmissão; equipe ou escala; atendimento a pessoas; segurança ou saúde; espaço e estrutura; programação ou horário; outro), gravidade (só para registro, precisa de atenção, urgente), o culto em que aconteceu e o relato.
 - Sempre identificada. O relato não pode ser editado nem apagado por ninguém: fica como histórico.
 - Os facilitadores do ministério recebem na hora por WhatsApp (quem registrou não recebe o próprio aviso) e veem um alerta na tela inicial.
 - O facilitador marca "Estou ciente" e/ou "Resolvida" e pode responder; a resposta aparece para quem registrou. Fica gravado quem tratou e quando.

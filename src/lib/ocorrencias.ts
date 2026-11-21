@@ -1,14 +1,19 @@
 /** Ocorrências: textos, ordem da lista e escolha do culto sugerido no formulário. */
 
-export type TipoOcorrencia = "equipamento" | "transmissao" | "equipe" | "outro";
+export type TipoOcorrencia = "equipamento" | "tecnico" | "equipe" | "pessoas" | "seguranca" | "estrutura" | "programacao" | "outro";
 export type Gravidade = "informativa" | "normal" | "urgente";
 export type StatusOcorrencia = "aberta" | "ciente" | "resolvida";
 
-export const TIPOS: { valor: TipoOcorrencia; texto: string; icone: string }[] = [
-  { valor: "equipamento", texto: "Equipamento", icone: "🔧" },
-  { valor: "transmissao", texto: "Transmissão / sinal", icone: "📡" },
-  { valor: "equipe", texto: "Equipe", icone: "👥" },
-  { valor: "outro", texto: "Outro", icone: "📝" },
+/** Tipos amplos, para qualquer ministério (o aviso vai para o facilitador do ministério escolhido). */
+export const TIPOS: { valor: TipoOcorrencia; texto: string; icone: string; exemplos: string }[] = [
+  { valor: "equipamento", texto: "Equipamento ou material", icone: "🔧", exemplos: "quebrou, faltou, sem bateria" },
+  { valor: "tecnico", texto: "Som, imagem ou transmissão", icone: "🎛️", exemplos: "microfone, telão, sinal caiu" },
+  { valor: "equipe", texto: "Equipe ou escala", icone: "👥", exemplos: "falta, atraso, time desfalcado" },
+  { valor: "pessoas", texto: "Atendimento a pessoas", icone: "🙋", exemplos: "visitante, membro, criança" },
+  { valor: "seguranca", texto: "Segurança ou saúde", icone: "🩹", exemplos: "acidente, mal-estar, risco" },
+  { valor: "estrutura", texto: "Espaço e estrutura", icone: "🏛️", exemplos: "limpeza, ar-condicionado, cadeiras" },
+  { valor: "programacao", texto: "Programação ou horário", icone: "⏱️", exemplos: "atraso, mudança na ordem" },
+  { valor: "outro", texto: "Outro", icone: "📝", exemplos: "qualquer outra situação" },
 ];
 
 export const GRAVIDADES: { valor: Gravidade; texto: string; dica: string }[] = [
