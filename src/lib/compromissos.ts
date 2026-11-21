@@ -12,11 +12,15 @@ export const TIPOS_COMPROMISSO: { valor: TipoCompromisso; texto: string; icone: 
 ];
 
 /**
- * Compromisso do time sempre em amarelo pastel, também no modo escuro (texto escuro por cima).
+ * Compromisso do time em amarelo suave: fundo bem leve e uma faixa amarela à esquerda para destacar.
+ * No modo escuro, só um brilho amarelo discreto sobre o fundo escuro.
  * Classes por extenso para o Tailwind enxergá-las.
  */
-export const CARTAO_COMPROMISSO = "border-yellow-300 bg-yellow-100 text-yellow-950";
-export const HORA_COMPROMISSO = "bg-yellow-200 text-yellow-950";
+export const CARTAO_COMPROMISSO =
+  "border-yellow-200 border-l-4 border-l-yellow-300 bg-yellow-50/70 dark:border-yellow-300/15 dark:border-l-yellow-300/60 dark:bg-yellow-300/[0.06]";
+export const HORA_COMPROMISSO = "bg-yellow-100/80 text-yellow-900 dark:bg-yellow-300/10 dark:text-yellow-100";
+export const TEXTO_COMPROMISSO = "text-yellow-900/75 dark:text-yellow-100/70";
+export const BOTAO_COMPROMISSO = "border-yellow-200 bg-yellow-50 text-yellow-900 dark:border-yellow-300/25 dark:bg-yellow-300/[0.08] dark:text-yellow-100";
 
 export function rotuloCompromisso(tipo: string): { texto: string; icone: string } {
   return TIPOS_COMPROMISSO.find((t) => t.valor === tipo) ?? { texto: "Compromisso do time", icone: "📌" };

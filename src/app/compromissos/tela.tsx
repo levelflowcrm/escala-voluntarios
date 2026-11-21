@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { BotaoAgenda } from "../botao-agenda";
-import { CARTAO_COMPROMISSO, ehLink, rotuloCompromisso, TIPOS_COMPROMISSO, type TipoCompromisso } from "@/lib/compromissos";
+import { CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, ehLink, rotuloCompromisso, TIPOS_COMPROMISSO, type TipoCompromisso } from "@/lib/compromissos";
 import { diaNoFuso, fmtDataHora } from "@/lib/datas";
 import { cancelarCompromisso, criarCompromisso } from "./acoes";
 
@@ -20,7 +20,7 @@ export type Compromisso = {
 
 const campo = "w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 const chip = (ativo: boolean) =>
-  `rounded-full border px-3 py-2 text-sm ${ativo ? "border-yellow-500 bg-yellow-200 text-yellow-950" : "border-neutral-300 dark:border-neutral-700"}`;
+  `rounded-full border px-3 py-2 text-sm ${ativo ? "border-yellow-300 bg-yellow-100 text-yellow-900 dark:border-yellow-300/50 dark:bg-yellow-300/15 dark:text-yellow-100" : "border-neutral-300 dark:border-neutral-700"}`;
 
 function Formulario({ ministerios }: { ministerios: { id: string; nome: string }[] }) {
   const [min, setMin] = useState(ministerios[0].id);
@@ -33,7 +33,7 @@ function Formulario({ ministerios }: { ministerios: { id: string; nome: string }
   const [pendente, iniciar] = useTransition();
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-yellow-300 bg-yellow-50/50 p-3 dark:border-yellow-800 dark:bg-yellow-950/20">
+    <section className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
       <div>
         <h2 className="font-medium">Marcar compromisso do time</h2>
         <p className="text-xs text-neutral-500">Aparece só para quem é do ministério. Não entra no calendário oficial da igreja.</p>
@@ -117,22 +117,21 @@ function Cartao({ c }: { c: Compromisso }) {
     <article className={`flex flex-col gap-1 rounded-xl border p-4 ${CARTAO_COMPROMISSO}`}>
       <p className="font-medium">{fmtDataHora.format(new Date(c.inicio))}</p>
       <p className="text-sm">
-        {r.icone} {r.texto} · <span className="text-yellow-900">{c.ministerio}</span>
+        {r.icone} {r.texto} · <span className={TEXTO_COMPROMISSO}>{c.ministerio}</span>
       </p>
       {c.local &&
         (ehLink(c.local) ? (
-          <a href={c.local} target="_blank" rel="noopener noreferrer" className="break-all text-sm font-medium text-violet-800 underline">
+          <a href={c.local} target="_blank" rel="noopener noreferrer" className="break-all text-sm font-medium text-violet-700 underline dark:text-violet-300">
             Entrar na reunião
           </a>
         ) : (
-          <p className="text-sm text-yellow-900">📍 {c.local}</p>
+          <p className={`text-sm ${TEXTO_COMPROMISSO}`}>📍 {c.local}</p>
         ))}
-      {c.observacao && <p className="whitespace-pre-line text-sm text-yellow-900">{c.observacao}</p>}
-      {c.criadoPor && <p className="text-xs text-yellow-800">Marcado por {c.criadoPor}</p>}
+      {c.observacao && <p className={`whitespace-pre-line text-sm ${TEXTO_COMPROMISSO}`}>{c.observacao}</p>}
+      {c.criadoPor && <p className="text-xs text-neutral-500">Marcado por {c.criadoPor}</p>}
       <div className="mt-1 flex flex-wrap items-center gap-3 text-xs">
         <BotaoAgenda
           titulo={`${r.texto} · ${c.ministerio}`}
-          sobreFundoClaro
           inicio={c.inicio}
           local={c.local ?? undefined}
           descricao={[c.observacao, "Compromisso do time pelo Mais Conectados"].filter(Boolean).join("\n")}
@@ -150,7 +149,7 @@ function Cartao({ c }: { c: Compromisso }) {
               <button onClick={() => setConfirmar(false)} className="underline">Não</button>
             </span>
           ) : (
-            <button onClick={() => setConfirmar(true)} className="font-medium text-red-700 underline">
+            <button onClick={() => setConfirmar(true)} className="text-red-700 underline dark:text-red-400">
               Cancelar compromisso
             </button>
           ))}

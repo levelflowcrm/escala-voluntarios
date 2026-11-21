@@ -4,7 +4,7 @@ import { BotaoAgenda } from "../botao-agenda";
 import { fmtMes, limitesMes, primeiraMaiuscula, mesAtual, mesValido, somarMes } from "@/lib/datas";
 import { corDoEvento, CORES } from "@/lib/cores-evento";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { CARTAO_COMPROMISSO, HORA_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
+import { CARTAO_COMPROMISSO, HORA_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
 
 type Linha = {
   id: string;
@@ -113,8 +113,8 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
                   </div>
                   <div className="flex flex-1 flex-col gap-1 p-3">
                     <p className="font-medium">{r.icone} {r.texto}</p>
-                    <p className="text-sm text-yellow-900">Compromisso do time · {c.ministerios.nome}</p>
-                    {c.local && <p className="truncate text-xs text-yellow-800">{/^https?:\/\//i.test(c.local) ? "Reunião on-line (link no compromisso)" : `📍 ${c.local}`}</p>}
+                    <p className={`text-sm ${TEXTO_COMPROMISSO}`}>Compromisso do time · {c.ministerios.nome}</p>
+                    {c.local && <p className="truncate text-xs text-neutral-500">{/^https?:\/\//i.test(c.local) ? "Reunião on-line (link no compromisso)" : `📍 ${c.local}`}</p>}
                   </div>
                 </Link>
               );

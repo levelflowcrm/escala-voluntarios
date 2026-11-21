@@ -14,7 +14,7 @@ import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } f
 import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
-import { CARTAO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
+import { BOTAO_COMPROMISSO, CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
 
 const PAPEL: Record<string, string> = {
   titular: "",
@@ -181,7 +181,7 @@ export function TelaInicio({
         {coordenador && (
           <Link
             href="/compromissos"
-            className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-yellow-300 bg-yellow-100 font-medium text-yellow-950"
+            className={`flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border font-medium ${BOTAO_COMPROMISSO}`}
           >
             Compromissos do time
           </Link>
@@ -261,7 +261,7 @@ export function TelaInicio({
             return (
               <Link key={c.id} href="/compromissos" className={`rounded-xl border p-4 ${CARTAO_COMPROMISSO}`}>
                 <p className="font-medium">{fmtDataHora.format(new Date(c.inicio))}</p>
-                <p className="text-sm text-yellow-900">
+                <p className={`text-sm ${TEXTO_COMPROMISSO}`}>
                   {r.icone} {r.texto} · {c.ministerio}
                 </p>
               </Link>
