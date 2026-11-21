@@ -88,6 +88,17 @@ export default async function Inicio() {
 
   const servidasNoMes = doMes?.length ?? 0;
 
+  // Ocorrências: o facilitador vê quantas do time estão abertas (a RLS devolve só as dos ministérios dele e as próprias).
+  let ocorrenciasAbertas = 0;
+  if (coordenador) {
+    const { count } = await supabase
+      .from("ocorrencias")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "aberta")
+      .neq("autor_id", pessoaId);
+    ocorrenciasAbertas = count ?? 0;
+  }
+
   // Facilitador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
   let pendencias = null;
   if (coordenador) {
@@ -124,6 +135,11 @@ export default async function Inicio() {
     lista.sort((a, b) => sentido * (+new Date(a.eventos.inicio) - +new Date(b.eventos.inicio)));
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
+  // Serviu (ou serve) hoje: mostra o atalho para registrar ocorrência
+  const hoje = diaNoFuso(new Date());
+  const serviHoje = [...proximas, ...historico].some(
+    (e) => e.status !== "recusado" && e.status !== "trocado" && diaNoFuso(new Date(e.eventos.inicio)) === hoje,
+  );
 
   const { data: timeLinhas } = await supabase.rpc("time_de_hoje");
   const timeDeHoje = agruparTime((timeLinhas ?? []) as LinhaTime[]);
@@ -158,6 +174,8 @@ export default async function Inicio() {
       pontuacao={minhaPontuacao}
       maisFeliz={maisFeliz ? { eventoId: maisFeliz.evento_id, titulo: maisFeliz.titulo } : null}
       pendencias={pendencias}
+      ocorrenciasAbertas={ocorrenciasAbertas}
+      serviHoje={serviHoje}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,
         titulo: a.titulo,

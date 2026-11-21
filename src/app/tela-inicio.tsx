@@ -60,6 +60,8 @@ export function TelaInicio({
   trocasRecebidas = 0,
   maisFeliz = null,
   pontuacao = null,
+  ocorrenciasAbertas = 0,
+  serviHoje = false,
 }: {
   nome: string;
   coordenador: boolean;
@@ -78,6 +80,8 @@ export function TelaInicio({
   vagasParaMim?: number;
   trocasRecebidas?: number;
   maisFeliz?: { eventoId: string; titulo: string } | null;
+  ocorrenciasAbertas?: number;
+  serviHoje?: boolean;
   pontuacao?: { pontos: number; nivel: string } | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
@@ -145,6 +149,12 @@ export function TelaInicio({
       {mensagensNovas > 0 && (
         <Link href="/mensagens" className="rounded-xl bg-amber-50 p-4 text-sm font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
           📬 {mensagensNovas === 1 ? "1 mensagem nova" : `${mensagensNovas} mensagens novas`} de erros e sugestões do app
+        </Link>
+      )}
+
+      {ocorrenciasAbertas > 0 && (
+        <Link href="/ocorrencias" className="rounded-xl bg-red-50 p-4 text-sm font-medium text-red-900 dark:bg-red-950/40 dark:text-red-200">
+          ⚠️ {ocorrenciasAbertas === 1 ? "1 ocorrência aberta" : `${ocorrenciasAbertas} ocorrências abertas`} do time. <span className="underline">Ver e responder</span>
         </Link>
       )}
 
@@ -230,6 +240,12 @@ export function TelaInicio({
             <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
           )}
         </section>
+      )}
+
+      {serviHoje && (
+        <Link href="/ocorrencias" className="rounded-xl border border-neutral-200 px-4 py-3 text-sm dark:border-neutral-800">
+          📋 Aconteceu algo no culto de hoje? <strong>Registrar ocorrência</strong>
+        </Link>
       )}
 
       {(trocasRecebidas > 0 || vagasParaMim > 0) && (
@@ -328,6 +344,7 @@ export function TelaInicio({
       )}
 
       <footer className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-neutral-200 pt-4 text-xs text-neutral-400 dark:border-neutral-800">
+        <Link href="/ocorrencias" className="underline">Ocorrências</Link>
         <Link href="/sugestoes" className="underline">Sugestões ao time</Link>
         <Link href="/mensagens" className="underline">Erro ou ideia do app</Link>
         <Link href="/contribuir" className="underline">Apoie o Mais Conectados</Link>
