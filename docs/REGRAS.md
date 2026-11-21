@@ -223,3 +223,10 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - Os facilitadores do ministério recebem na hora por WhatsApp (quem registrou não recebe o próprio aviso) e veem um alerta na tela inicial.
 - O facilitador marca "Estou ciente" e/ou "Resolvida" e pode responder; a resposta aparece para quem registrou. Fica gravado quem tratou e quando.
 - Só o autor e os facilitadores do ministério enxergam a ocorrência.
+
+## Compromissos do time (21/11)
+
+- O **facilitador** marca compromissos só para o próprio ministério: **Reunião on-line, Reunião presencial, Ensaio, Confraternização ou Treinamento**, com data, horário, local ou link (opcional) e observação (opcional).
+- **Não fazem parte do calendário oficial**: ficam numa tabela própria (`compromissos_time`), fora de `eventos`. Não aparecem na Agenda da igreja, nas métricas, na sugestão de escala nem nos lembretes, e não contam a regra "só o master cria eventos".
+- **Só quem é do ministério vê.** Só o facilitador daquele ministério cria e cancela.
+- Aparecem em **amarelo pastel** (também no modo escuro) em "Minhas escalas", na tela inicial (próximos 14 dias) e na tela "Compromissos do time".

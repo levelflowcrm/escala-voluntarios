@@ -4,6 +4,7 @@ import { BotaoAgenda } from "../botao-agenda";
 import { fmtMes, limitesMes, primeiraMaiuscula, mesAtual, mesValido, somarMes } from "@/lib/datas";
 import { corDoEvento, CORES } from "@/lib/cores-evento";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { CARTAO_COMPROMISSO, HORA_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
 
 type Linha = {
   id: string;
@@ -18,6 +19,9 @@ const FUSO = "America/Sao_Paulo";
 const fmtDia = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, weekday: "long", day: "2-digit", month: "2-digit" });
 const fmtHora = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 const diaDe = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: FUSO }).format(new Date(iso));
+type Compromisso = { id: string; tipo: string; inicio: string; local: string | null; ministerios: { nome: string } };
+type Item = { tipo: "escala"; l: Linha; inicio: string } | { tipo: "compromisso"; c: Compromisso; inicio: string };
+
 const PAPEL: Record<string, string> = { titular: "", apoio: "apoio", treinamento: "treinamento", responsavel_dia: "responsável do dia" };
 
 export default async function MinhasEscalas({ searchParams }: { searchParams: Promise<{ mes?: string; ver?: string }> }) {
@@ -40,10 +44,25 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
     ? consulta.gte("eventos.inicio", new Date().toISOString()).limit(60)
     : consulta.gte("eventos.inicio", inicio).lt("eventos.inicio", fim);
   const lista = ((await consulta).data ?? []) as unknown as Linha[];
-  lista.sort((a, b) => +new Date(a.eventos.inicio) - +new Date(b.eventos.inicio));
 
-  const dias = new Map<string, Linha[]>();
-  for (const l of lista) dias.set(diaDe(l.eventos.inicio), [...(dias.get(diaDe(l.eventos.inicio)) ?? []), l]);
+  // Compromissos do time (reuniões, ensaios...): a RLS devolve só os dos meus ministérios
+  let consultaComp = supabase
+    .from("compromissos_time")
+    .select("id, tipo, inicio, local, ministerios!inner(nome)")
+    .order("inicio");
+  consultaComp = proximas
+    ? consultaComp.gte("inicio", new Date().toISOString()).limit(60)
+    : consultaComp.gte("inicio", inicio).lt("inicio", fim);
+  const compromissos = ((await consultaComp).data ?? []) as unknown as Compromisso[];
+
+  const itens: Item[] = [
+    ...lista.map((l) => ({ tipo: "escala" as const, l, inicio: l.eventos.inicio })),
+    ...compromissos.map((c) => ({ tipo: "compromisso" as const, c, inicio: c.inicio })),
+  ].sort((a, b) => +new Date(a.inicio) - +new Date(b.inicio));
+
+  const dias = new Map<string, Item[]>();
+  for (const i of itens) dias.set(diaDe(i.inicio), [...(dias.get(diaDe(i.inicio)) ?? []), i]);
+  const diasServindo = new Set(lista.map((l) => diaDe(l.eventos.inicio))).size;
 
   const nomeMes = fmtMes.format(new Date(`${mes}-15T12:00:00-03:00`));
   const aba = (ativa: boolean) =>
@@ -75,13 +94,32 @@ export default async function MinhasEscalas({ searchParams }: { searchParams: Pr
           ? proximas ? "Você não tem escalas marcadas pelos próximos dias." : "Você não serve em nenhum dia deste mês."
           : proximas
             ? `${lista.length} ${lista.length === 1 ? "escala" : "escalas"} pela frente.`
-            : `Você serve em ${dias.size} ${dias.size === 1 ? "dia" : "dias"} neste mês (${lista.length} ${lista.length === 1 ? "escala" : "escalas"}).`}
+            : `Você serve em ${diasServindo} ${diasServindo === 1 ? "dia" : "dias"} neste mês (${lista.length} ${lista.length === 1 ? "escala" : "escalas"}).`}
+        {compromissos.length > 0 &&
+          ` ${compromissos.length === 1 ? "Mais 1 compromisso" : `Mais ${compromissos.length} compromissos`} do time.`}
       </p>
 
-      {[...dias.entries()].map(([dia, escalas]) => (
+      {[...dias.entries()].map(([dia, doDia]) => (
         <section key={dia} className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium">{primeiraMaiuscula(fmtDia.format(new Date(escalas[0].eventos.inicio)).replace(/-feira/, ""))}</h2>
-          {escalas.map((l) => {
+          <h2 className="text-sm font-medium">{primeiraMaiuscula(fmtDia.format(new Date(doDia[0].inicio)).replace(/-feira/, ""))}</h2>
+          {doDia.map((item) => {
+            if (item.tipo === "compromisso") {
+              const c = item.c;
+              const r = rotuloCompromisso(c.tipo);
+              return (
+                <Link key={c.id} href="/compromissos" className={`flex overflow-hidden rounded-xl border ${CARTAO_COMPROMISSO}`}>
+                  <div className={`flex w-20 shrink-0 items-center justify-center text-lg font-semibold ${HORA_COMPROMISSO}`}>
+                    {fmtHora.format(new Date(c.inicio))}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-3">
+                    <p className="font-medium">{r.icone} {r.texto}</p>
+                    <p className="text-sm text-yellow-900">Compromisso do time · {c.ministerios.nome}</p>
+                    {c.local && <p className="truncate text-xs text-yellow-800">{/^https?:\/\//i.test(c.local) ? "Reunião on-line (link no compromisso)" : `📍 ${c.local}`}</p>}
+                  </div>
+                </Link>
+              );
+            }
+            const l = item.l;
             const cor = corDoEvento(l.eventos.tipos_evento?.cor ?? null, l.eventos.cor);
             const papel = PAPEL[l.papel];
             return (
