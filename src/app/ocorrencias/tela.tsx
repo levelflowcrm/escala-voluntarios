@@ -92,6 +92,7 @@ function Formulario({ ministerios, cultos, sugerido }: { ministerios: { id: stri
             </button>
           ))}
         </div>
+        {tipo && <span className="text-xs text-neutral-500">Ex.: {TIPOS.find((t) => t.valor === tipo)?.exemplos}</span>}
       </div>
 
       <div className="flex flex-col gap-1 text-sm">
@@ -115,7 +116,7 @@ function Formulario({ ministerios, cultos, sugerido }: { ministerios: { id: stri
         className={`${campo} py-2`}
         rows={5}
         maxLength={2000}
-        placeholder="O que aconteceu, em que momento e o que já foi feito. Ex.: a câmera Black desligou na ministração; troquei a bateria e voltou."
+        placeholder="O que aconteceu, em que momento e o que já foi feito."
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
       />
@@ -240,7 +241,7 @@ export function TelaOcorrencias({
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <div>
         <h1 className="text-2xl font-semibold">Ocorrências</h1>
-        <p className="text-sm text-neutral-500">Registre o que aconteceu no culto. O facilitador do ministério recebe na hora.</p>
+        <p className="text-sm text-neutral-500">Registre o que aconteceu no culto. O facilitador do seu ministério recebe na hora.</p>
       </div>
 
       {ministerios.length > 0 ? (

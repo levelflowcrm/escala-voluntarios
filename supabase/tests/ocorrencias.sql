@@ -36,7 +36,7 @@ set role authenticated;
 select set_config('request.jwt.claim.sub', current_setting('test.vol'), false);
 insert into ocorrencias (ministerio_id, evento_id, autor_id, tipo, gravidade, texto)
 values (current_setting('test.tm')::uuid, current_setting('test.ev')::uuid, current_setting('test.volid')::uuid,
-        'transmissao', 'urgente', 'O sinal do YouTube caiu na ministração por 3 minutos');
+        'tecnico', 'urgente', 'O sinal do YouTube caiu na ministração por 3 minutos');
 do $$
 declare n int;
 begin
@@ -138,3 +138,53 @@ delete from fila_whatsapp where tipo = 'ocorrencia';
 delete from ocorrencias;
 delete from eventos where titulo = 'Culto ocorrência';
 update pessoas set auth_user_id = null where nome in ('Sérgio', 'Diogo', 'Josy');
+
+-- Tipos amplos: aceita os novos e recusa o antigo "transmissao"
+do $$
+declare tm uuid; p uuid;
+begin
+  select id into tm from ministerios where nome = 'Transmissão';
+  select id into p from pessoas where nome = 'Diogo';
+  insert into ocorrencias (igreja_id, ministerio_id, autor_id, tipo, texto)
+  select igreja_id, tm, p, t, 'teste' from ministerios, unnest(array['equipamento','tecnico','equipe','pessoas','seguranca','estrutura','programacao','outro']) t
+  where ministerios.id = tm;
+  begin
+    insert into ocorrencias (igreja_id, ministerio_id, autor_id, tipo, texto)
+    select igreja_id, tm, p, 'transmissao', 'teste' from ministerios where id = tm;
+    raise exception 'FALHOU: aceitou o tipo antigo';
+  exception when check_violation then null; end;
+  delete from ocorrencias;
+  delete from fila_whatsapp where tipo = 'ocorrencia';
+  raise notice 'Ocorrências: tipos amplos OK';
+end $$;
+
+-- Cada ministério avisa só o próprio facilitador
+do $$
+declare pj uuid; tm uuid; fac_pj uuid; vol_pj uuid; n_pj int; n_tm int;
+begin
+  select id into pj from ministerios where nome = 'Projeção';
+  select id into tm from ministerios where nome = 'Transmissão';
+  select id into fac_pj from pessoas where nome = 'Marcos';
+  select id into vol_pj from pessoas where nome = 'Wesley';
+  update pessoas set celular = '(11) 95402-5009' where id = fac_pj;
+  insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (fac_pj, pj, 'coordenador')
+    on conflict (pessoa_id, ministerio_id) do update set papel = 'coordenador';
+  insert into membros_ministerio (pessoa_id, ministerio_id, papel) values (vol_pj, pj, 'voluntario')
+    on conflict (pessoa_id, ministerio_id) do nothing;
+  delete from fila_whatsapp;
+  insert into ocorrencias (igreja_id, ministerio_id, autor_id, tipo, texto)
+  select igreja_id, pj, vol_pj, 'equipamento', 'O projetor desligou' from ministerios where id = pj;
+  select count(*) into n_pj from fila_whatsapp f
+   where f.tipo = 'ocorrencia' and f.pessoa_id = fac_pj and f.texto like '%Projeção%';
+  select count(*) into n_tm from fila_whatsapp f
+   where f.tipo = 'ocorrencia' and exists (select 1 from membros_ministerio mm
+     where mm.pessoa_id = f.pessoa_id and mm.ministerio_id = tm and mm.papel = 'coordenador')
+     and not exists (select 1 from membros_ministerio mm
+     where mm.pessoa_id = f.pessoa_id and mm.ministerio_id = pj and mm.papel = 'coordenador');
+  if n_pj <> 1 then raise exception 'FALHOU: facilitador da Projeção não recebeu (%)', n_pj; end if;
+  if n_tm <> 0 then raise exception 'FALHOU: facilitador da Transmissão recebeu ocorrência da Projeção'; end if;
+  delete from ocorrencias;
+  delete from fila_whatsapp where tipo = 'ocorrencia';
+  delete from membros_ministerio where pessoa_id = fac_pj and ministerio_id = pj and papel = 'coordenador';
+  raise notice 'Ocorrências: cada ministério avisa o próprio facilitador OK';
+end $$;
