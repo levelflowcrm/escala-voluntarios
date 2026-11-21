@@ -14,6 +14,7 @@ import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } f
 import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
+import { BOTAO_COMPROMISSO, CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
 
 const PAPEL: Record<string, string> = {
   titular: "",
@@ -60,6 +61,9 @@ export function TelaInicio({
   trocasRecebidas = 0,
   maisFeliz = null,
   pontuacao = null,
+  ocorrenciasAbertas = 0,
+  serviHoje = false,
+  compromissos = [],
 }: {
   nome: string;
   coordenador: boolean;
@@ -78,6 +82,9 @@ export function TelaInicio({
   vagasParaMim?: number;
   trocasRecebidas?: number;
   maisFeliz?: { eventoId: string; titulo: string } | null;
+  ocorrenciasAbertas?: number;
+  serviHoje?: boolean;
+  compromissos?: { id: string; tipo: string; inicio: string; local: string | null; ministerio: string }[];
   pontuacao?: { pontos: number; nivel: string } | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
@@ -148,6 +155,12 @@ export function TelaInicio({
         </Link>
       )}
 
+      {ocorrenciasAbertas > 0 && (
+        <Link href="/ocorrencias" className="rounded-xl bg-red-50 p-4 text-sm font-medium text-red-900 dark:bg-red-950/40 dark:text-red-200">
+          ⚠️ {ocorrenciasAbertas === 1 ? "1 ocorrência aberta" : `${ocorrenciasAbertas} ocorrências abertas`} do time. <span className="underline">Ver e responder</span>
+        </Link>
+      )}
+
       <nav className="flex flex-wrap gap-2">
         {coordenador && (
           <Link
@@ -163,6 +176,14 @@ export function TelaInicio({
             className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
           >
             Voluntários
+          </Link>
+        )}
+        {coordenador && (
+          <Link
+            href="/compromissos"
+            className={`flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border font-medium ${BOTAO_COMPROMISSO}`}
+          >
+            Compromissos do time
           </Link>
         )}
         <Link
@@ -230,6 +251,29 @@ export function TelaInicio({
             <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
           )}
         </section>
+      )}
+
+      {compromissos.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-neutral-500">Compromissos do time</h2>
+          {compromissos.map((c) => {
+            const r = rotuloCompromisso(c.tipo);
+            return (
+              <Link key={c.id} href="/compromissos" className={`rounded-xl border p-4 ${CARTAO_COMPROMISSO}`}>
+                <p className="font-medium">{fmtDataHora.format(new Date(c.inicio))}</p>
+                <p className={`text-sm ${TEXTO_COMPROMISSO}`}>
+                  {r.icone} {r.texto} · {c.ministerio}
+                </p>
+              </Link>
+            );
+          })}
+        </section>
+      )}
+
+      {serviHoje && (
+        <Link href="/ocorrencias" className="rounded-xl border border-neutral-200 px-4 py-3 text-sm dark:border-neutral-800">
+          📋 Aconteceu algo no culto de hoje? <strong>Registrar ocorrência</strong>
+        </Link>
       )}
 
       {(trocasRecebidas > 0 || vagasParaMim > 0) && (
@@ -328,6 +372,7 @@ export function TelaInicio({
       )}
 
       <footer className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-neutral-200 pt-4 text-xs text-neutral-400 dark:border-neutral-800">
+        <Link href="/ocorrencias" className="underline">Ocorrências</Link>
         <Link href="/sugestoes" className="underline">Sugestões ao time</Link>
         <Link href="/mensagens" className="underline">Erro ou ideia do app</Link>
         <Link href="/contribuir" className="underline">Apoie o Mais Conectados</Link>
