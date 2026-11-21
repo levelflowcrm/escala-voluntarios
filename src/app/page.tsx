@@ -88,6 +88,29 @@ export default async function Inicio() {
 
   const servidasNoMes = doMes?.length ?? 0;
 
+  // Compromissos do time nos próximos 14 dias (a RLS devolve só os dos meus ministérios)
+  const { data: comp } = await supabase
+    .from("compromissos_time")
+    .select("id, tipo, inicio, local, ministerios!inner(nome)")
+    .gte("inicio", agora)
+    .lt("inicio", new Date(Date.now() + 14 * 86_400_000).toISOString())
+    .order("inicio")
+    .limit(5);
+  const compromissos = ((comp ?? []) as unknown as { id: string; tipo: string; inicio: string; local: string | null; ministerios: { nome: string } }[]).map(
+    (c) => ({ id: c.id, tipo: c.tipo, inicio: c.inicio, local: c.local, ministerio: c.ministerios.nome }),
+  );
+
+  // Ocorrências: o facilitador vê quantas do time estão abertas (a RLS devolve só as dos ministérios dele e as próprias).
+  let ocorrenciasAbertas = 0;
+  if (coordenador) {
+    const { count } = await supabase
+      .from("ocorrencias")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "aberta")
+      .neq("autor_id", pessoaId);
+    ocorrenciasAbertas = count ?? 0;
+  }
+
   // Facilitador: o que precisa de atenção (a RLS só devolve o que ele enxerga).
   let pendencias = null;
   if (coordenador) {
@@ -124,6 +147,11 @@ export default async function Inicio() {
     lista.sort((a, b) => sentido * (+new Date(a.eventos.inicio) - +new Date(b.eventos.inicio)));
   const proximas = porData((futuras ?? []) as unknown as Linha[], 1);
   const historico = porData((passadas ?? []) as unknown as Linha[], -1);
+  // Serviu (ou serve) hoje: mostra o atalho para registrar ocorrência
+  const hoje = diaNoFuso(new Date());
+  const serviHoje = [...proximas, ...historico].some(
+    (e) => e.status !== "recusado" && e.status !== "trocado" && diaNoFuso(new Date(e.eventos.inicio)) === hoje,
+  );
 
   const { data: timeLinhas } = await supabase.rpc("time_de_hoje");
   const timeDeHoje = agruparTime((timeLinhas ?? []) as LinhaTime[]);
@@ -158,6 +186,9 @@ export default async function Inicio() {
       pontuacao={minhaPontuacao}
       maisFeliz={maisFeliz ? { eventoId: maisFeliz.evento_id, titulo: maisFeliz.titulo } : null}
       pendencias={pendencias}
+      ocorrenciasAbertas={ocorrenciasAbertas}
+      compromissos={compromissos}
+      serviHoje={serviHoje}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,
         titulo: a.titulo,
