@@ -12,6 +12,7 @@ import { sair } from "./acoes";
 import { Resposta } from "./resposta";
 import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } from "./icones-topo";
 import { BotaoAgenda } from "./botao-agenda";
+import { IconeMontarEscala, IconeVoluntarios, IconeCompromissos, IconeMinhasEscalas, IconeDisponibilidade, IconeVagas } from "./icones-botoes";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 import { BOTAO_COMPROMISSO, CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
@@ -165,43 +166,49 @@ export function TelaInicio({
         {coordenador && (
           <Link
             href="/montar"
-            className="flex h-12 flex-1 items-center justify-center rounded-xl bg-violet-600 font-medium text-white"
+            className="flex h-20 flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center bg-violet-600 font-medium text-white"
           >
+            <IconeMontarEscala />
             Montar escala
           </Link>
         )}
         {coordenador && (
           <Link
             href="/voluntarios"
-            className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+            className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
           >
+            <IconeVoluntarios />
             Voluntários
           </Link>
         )}
         {coordenador && (
           <Link
             href="/compromissos"
-            className={`flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border font-medium ${BOTAO_COMPROMISSO}`}
+            className={`flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border font-medium ${BOTAO_COMPROMISSO}`}
           >
+            <IconeCompromissos />
             Compromissos do time
           </Link>
         )}
         <Link
           href="/minhas-escalas"
-          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
         >
+          <IconeMinhasEscalas />
           Minhas escalas
         </Link>
         <Link
           href="/disponibilidade"
-          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
         >
+          <IconeDisponibilidade />
           Disponibilidade
         </Link>
         <Link
           href="/vagas"
-          className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
+          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
         >
+          <IconeVagas />
           Vagas abertas
         </Link>
       </nav>
