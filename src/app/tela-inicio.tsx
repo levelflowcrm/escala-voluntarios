@@ -12,6 +12,7 @@ import { sair } from "./acoes";
 import { Resposta } from "./resposta";
 import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } from "./icones-topo";
 import { BotaoAgenda } from "./botao-agenda";
+import { AvisosNoCelular } from "./avisos-no-celular";
 import { IconeMontarEscala, IconeVoluntarios, IconeCompromissos, IconeMinhasEscalas, IconeDisponibilidade, IconeVagas } from "./icones-botoes";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
@@ -212,6 +213,8 @@ export function TelaInicio({
           Vagas abertas
         </Link>
       </nav>
+
+      <AvisosNoCelular />
 
       {maisFeliz && <CartaoMaisFeliz key={maisFeliz.eventoId} eventoId={maisFeliz.eventoId} titulo={maisFeliz.titulo} />}
 
