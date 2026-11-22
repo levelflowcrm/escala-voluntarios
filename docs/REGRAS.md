@@ -230,3 +230,12 @@ confirmada e avisa o facilitador (sino e "Chegadas de hoje").
 - **Não fazem parte do calendário oficial**: ficam numa tabela própria (`compromissos_time`), fora de `eventos`. Não aparecem na Agenda da igreja, nas métricas, na sugestão de escala nem nos lembretes, e não contam a regra "só o master cria eventos".
 - **Só quem é do ministério vê.** Só o facilitador daquele ministério cria e cancela.
 - Aparecem em **amarelo pastel** (também no modo escuro) em "Minhas escalas", na tela inicial (próximos 14 dias) e na tela "Compromissos do time".
+
+## Envio do WhatsApp (21/11)
+
+- A fila é enviada **a cada 10 minutos** pelo agendador do Supabase (pg_cron + pg_net), que chama `/api/cron/enviar` com a senha `CRON_SECRET` guardada no cofre do Supabase (segredo `cron_secret`). As rotinas das 7h30 e das 21h e o envio logo depois de uma ação continuam funcionando.
+- **Prioridade** (sai primeiro): 1) ocorrência; 2) vaga aberta, troca e "Cheguei"; 3) lembretes, escala publicada, repertório e mensagens do app; 4) parabéns, boas-vindas e MaisFeliz.
+- **Validade por tipo**: "Cheguei" 3h; lembrete 14h; ocorrência, vaga, troca e repertório 24h; publicada e mensagem do app 48h; boas-vindas 72h; parabéns e MaisFeliz até o fim do dia; demais 12h. Vencida, é descartada.
+- **Proteções do número**: nada sai entre **22h e 7h** (fica na fila e sai de manhã); no máximo **300 mensagens por 24h** no total e **4 por pessoa**; pausa aleatória de 1 a 3 segundos entre mensagens.
+- **Sem envio em dobro**: cada rotina reserva a mensagem antes de enviar; a reserva vale 5 minutos.
+- O risco de bloqueio continua enquanto o envio for pela Uazapi (não oficial); a solução definitiva é a API oficial do WhatsApp.
