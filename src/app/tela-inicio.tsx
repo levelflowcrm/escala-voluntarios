@@ -187,7 +187,7 @@ export function TelaInicio({
             className={`flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border font-medium ${BOTAO_COMPROMISSO}`}
           >
             <IconeCompromissos />
-            Compromissos do time
+            <span>Compromissos<br />do time</span>
           </Link>
         )}
         <Link
