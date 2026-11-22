@@ -88,6 +88,18 @@ export default async function Inicio() {
 
   const servidasNoMes = doMes?.length ?? 0;
 
+  // Compromissos do time nos próximos 14 dias (a RLS devolve só os dos meus ministérios)
+  const { data: comp } = await supabase
+    .from("compromissos_time")
+    .select("id, tipo, inicio, local, ministerios!inner(nome)")
+    .gte("inicio", agora)
+    .lt("inicio", new Date(Date.now() + 14 * 86_400_000).toISOString())
+    .order("inicio")
+    .limit(5);
+  const compromissos = ((comp ?? []) as unknown as { id: string; tipo: string; inicio: string; local: string | null; ministerios: { nome: string } }[]).map(
+    (c) => ({ id: c.id, tipo: c.tipo, inicio: c.inicio, local: c.local, ministerio: c.ministerios.nome }),
+  );
+
   // Ocorrências: o facilitador vê quantas do time estão abertas (a RLS devolve só as dos ministérios dele e as próprias).
   let ocorrenciasAbertas = 0;
   if (coordenador) {
@@ -175,6 +187,7 @@ export default async function Inicio() {
       maisFeliz={maisFeliz ? { eventoId: maisFeliz.evento_id, titulo: maisFeliz.titulo } : null}
       pendencias={pendencias}
       ocorrenciasAbertas={ocorrenciasAbertas}
+      compromissos={compromissos}
       serviHoje={serviHoje}
       avisos={(avisos ?? []).map((a) => ({
         id: a.id,

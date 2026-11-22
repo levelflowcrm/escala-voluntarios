@@ -14,6 +14,7 @@ import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } f
 import { BotaoAgenda } from "./botao-agenda";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
+import { BOTAO_COMPROMISSO, CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
 
 const PAPEL: Record<string, string> = {
   titular: "",
@@ -62,6 +63,7 @@ export function TelaInicio({
   pontuacao = null,
   ocorrenciasAbertas = 0,
   serviHoje = false,
+  compromissos = [],
 }: {
   nome: string;
   coordenador: boolean;
@@ -82,6 +84,7 @@ export function TelaInicio({
   maisFeliz?: { eventoId: string; titulo: string } | null;
   ocorrenciasAbertas?: number;
   serviHoje?: boolean;
+  compromissos?: { id: string; tipo: string; inicio: string; local: string | null; ministerio: string }[];
   pontuacao?: { pontos: number; nivel: string } | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
@@ -175,6 +178,14 @@ export function TelaInicio({
             Voluntários
           </Link>
         )}
+        {coordenador && (
+          <Link
+            href="/compromissos"
+            className={`flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border font-medium ${BOTAO_COMPROMISSO}`}
+          >
+            Compromissos do time
+          </Link>
+        )}
         <Link
           href="/minhas-escalas"
           className="flex h-12 min-w-[45%] flex-1 items-center justify-center rounded-xl border border-neutral-300 font-medium dark:border-neutral-700"
@@ -239,6 +250,23 @@ export function TelaInicio({
           ) : (
             <p className="text-sm font-medium text-violet-100">✓ Presença confirmada</p>
           )}
+        </section>
+      )}
+
+      {compromissos.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-neutral-500">Compromissos do time</h2>
+          {compromissos.map((c) => {
+            const r = rotuloCompromisso(c.tipo);
+            return (
+              <Link key={c.id} href="/compromissos" className={`rounded-xl border p-4 ${CARTAO_COMPROMISSO}`}>
+                <p className="font-medium">{fmtDataHora.format(new Date(c.inicio))}</p>
+                <p className={`text-sm ${TEXTO_COMPROMISSO}`}>
+                  {r.icone} {r.texto} · {c.ministerio}
+                </p>
+              </Link>
+            );
+          })}
         </section>
       )}
 
