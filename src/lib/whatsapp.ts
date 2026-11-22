@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { despacharPush } from "./push";
 
 /** Limites de segurança: pouco volume, nada de enxurrada. */
 export const MAX_POR_RODADA = 10; // envio na hora, logo depois de uma ação no app
@@ -126,9 +127,11 @@ export async function despacharFila(
 ): Promise<{ enviados: number; motivo?: string }> {
   const comeco = Date.now();
   try {
+    const db = clienteServico();
+    // Push do app: segue a mesma fila, mas não depende do interruptor do WhatsApp (tem o próprio, pelas chaves VAPID).
+    if (db) await despacharPush(db);
     if (!whatsappAtivo()) return { enviados: 0, motivo: "desligado" };
     if (emSilencio(new Date())) return { enviados: 0, motivo: "silencio" };
-    const db = clienteServico();
     if (!db) return { enviados: 0, motivo: "sem_chave_de_servico" };
 
     const reservaVencida = new Date(Date.now() - RESERVA_MIN * 60_000).toISOString();

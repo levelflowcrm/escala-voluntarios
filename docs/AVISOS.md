@@ -24,12 +24,12 @@ Lista oficial de quais avisos o app envia, por qual canal e para quem. Serve de 
 
 | Aviso | Quem recebe | WhatsApp hoje | Push no app |
 |---|---|---|---|
-| Escala publicada | voluntário escalado | sim | a fazer |
-| Lembrete de véspera | voluntário escalado | sim | a fazer |
-| Vaga aberta | colegas aptos a cobrir | sim | a fazer |
-| Pedido ou resposta de troca | quem pediu e quem responde | sim | a fazer |
-| Cheguei | facilitadores do ministério | sim | a fazer |
-| Ocorrência nova | facilitadores do ministério | sim | a fazer |
+| Escala publicada | voluntário escalado | sim | sim (PR do push) |
+| Lembrete de véspera | voluntário escalado | sim | sim (PR do push) |
+| Vaga aberta | colegas aptos a cobrir | sim | sim (PR do push) |
+| Pedido ou resposta de troca | quem pediu e quem responde | sim | sim (PR do push) |
+| Cheguei | facilitadores do ministério | sim | sim (PR do push) |
+| Ocorrência nova | facilitadores do ministério | sim | sim (PR do push) |
 
 ## Nível 2: push no app e sino, sem WhatsApp (informativos)
 
@@ -49,10 +49,18 @@ Lista oficial de quais avisos o app envia, por qual canal e para quem. Serve de 
 | Boas-vindas | fica só no WhatsApp, porque a pessoa ainda não instalou o app |
 | Erro ou sugestão enviada pelo app | só para o administrador master; WhatsApp e sino como hoje |
 
+## Como o push funciona
+
+- Os avisos do nível 1 continuam entrando na fila do WhatsApp; a mesma rotina que envia a fila (a cada 10 minutos e logo depois de uma ação no app) também manda o push para quem ativou os avisos no aparelho.
+- Push respeita o silêncio das 22h às 7h e a validade de cada aviso. Cada aviso vai uma vez só por push (`fila_whatsapp.push_enviado_em`).
+- O push depende da fila: quem não tem celular válido cadastrado não entra na fila e, por ora, também não recebe push.
+- Variáveis na Vercel: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT` (um `mailto:`). Sem elas o push fica desligado e o app segue normal.
+- O número no ícone conta os avisos recebidos e ainda não abertos, e zera quando a pessoa abre o app.
+
 ## O que falta construir
 
-1. Push do app (service worker, permissão do aparelho e tabela com o aparelho de cada pessoa; exige migração no Supabase).
-2. Número vermelho no ícone do app, igual ao do sino.
+1. ~~Push do app~~ (feito para o nível 1: service worker, permissão do aparelho, tabela `push_assinaturas`; precisa das chaves VAPID na Vercel).
+2. ~~Número vermelho no ícone do app~~ (feito: conta os avisos recebidos e ainda não abertos; zera ao abrir o app).
 3. Botão "Avisar também por WhatsApp" ao publicar um comunicado.
 4. Resumo diário de pendências para o facilitador.
 5. Regra para não duplicar: o mesmo aviso não chega duas vezes à mesma pessoa nos dois canais.
