@@ -93,12 +93,12 @@ function Formulario({
       <p className="text-xs text-neutral-500">Início</p>
       <div className="flex gap-2">
         <input className={campo} type="date" value={d.dia} onChange={mudar("dia")} />
-        <input className={`${campo} max-w-32`} type="time" value={d.hora} onChange={mudar("hora")} />
+        <input className={`${campo} max-w-32`} type="time" step={300} value={d.hora} onChange={mudar("hora")} />
       </div>
       <p className="text-xs text-neutral-500">Fim (opcional)</p>
       <div className="flex gap-2">
         <input className={campo} type="date" value={d.diaFim} onChange={mudar("diaFim")} />
-        <input className={`${campo} max-w-32`} type="time" value={d.horaFim} onChange={mudar("horaFim")} />
+        <input className={`${campo} max-w-32`} type="time" step={300} value={d.horaFim} onChange={mudar("horaFim")} />
       </div>
       <input className={campo} placeholder="Local (opcional)" maxLength={120} value={d.local} onChange={mudar("local")} />
       <textarea className={`${campo} h-20 py-2`} placeholder="Descrição (opcional)" maxLength={1000} value={d.descricao} onChange={mudar("descricao")} />

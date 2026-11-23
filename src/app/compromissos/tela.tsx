@@ -62,7 +62,7 @@ function Formulario({ ministerios }: { ministerios: { id: string; nome: string }
         </label>
         <label className="flex w-32 flex-col gap-1 text-sm">
           <span className="text-neutral-500">Horário</span>
-          <input type="time" className={`${campo} h-11`} value={hora} onChange={(e) => setHora(e.target.value)} />
+          <input type="time" step={300} className={`${campo} h-11`} value={hora} onChange={(e) => setHora(e.target.value)} />
         </label>
       </div>
 
