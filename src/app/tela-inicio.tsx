@@ -13,7 +13,7 @@ import { Resposta } from "./resposta";
 import { IconeAgenda, IconeAniversariantes, IconePermissoes, IconeEquilibrio } from "./icones-topo";
 import { BotaoAgenda } from "./botao-agenda";
 import { AvisosNoCelular } from "./avisos-no-celular";
-import { IconeMontarEscala, IconeVoluntarios, IconeCompromissos, IconeMinhasEscalas, IconeDisponibilidade, IconeVagas } from "./icones-botoes";
+import { IconeMontarEscala, IconeVoluntarios, IconeCompromissos, IconeMinhasEscalas, IconeDisponibilidade, IconeVagas, IconeOcorrencias, IconeSugestoes, IconeErroOuIdeia, IconeApoie } from "./icones-botoes";
 import { Sino } from "./sino";
 import type { Pendencias } from "@/lib/pendencias";
 import { BOTAO_COMPROMISSO, CARTAO_COMPROMISSO, TEXTO_COMPROMISSO, rotuloCompromisso } from "@/lib/compromissos";
@@ -382,10 +382,10 @@ export function TelaInicio({
       )}
 
       <footer className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-neutral-200 pt-4 text-xs text-neutral-400 dark:border-neutral-800">
-        <Link href="/ocorrencias" className="underline">Ocorrências</Link>
-        <Link href="/sugestoes" className="underline">Sugestões ao time</Link>
-        <Link href="/mensagens" className="underline">Erro ou ideia do app</Link>
-        <Link href="/contribuir" className="underline">Apoie o Mais Conectados</Link>
+        <Link href="/ocorrencias" className="inline-flex items-center gap-1 underline"><IconeOcorrencias />Ocorrências</Link>
+        <Link href="/sugestoes" className="inline-flex items-center gap-1 underline"><IconeSugestoes />Sugestões ao time</Link>
+        <Link href="/mensagens" className="inline-flex items-center gap-1 underline"><IconeErroOuIdeia />Erro ou ideia do app</Link>
+        <Link href="/contribuir" className="inline-flex items-center gap-1 underline"><IconeApoie />Apoie</Link>
       </footer>
     </main>
   );
