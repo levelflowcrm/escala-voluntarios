@@ -7,6 +7,8 @@ import { apagar, marcarVistos, publicar } from "./acoes";
 
 export type Comunicado = { id: string; titulo: string; texto: string; criadoEm: string; ministerio: string; autor: string };
 
+export type AvisoApp = { id: string; texto: string; criadoEm: string; novo: boolean };
+
 export type Chegada = { id: string; pessoa: string; funcao: string; ministerio: string; evento: string; inicio: string; chegouEm: string | null };
 
 const hora = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
@@ -28,6 +30,22 @@ function Chegadas({ lista }: { lista: Chegada[] }) {
           ) : (
             <span className="shrink-0 rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">Ainda não</span>
           )}
+        </p>
+      ))}
+    </section>
+  );
+}
+
+function AvisosDoApp({ lista }: { lista: AvisoApp[] }) {
+  if (lista.length === 0) return null;
+  return (
+    <section className="flex flex-col gap-2 rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+      <h2 className="font-medium">Avisos</h2>
+      {lista.map((a) => (
+        <p key={a.id} className="text-sm">
+          {a.novo && <span className="mr-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">Novo</span>}
+          {a.texto}
+          <span className="block text-xs text-neutral-500">{fmtDataHora.format(new Date(a.criadoEm))}</span>
         </p>
       ))}
     </section>
@@ -80,7 +98,9 @@ export function TelaComunicados({
   ministerios,
   vistoEm,
   chegadas = [],
+  avisosApp = [],
 }: {
+  avisosApp?: AvisoApp[];
   chegadas?: Chegada[];
   comunicados: Comunicado[];
   ministerios: { id: string; nome: string }[];
@@ -96,6 +116,7 @@ export function TelaComunicados({
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 py-8">
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Comunicados</h1>
+      <AvisosDoApp lista={avisosApp} />
       <Chegadas lista={chegadas} />
       {ministerios.length > 0 && <Formulario ministerios={ministerios} />}
       {comunicados.length === 0 && <p className="text-neutral-500">Nenhum comunicado por enquanto.</p>}

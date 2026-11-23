@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import { ministeriosQueCoordeno } from "@/lib/ministerios";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { TelaComunicados, type Chegada, type Comunicado } from "./tela";
+import { TelaComunicados, type AvisoApp, type Chegada, type Comunicado } from "./tela";
 
 export default async function Comunicados() {
   const supabase = await criarClienteServidor();
   const { data: eu } = await supabase.rpc("minha_pessoa");
   if (!eu) redirect("/sem-cadastro");
 
-  const [{ data: lista }, meus, { data: leitura }] = await Promise.all([
+  const [{ data: lista }, meus, { data: leitura }, { data: avisosLinhas }] = await Promise.all([
     supabase
       .from("comunicados")
       .select("id, titulo, texto, criado_em, ministerios!inner(nome), pessoas(nome)")
@@ -16,7 +16,9 @@ export default async function Comunicados() {
       .limit(50),
     ministeriosQueCoordeno(supabase, eu),
     supabase.from("leituras_comunicados").select("visto_em").eq("pessoa_id", eu).maybeSingle(),
+    supabase.from("notificacoes").select("id, texto, criado_em, lido_em").order("criado_em", { ascending: false }).limit(30),
   ]);
+  const avisosApp: AvisoApp[] = (avisosLinhas ?? []).map((a) => ({ id: a.id, texto: a.texto, criadoEm: a.criado_em, novo: a.lido_em == null }));
 
   const comunicados: Comunicado[] = (lista ?? []).map((c) => ({
     id: c.id,
@@ -40,5 +42,5 @@ export default async function Comunicados() {
       chegouEm: c.chegou_em,
     }));
   }
-  return <TelaComunicados chegadas={chegadas} comunicados={comunicados} ministerios={ministerios} vistoEm={leitura?.visto_em ?? new Date(Date.now() - 14 * 86_400_000).toISOString()} />;
+  return <TelaComunicados avisosApp={avisosApp} chegadas={chegadas} comunicados={comunicados} ministerios={ministerios} vistoEm={leitura?.visto_em ?? new Date(Date.now() - 14 * 86_400_000).toISOString()} />;
 }

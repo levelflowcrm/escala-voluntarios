@@ -53,4 +53,5 @@ $PSQL -f supabase/tests/metricas_dos_cultos.sql
 $PSQL -f supabase/tests/ocorrencias.sql
 $PSQL -f supabase/tests/compromissos_do_time.sql
 $PSQL -f supabase/tests/whatsapp_ritmo.sql
+$PSQL -f supabase/tests/avisos_novo_ministerio.sql
 echo "OK: migrações, seed e testes passaram"

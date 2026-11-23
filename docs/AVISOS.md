@@ -38,6 +38,8 @@ Lista oficial de quais avisos o app envia, por qual canal e para quem. Serve de 
 | Repertório novo ou atualizado | só Louvor e Projeção escalados no dia | sim | passa a ser só push e sino quando o time instalar o app |
 | Comunicado do facilitador | time | não | push e sino; WhatsApp só se o facilitador marcar "Avisar também por WhatsApp" (a fazer) |
 | Lembrete do MaisFeliz | quem serviu no culto | sim | push perto do fim do culto; WhatsApp pode sair depois |
+| Voluntário adicionado a outro ministério | facilitador de cada ministério em que a pessoa já serve (menos quem a adicionou) e a própria pessoa | não | sino e push (feito, aparece na tela Comunicados, em "Avisos") |
+| Escala publicada com alguém de outro ministério | facilitadores dos outros ministérios da pessoa | não | sino e push (feito); no máximo 1 aviso por pessoa por hora |
 | Resumo de pendências | facilitador | não | uma vez por dia, só se houver vaga sem ninguém ou pedido sem resposta (a fazer) |
 
 ## Nível 3: só sino ou número no ícone, sem push

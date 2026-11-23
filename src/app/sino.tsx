@@ -5,7 +5,7 @@ export function Sino({ novos }: { novos: number }) {
   return (
     <Link
       href="/comunicados"
-      aria-label={novos > 0 ? `Comunicados: ${novos} novo${novos > 1 ? "s" : ""}` : "Comunicados"}
+      aria-label={novos > 0 ? `Comunicados e avisos: ${novos} novo${novos > 1 ? "s" : ""}` : "Comunicados e avisos"}
       className="relative flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

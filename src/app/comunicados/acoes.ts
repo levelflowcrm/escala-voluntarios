@@ -39,5 +39,6 @@ export async function marcarVistos(): Promise<void> {
   await supabase
     .from("leituras_comunicados")
     .upsert({ pessoa_id: eu, visto_em: new Date().toISOString() }, { onConflict: "pessoa_id" });
+  await supabase.rpc("marcar_notificacoes_lidas");
   revalidatePath("/");
 }
