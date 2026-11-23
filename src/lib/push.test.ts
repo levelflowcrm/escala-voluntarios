@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { montarMensagemPush, pushConfigurado, TIPOS_PUSH } from "./push";
+import { montarMensagemNotificacao, montarMensagemPush, pushConfigurado, TIPOS_PUSH } from "./push";
 
 describe("montarMensagemPush", () => {
   it("monta título, destino e tag para os avisos do nível 1", () => {
@@ -35,5 +35,23 @@ describe("pushConfigurado", () => {
     expect(pushConfigurado({})).toBe(false);
     expect(pushConfigurado({ NEXT_PUBLIC_VAPID_PUBLIC_KEY: "a", VAPID_PRIVATE_KEY: "b" })).toBe(false);
     expect(pushConfigurado({ NEXT_PUBLIC_VAPID_PUBLIC_KEY: "a", VAPID_PRIVATE_KEY: "b", VAPID_SUBJECT: "mailto:x@y.com" })).toBe(true);
+  });
+});
+
+describe("montarMensagemNotificacao", () => {
+  it("monta o push dos avisos de novo ministério e de escala em outro ministério", () => {
+    expect(montarMensagemNotificacao("novo_ministerio", "Ana, do seu time, também foi adicionado(a) ao ministério Projeção.", "/comunicados", "n1")).toEqual({
+      titulo: "Novo ministério no time",
+      corpo: "Ana, do seu time, também foi adicionado(a) ao ministério Projeção.",
+      url: "/comunicados",
+      tag: "novo_ministerio:n1",
+    });
+    expect(montarMensagemNotificacao("escalado_outro_ministerio", "Ana foi escalado(a).", "/montar", "n2")?.titulo).toBe("Escala em outro ministério");
+    expect(montarMensagemNotificacao("novo_ministerio_voluntario", "Você agora também faz parte do ministério Projeção.", "/", "n3")?.titulo).toBe("Novo ministério");
+  });
+
+  it("ignora tipos sem push e destinos que não são do próprio app", () => {
+    expect(montarMensagemNotificacao("outro_tipo", "x", "/", "1")).toBeNull();
+    expect(montarMensagemNotificacao("novo_ministerio", "x", "https://golpe.example", "1")?.url).toBe("/");
   });
 });

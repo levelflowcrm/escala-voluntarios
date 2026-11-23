@@ -50,6 +50,11 @@ export default async function Inicio() {
     .select("id", { count: "exact", head: true })
     .gt("criado_em", desde)
     .or(`autor_id.is.null,autor_id.neq.${pessoaId}`);
+  // Avisos do app (ex.: voluntário adicionado a outro ministério) ainda não lidos também acendem o sino.
+  const { count: avisosNaoLidos } = await supabase
+    .from("notificacoes")
+    .select("id", { count: "exact", head: true })
+    .is("lido_em", null);
   // Facilitador: quem avisou "Cheguei" depois da última visita também acende o sino.
   let chegadasNovas = 0;
   if (coordenador) {
@@ -178,7 +183,7 @@ export default async function Inicio() {
       admin={!!admin}
       proximas={proximas}
       historico={historico}
-      novosComunicados={(novos ?? 0) + chegadasNovas}
+      novosComunicados={(novos ?? 0) + chegadasNovas + (avisosNaoLidos ?? 0)}
       mensagensNovas={mensagensNovas}
       servidasNoMes={servidasNoMes}
       vagasParaMim={vagasParaMim}
