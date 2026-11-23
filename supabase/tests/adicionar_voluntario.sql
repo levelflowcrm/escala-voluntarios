@@ -19,7 +19,7 @@ begin
   perform set_config('request.jwt.claim.sub', uc::text, true);
 
   -- coordenador cadastra: pessoa, vínculo ao ministério e função (só da própria área)
-  select pessoa_id, ja_existia into novo, ja from adicionar_voluntario('  Maria Teste  ', 'Maria.Teste@Exemplo.com', '11 99999-0000', tm, array[f1, f2]);
+  select pessoa_id, ja_existia into novo, ja from adicionar_voluntario('  Maria Teste  ', 'Maria.Teste@Exemplo.com', '11 99999-0000', tm, array[f1, f2], date '1990-05-10');
   if ja then raise exception 'FALHOU: pessoa nova marcada como existente'; end if;
   if not exists (select 1 from pessoas where id = novo and nome = 'Maria Teste' and ativo) then raise exception 'FALHOU: pessoa não criada com nome limpo'; end if;
   if not exists (select 1 from membros_ministerio where pessoa_id = novo and ministerio_id = tm and papel = 'voluntario') then raise exception 'FALHOU: não entrou no time'; end if;
@@ -27,7 +27,7 @@ begin
   if exists (select 1 from habilitacoes where pessoa_id = novo and funcao_id = f2) then raise exception 'FALHOU: função de outra área foi marcada'; end if;
 
   -- e-mail igual (maiúsculas diferentes) reaproveita a pessoa, sem duplicar
-  select pessoa_id, ja_existia into novo2, ja from adicionar_voluntario('Outro Nome', 'maria.teste@exemplo.com', null, tm);
+  select pessoa_id, ja_existia into novo2, ja from adicionar_voluntario('Outro Nome', 'maria.teste@exemplo.com', null, tm, '{}', date '2001-01-01');
   if novo2 <> novo or not ja then raise exception 'FALHOU: não reaproveitou a pessoa pelo e-mail'; end if;
 
   -- nome repetido sem e-mail correspondente é recusado
@@ -48,9 +48,18 @@ begin
   begin perform adicionar_voluntario('Intruso', null, null, tm); raise exception 'FALHOU: voluntário cadastrou';
   exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
 
+  -- data de nascimento no futuro ou antiga demais é recusada
+  begin perform adicionar_voluntario('Data Futura', null, null, tm, '{}', current_date + 1); raise exception 'FALHOU: aceitou nascimento no futuro';
+  exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
+  begin perform adicionar_voluntario('Data Antiga', null, null, tm, '{}', date '1800-01-01'); raise exception 'FALHOU: aceitou nascimento antigo demais';
+  exception when raise_exception then if sqlerrm like 'FALHOU%' then raise; end if; end;
+
   -- anônimo não executa
   reset role; set local role anon;
   begin perform adicionar_voluntario('Anon', null, null, tm); raise exception 'FALHOU: anon executou';
   exception when insufficient_privilege then null; end;
+  -- nascimento gravado na pessoa nova; reaproveitar pelo e-mail não sobrescreve o que já existe
+  reset role;
+  if (select aniversario from pessoas where id = novo) is distinct from date '1990-05-10' then raise exception 'FALHOU: nascimento não foi gravado'; end if;
   raise notice 'Adicionar voluntário: OK';
 end $$;

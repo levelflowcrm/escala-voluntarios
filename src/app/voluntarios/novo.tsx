@@ -7,13 +7,14 @@ import type { AreaFuncoes } from "./habilidades";
 
 const campo = "h-11 min-w-0 rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
 
-/** Formulário "Adicionar voluntário": nome, e-mail Google, celular, ministério e funções iniciais. */
+/** Formulário "Adicionar voluntário": nome, e-mail Google, celular, nascimento, ministério e funções iniciais. */
 export function NovoVoluntario({ areas }: { areas: AreaFuncoes[] }) {
   const router = useRouter();
   const [aberto, setAberto] = useState(false);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [celular, setCelular] = useState("");
+  const [aniversario, setAniversario] = useState("");
   const [ministerio, setMinisterio] = useState(areas[0]?.id ?? "");
   const [funcoes, setFuncoes] = useState<string[]>([]);
   const [erro, setErro] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export function NovoVoluntario({ areas }: { areas: AreaFuncoes[] }) {
     iniciar(async () => {
       setErro(null);
       setAviso(null);
-      const r = await adicionarVoluntario({ nome, email, celular, ministerio, funcoes });
+      const r = await adicionarVoluntario({ nome, email, celular, aniversario, ministerio, funcoes });
       if (r.erro) return setErro(r.erro);
       setAviso(
         r.jaExistia
@@ -37,6 +38,7 @@ export function NovoVoluntario({ areas }: { areas: AreaFuncoes[] }) {
       setNome("");
       setEmail("");
       setCelular("");
+      setAniversario("");
       setFuncoes([]);
       router.refresh();
     });
@@ -67,7 +69,11 @@ export function NovoVoluntario({ areas }: { areas: AreaFuncoes[] }) {
         onChange={(e) => setEmail(e.target.value)}
         className={campo}
       />
-      <input type="tel" inputMode="tel" placeholder="Celular com DDD (opcional)" value={celular} onChange={(e) => setCelular(e.target.value)} className={campo} />
+      <input type="tel" inputMode="tel" placeholder="Celular com DDD (WhatsApp)" value={celular} onChange={(e) => setCelular(e.target.value)} className={campo} />
+      <label className="flex flex-col gap-1 text-sm text-neutral-500">
+        Data de nascimento
+        <input type="date" value={aniversario} min="1900-01-01" max={new Date().toISOString().slice(0, 10)} onChange={(e) => setAniversario(e.target.value)} className={`${campo} text-base text-inherit`} />
+      </label>
       {areas.length > 1 && (
         <select
           value={ministerio}
@@ -99,7 +105,7 @@ export function NovoVoluntario({ areas }: { areas: AreaFuncoes[] }) {
       )}
       {erro && <p className="text-sm text-red-600">{erro}</p>}
       {aviso && <p className="text-sm text-emerald-700 dark:text-emerald-400">{aviso}</p>}
-      <button disabled={pendente || !nome.trim() || !ministerio} onClick={salvar} className="h-11 rounded-lg bg-violet-600 px-4 font-medium text-white disabled:opacity-40">
+      <button disabled={pendente || !nome.trim() || !celular.trim() || !aniversario || !ministerio} onClick={salvar} className="h-11 rounded-lg bg-violet-600 px-4 font-medium text-white disabled:opacity-40">
         {pendente ? "Salvando…" : "Adicionar ao time"}
       </button>
     </section>
