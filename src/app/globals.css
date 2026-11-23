@@ -27,6 +27,21 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Listas suspensas (select): no tema escuro o texto das opções ficava claro sobre fundo branco. Cores explícitas nos dois temas. */
+select option,
+select optgroup {
+  background-color: #ffffff;
+  color: #171717;
+}
+.dark select {
+  color-scheme: dark;
+}
+.dark select option,
+.dark select optgroup {
+  background-color: #171717;
+  color: #ededed;
+}
+
 /* Cor de destaque: o app usa a paleta "violet"; cada cor troca os tons usados. */
 html[data-cor="azul"] {
   --color-violet-50: #eff6ff; --color-violet-300: #93c5fd; --color-violet-400: #60a5fa; --color-violet-500: #3b82f6;
