@@ -26,7 +26,7 @@ function FormCulto({ inicial, rotulo, aoEnviar, aoFechar }: { inicial: DadosCult
             <option key={n} value={i}>{n}</option>
           ))}
         </select>
-        <input className={`${campo} max-w-32`} type="time" value={d.hora} onChange={(e) => setD({ ...d, hora: e.target.value })} />
+        <input className={`${campo} max-w-32`} type="time" step={300} value={d.hora} onChange={(e) => setD({ ...d, hora: e.target.value })} />
       </div>
       {d.id && (
         <label className="flex items-start gap-2 text-sm">

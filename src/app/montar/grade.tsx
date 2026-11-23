@@ -181,7 +181,7 @@ export function Grade({
                 <p className="text-xs text-neutral-500">Vale só para este culto. Quem já está escalado continua escalado.</p>
                 <div className="flex gap-2">
                   <input type="date" value={alterando.dia} onChange={(ev) => setAlterando({ ...alterando, dia: ev.target.value })} className="h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700" />
-                  <input type="time" value={alterando.hora} onChange={(ev) => setAlterando({ ...alterando, hora: ev.target.value })} className="h-11 max-w-32 rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700" />
+                  <input type="time" step={300} value={alterando.hora} onChange={(ev) => setAlterando({ ...alterando, hora: ev.target.value })} className="h-11 max-w-32 rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700" />
                 </div>
                 <div className="flex gap-2">
                   <button
