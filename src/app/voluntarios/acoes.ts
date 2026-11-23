@@ -70,7 +70,7 @@ export async function definirHabilidade(pessoaId: string, funcaoId: string, nive
   return { erro: null };
 }
 
-export type DadosNovoVoluntario = { nome: string; email: string; celular: string; ministerio: string; funcoes: string[] };
+export type DadosNovoVoluntario = { nome: string; email: string; celular: string; aniversario: string; ministerio: string; funcoes: string[] };
 
 /**
  * Cadastra um voluntário no ministério (e marca as funções escolhidas como "apto").
@@ -86,6 +86,7 @@ export async function adicionarVoluntario(d: DadosNovoVoluntario): Promise<{ err
     p_celular: v.celular,
     p_ministerio: d.ministerio,
     p_funcoes: d.funcoes,
+    p_aniversario: v.aniversario,
   });
   if (error) return { erro: error.message };
   revalidatePath("/voluntarios");
