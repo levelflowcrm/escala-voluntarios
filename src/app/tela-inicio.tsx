@@ -66,6 +66,7 @@ export function TelaInicio({
   ocorrenciasAbertas = 0,
   serviHoje = false,
   compromissos = [],
+  avisoDisponibilidade = null,
 }: {
   nome: string;
   coordenador: boolean;
@@ -88,6 +89,7 @@ export function TelaInicio({
   serviHoje?: boolean;
   compromissos?: { id: string; tipo: string; inicio: string; local: string | null; ministerio: string }[];
   pontuacao?: { pontos: number; nivel: string } | null;
+  avisoDisponibilidade?: string | null;
 }) {
   const aguardando = proximas.filter((e) => e.status === "pendente").length;
   const proximo = proximas.find((e) => e.status !== "recusado");
@@ -163,11 +165,26 @@ export function TelaInicio({
         </Link>
       )}
 
+      {avisoDisponibilidade && (
+        <Link href="/disponibilidade" className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-3 text-sm dark:border-neutral-800">
+          <IconeDisponibilidade />
+          <span className="flex-1">Informe sua disponibilidade de <strong>{avisoDisponibilidade}</strong></span>
+          <span aria-hidden className="text-neutral-400">›</span>
+        </Link>
+      )}
+
       <nav className="flex flex-wrap gap-2">
+        <Link
+          href="/vagas"
+          className="flex min-h-[5.5rem] py-2 basis-full flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
+        >
+          <IconeVagas />
+          Vagas abertas
+        </Link>
         {coordenador && (
           <Link
             href="/montar"
-            className="flex h-20 flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center bg-violet-600 font-medium text-white"
+            className="flex min-h-[5.5rem] py-2 flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center bg-violet-600 font-medium text-white"
           >
             <IconeMontarEscala />
             Montar escala
@@ -176,7 +193,7 @@ export function TelaInicio({
         {coordenador && (
           <Link
             href="/voluntarios"
-            className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
+            className="flex min-h-[5.5rem] py-2 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
           >
             <IconeVoluntarios />
             Voluntários
@@ -185,7 +202,7 @@ export function TelaInicio({
         {coordenador && (
           <Link
             href="/compromissos"
-            className={`flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border font-medium ${BOTAO_COMPROMISSO}`}
+            className={`flex min-h-[5.5rem] py-2 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border font-medium ${BOTAO_COMPROMISSO}`}
           >
             <IconeCompromissos />
             <span>Compromissos<br />do time</span>
@@ -193,24 +210,10 @@ export function TelaInicio({
         )}
         <Link
           href="/minhas-escalas"
-          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
+          className="flex min-h-[5.5rem] py-2 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
         >
           <IconeMinhasEscalas />
           Minhas escalas
-        </Link>
-        <Link
-          href="/disponibilidade"
-          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
-        >
-          <IconeDisponibilidade />
-          Disponibilidade
-        </Link>
-        <Link
-          href="/vagas"
-          className="flex h-20 min-w-[45%] flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-center border border-neutral-300 font-medium dark:border-neutral-700"
-        >
-          <IconeVagas />
-          Vagas abertas
         </Link>
       </nav>
 

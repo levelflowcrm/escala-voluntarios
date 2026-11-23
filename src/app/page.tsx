@@ -4,6 +4,7 @@ import { calcularPendencias, type EscalaPend } from "@/lib/pendencias";
 import { proximosAniversarios } from "@/lib/aniversarios";
 import { diaNoFuso, limitesMes, mesAtual } from "@/lib/datas";
 import { agruparTime, type LinhaTime } from "@/lib/time-de-hoje";
+import { deveAvisarDisponibilidade, proximoMes } from "@/lib/disponibilidade-mes";
 import { TelaInicio, type Linha } from "./tela-inicio";
 
 const CAMPOS = "id, papel, status, motivo, chegou_em, eventos!inner(titulo, inicio, cor), funcoes(nome), ministerios(nome)";
@@ -55,6 +56,17 @@ export default async function Inicio() {
     .from("notificacoes")
     .select("id", { count: "exact", head: true })
     .is("lido_em", null);
+  // Cartão "Informe sua disponibilidade de <próximo mês>": a partir do dia 15, para quem serve em algum ministério.
+  let avisoDisponibilidade: string | null = null;
+  const hojeBr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  if (deveAvisarDisponibilidade(hojeBr)) {
+    const prox = proximoMes(hojeBr);
+    const [{ data: informado }, { count: times }] = await Promise.all([
+      supabase.from("disponibilidade_informada").select("mes").eq("mes", prox.mes).maybeSingle(),
+      supabase.from("membros_ministerio").select("ministerio_id", { count: "exact", head: true }).eq("pessoa_id", pessoaId),
+    ]);
+    if (!informado && (times ?? 0) > 0) avisoDisponibilidade = prox.nome;
+  }
   // Facilitador: quem avisou "Cheguei" depois da última visita também acende o sino.
   let chegadasNovas = 0;
   if (coordenador) {
@@ -183,6 +195,7 @@ export default async function Inicio() {
       admin={!!admin}
       proximas={proximas}
       historico={historico}
+      avisoDisponibilidade={avisoDisponibilidade}
       novosComunicados={(novos ?? 0) + chegadasNovas + (avisosNaoLidos ?? 0)}
       mensagensNovas={mensagensNovas}
       servidasNoMes={servidasNoMes}
