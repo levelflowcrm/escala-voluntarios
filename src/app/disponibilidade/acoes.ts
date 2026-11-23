@@ -59,6 +59,7 @@ export async function salvarTurno(
     const { error } = await supabase.from("indisponibilidades").insert(linhas);
     if (error) return { erro: error.message };
   }
+  await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: null };
 }
@@ -72,6 +73,7 @@ export async function adicionarBloqueio(inicio: string, fim: string, motivo: str
   const { error } = await supabase
     .from("bloqueios")
     .insert({ pessoa_id: eu, inicio, fim, motivo: motivo.trim().slice(0, 200) || null });
+  if (!error) await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: error?.message ?? null };
 }
@@ -79,6 +81,7 @@ export async function adicionarBloqueio(inicio: string, fim: string, motivo: str
 export async function removerBloqueio(id: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
   const { error } = await supabase.from("bloqueios").delete().eq("id", id);
+  if (!error) await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: error?.message ?? null };
 }
@@ -92,6 +95,7 @@ export async function salvarPreferencias(limite: number | null, observacao: stri
   const { error } = await supabase
     .from("preferencias")
     .upsert({ pessoa_id: eu, limite_mensal: limite, observacao: nota || null, atualizado_em: new Date().toISOString() });
+  if (!error) await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
 }
@@ -113,6 +117,7 @@ export async function aplicarAtalho(atalho: Atalho): Promise<Resultado> {
       .insert(bloquear.map((d) => ({ pessoa_id: eu, dia_semana: d, periodo: null, ordem_no_mes: null })));
     if (error) return { erro: error.message };
   }
+  await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: null };
 }
@@ -126,6 +131,7 @@ export async function alternarDia(dia: string, marcar: boolean): Promise<Resulta
   const { error } = marcar
     ? await supabase.from("dias_disponiveis").upsert({ pessoa_id: eu, dia })
     : await supabase.from("dias_disponiveis").delete().eq("pessoa_id", eu).eq("dia", dia);
+  if (!error) await supabase.rpc("informar_disponibilidade");
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
 }
 
@@ -137,6 +143,17 @@ export async function salvarSoDiasMarcados(ligado: boolean): Promise<Resultado> 
   const { error } = await supabase
     .from("preferencias")
     .upsert({ pessoa_id: eu, so_dias_marcados: ligado, atualizado_em: new Date().toISOString() });
+  if (!error) await supabase.rpc("informar_disponibilidade");
   revalidatePath("/disponibilidade");
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
+}
+
+/** "Está tudo certo": confirma o mês sem mudar nada (quem pode servir sempre). */
+export async function confirmarDisponibilidade(): Promise<Resultado> {
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase.rpc("informar_disponibilidade");
+  if (error) return { erro: "Não foi possível confirmar agora. Tente de novo." };
+  revalidatePath("/disponibilidade");
+  revalidatePath("/");
+  return { erro: null };
 }

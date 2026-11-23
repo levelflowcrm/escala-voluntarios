@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Periodo } from "@/lib/escala/sugerir";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { proximoMes } from "@/lib/disponibilidade-mes";
 import { turnosDosCultos } from "@/lib/turnos";
 import type { Atalho } from "./acoes";
 import { TelaDisponibilidade, type RegraTurno } from "./tela";
@@ -19,6 +20,9 @@ export default async function Disponibilidade() {
     supabase.from("dias_disponiveis").select("dia").eq("pessoa_id", eu).gte("dia", hoje),
     supabase.from("eventos").select("inicio").gte("inicio", new Date().toISOString()).lt("inicio", new Date(Date.now() + 200 * 86400000).toISOString()),
   ]);
+
+  const prox = proximoMes(hoje);
+  const { data: informado } = await supabase.from("disponibilidade_informada").select("mes").eq("mes", prox.mes).maybeSingle();
 
   const fmtDia = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" });
   const diasComEvento = [...new Set((eventos ?? []).map((e) => fmtDia.format(new Date(e.inicio))))];
@@ -59,6 +63,7 @@ export default async function Disponibilidade() {
       marcados={(marcados ?? []).map((m) => m.dia as string)}
       diasComEvento={diasComEvento}
       soDiasMarcados={pref?.so_dias_marcados ?? false}
+      mesParaConfirmar={informado ? null : prox.nome}
     />
   );
 }

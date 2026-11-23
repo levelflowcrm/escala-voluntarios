@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { salvarPerfil, type DadosPerfil } from "./acoes";
 import { Aparencia } from "./aparencia";
+import { IconeDisponibilidade } from "../icones-botoes";
 import { FotoPerfil } from "./foto";
 
 const campo = "h-11 w-full rounded-lg border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
@@ -64,6 +65,15 @@ export function TelaPerfil({
         {pendente ? "Salvando…" : "Salvar"}
       </button>
       {msg && <p className={`text-sm ${msg.ok ? "text-emerald-700 dark:text-emerald-400" : "text-red-600"}`}>{msg.texto}</p>}
+
+      <Link
+        href="/disponibilidade"
+        className="flex items-center gap-3 rounded-xl border border-neutral-300 px-4 py-3 font-medium dark:border-neutral-700"
+      >
+        <IconeDisponibilidade />
+        <span className="flex-1">Minha disponibilidade</span>
+        <span aria-hidden className="text-neutral-400">›</span>
+      </Link>
 
       <Aparencia />
 

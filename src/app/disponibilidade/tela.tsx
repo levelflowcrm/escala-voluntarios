@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import type { Periodo } from "@/lib/escala/sugerir";
 import { nomeTurno } from "@/lib/turnos";
 import { Preferencias } from "./preferencias";
-import { adicionarBloqueio, removerBloqueio, salvarTurno, type Atalho } from "./acoes";
+import { adicionarBloqueio, confirmarDisponibilidade, removerBloqueio, salvarTurno, type Atalho } from "./acoes";
 import { Atalhos, Calendario } from "./calendario";
 
 export type RegraTurno = "sempre" | "nunca" | number[];
@@ -88,6 +88,7 @@ export function TelaDisponibilidade({
   marcados,
   diasComEvento,
   soDiasMarcados,
+  mesParaConfirmar = null,
 }: {
   turnos: { diaSemana: number; periodo: Periodo; cultos: string[]; regra: RegraTurno }[];
   bloqueios: { id: string; inicio: string; fim: string; motivo: string | null }[];
@@ -98,6 +99,7 @@ export function TelaDisponibilidade({
   marcados: string[];
   diasComEvento: string[];
   soDiasMarcados: boolean;
+  mesParaConfirmar?: string | null;
 }) {
   const [ocupado, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
@@ -115,8 +117,8 @@ export function TelaDisponibilidade({
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-4 py-8">
       <header className="flex flex-col gap-1">
-        <Link href="/" className="text-sm text-neutral-500">
-          ← Minhas escalas
+        <Link href="/perfil" className="text-sm text-neutral-500">
+          ← Perfil
         </Link>
         <h1 className="text-2xl font-semibold">Minha disponibilidade</h1>
         <p className="text-sm text-neutral-500">
@@ -125,6 +127,21 @@ export function TelaDisponibilidade({
       </header>
 
       {erro && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{erro}</p>}
+
+      {mesParaConfirmar && (
+        <section className="flex flex-col gap-2 rounded-xl border border-violet-300 p-3 dark:border-violet-800">
+          <p className="text-sm">
+            Você ainda não informou sua disponibilidade de <strong>{mesParaConfirmar}</strong>. Se pode servir normalmente, é só confirmar; se não, ajuste abaixo.
+          </p>
+          <button
+            disabled={ocupado}
+            onClick={() => rodar(confirmarDisponibilidade)}
+            className="h-11 rounded-xl bg-violet-600 font-medium text-white disabled:opacity-60"
+          >
+            Está tudo certo para {mesParaConfirmar}
+          </button>
+        </section>
+      )}
 
       <Atalhos key={atalho ?? "personalizado"} atual={atalho} />
 
