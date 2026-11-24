@@ -8,7 +8,7 @@ const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julh
 const SEMANA = ["D", "S", "T", "Q", "Q", "S", "S"];
 
 /** Atalhos: servir só aos fins de semana, só durante a semana ou todos os dias. */
-export function Atalhos({ atual }: { atual: Atalho | null }) {
+export function Atalhos({ atual, pessoaId, sujeito, aoSalvar }: { atual: Atalho | null; pessoaId?: string; sujeito?: string; aoSalvar?: () => void }) {
   const [ocupado, iniciar] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const [escolhido, setEscolhido] = useState<Atalho | null>(atual);
@@ -19,7 +19,7 @@ export function Atalhos({ atual }: { atual: Atalho | null }) {
   ];
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium text-neutral-500">Em que dias da semana eu posso?</h2>
+      <h2 className="text-sm font-medium text-neutral-500">{sujeito ? `Em que dias da semana ${sujeito} pode?` : "Em que dias da semana eu posso?"}</h2>
       <div className="flex flex-col gap-2">
         {opcoes.map((o) => (
           <button
@@ -27,9 +27,12 @@ export function Atalhos({ atual }: { atual: Atalho | null }) {
             disabled={ocupado}
             onClick={() =>
               iniciar(async () => {
-                const r = await aplicarAtalho(o.id);
+                const r = await aplicarAtalho(o.id, pessoaId);
                 setErro(r.erro);
-                if (!r.erro) setEscolhido(o.id);
+                if (!r.erro) {
+                  setEscolhido(o.id);
+                  aoSalvar?.();
+                }
               })
             }
             className={`rounded-xl border p-3 text-left disabled:opacity-60 ${escolhido === o.id ? "border-violet-500 bg-violet-50 dark:bg-violet-950" : "border-neutral-300 dark:border-neutral-700"}`}
@@ -40,7 +43,7 @@ export function Atalhos({ atual }: { atual: Atalho | null }) {
         ))}
       </div>
       <p className="text-xs text-neutral-500">
-        Isso substitui os ajustes por culto abaixo. Depois você ainda pode mudar cada culto e marcar dias especiais no calendário.
+        Isso substitui os ajustes por culto abaixo. Depois ainda dá para mudar cada culto e marcar dias especiais no calendário.
       </p>
       {erro && <p className="text-sm text-red-600">{erro}</p>}
     </section>
@@ -53,7 +56,11 @@ export function Calendario({
   marcados,
   diasComEvento,
   soDiasMarcados,
+  pessoaId,
+  sujeito,
 }: {
+  pessoaId?: string;
+  sujeito?: string;
   hoje: string;
   marcados: string[];
   diasComEvento: string[];
@@ -88,7 +95,7 @@ export function Calendario({
       return n;
     });
     iniciar(async () => {
-      const r = await alternarDia(dia, marcar);
+      const r = await alternarDia(dia, marcar, pessoaId);
       setErro(r.erro);
       if (r.erro)
         setSel((s) => {
@@ -102,9 +109,9 @@ export function Calendario({
 
   return (
     <section className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-      <h2 className="text-sm font-medium text-neutral-500">Calendário: dias em que posso servir</h2>
+      <h2 className="text-sm font-medium text-neutral-500">{sujeito ? `Calendário: dias em que ${sujeito} pode servir` : "Calendário: dias em que posso servir"}</h2>
       <p className="text-sm text-neutral-500">
-        Toque nos dias em que você tem disponibilidade. Um dia marcado vale mesmo que a regra da semana diga que você não pode.
+        Toque nos dias de disponibilidade. Um dia marcado vale mesmo que a regra da semana diga que não pode.
       </p>
 
       <button
@@ -112,7 +119,7 @@ export function Calendario({
         onClick={() =>
           iniciar(async () => {
             const novo = !so;
-            const r = await salvarSoDiasMarcados(novo);
+            const r = await salvarSoDiasMarcados(novo, pessoaId);
             setErro(r.erro);
             if (!r.erro) setSo(novo);
           })
@@ -121,8 +128,8 @@ export function Calendario({
       >
         <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${so ? "border-violet-600 bg-violet-600 text-white" : "border-neutral-400"}`}>{so ? "✓" : ""}</span>
         <span>
-          <span className="block font-medium">Só sirvo nos dias que eu marcar</span>
-          <span className="block text-sm text-neutral-500">Fora dos dias marcados, o facilitador não me sugere.</span>
+          <span className="block font-medium">{sujeito ? "Só serve nos dias marcados" : "Só sirvo nos dias que eu marcar"}</span>
+          <span className="block text-sm text-neutral-500">Fora dos dias marcados, a sugestão automática não escala.</span>
         </span>
       </button>
 

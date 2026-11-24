@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { criarClienteServidor } from "@/lib/supabase/server";
+import { dadosDisponibilidade, type DadosDisponibilidade } from "@/lib/disponibilidade-dados";
 import { validarNovoVoluntario } from "@/lib/voluntario";
 import { despacharFila, normalizarNumero } from "@/lib/whatsapp";
 
@@ -93,4 +94,40 @@ export async function adicionarVoluntario(d: DadosNovoVoluntario): Promise<{ err
   after(() => despacharFila()); // envia na hora a boas-vindas da pessoa nova (o banco só enfileira)
   const linha = (Array.isArray(data) ? data[0] : data) as { ja_existia?: boolean } | null;
   return { erro: null, nome: v.nome, jaExistia: !!linha?.ja_existia };
+}
+
+export type EscalaProxima = { quando: string; evento: string; ministerio: string; funcao: string | null; status: string };
+
+/** Disponibilidade e próximas escalas de um voluntário, para o facilitador conferir. */
+export async function carregarDisponibilidade(
+  pessoaId: string,
+): Promise<{ erro: string | null; dados?: DadosDisponibilidade; proximas?: EscalaProxima[] }> {
+  const supabase = await criarClienteServidor();
+  const { data: pode } = await supabase.rpc("coordeno_pessoa", { p: pessoaId });
+  if (!pode) return { erro: "Sem permissão para ver essa pessoa" };
+  const [dados, { data: esc }] = await Promise.all([
+    dadosDisponibilidade(supabase, pessoaId),
+    supabase
+      .from("escalas")
+      .select("status, eventos!inner(titulo, inicio), ministerios(nome), funcoes(nome)")
+      .eq("pessoa_id", pessoaId)
+      .in("status", ["pendente", "confirmado"])
+      .gte("eventos.inicio", new Date().toISOString())
+      .order("inicio", { referencedTable: "eventos", ascending: true })
+      .limit(8),
+  ]);
+  const proximas = ((esc ?? []) as unknown as {
+    status: string;
+    eventos: { titulo: string; inicio: string };
+    ministerios: { nome: string } | null;
+    funcoes: { nome: string } | null;
+  }[]).map((e) => ({
+    quando: e.eventos.inicio,
+    evento: e.eventos.titulo,
+    ministerio: e.ministerios?.nome ?? "",
+    funcao: e.funcoes?.nome ?? null,
+    status: e.status,
+  }));
+  proximas.sort((a, b) => a.quando.localeCompare(b.quando));
+  return { erro: null, dados, proximas };
 }

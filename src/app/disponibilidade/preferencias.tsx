@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { salvarPreferencias } from "./acoes";
 
 /** Preferências: limite de serviços por mês e recado ao facilitador. */
-export function Preferencias({ limite, observacao }: { limite: number | null; observacao: string }) {
+export function Preferencias({ limite, observacao, pessoaId, sujeito }: { limite: number | null; observacao: string; pessoaId?: string; sujeito?: string }) {
   const [valor, setValor] = useState(limite === null ? "" : String(limite));
   const [nota, setNota] = useState(observacao);
   const [ocupado, iniciar] = useTransition();
@@ -13,9 +13,9 @@ export function Preferencias({ limite, observacao }: { limite: number | null; ob
   const campo = "h-11 w-full rounded-xl border border-neutral-300 bg-transparent px-3 dark:border-neutral-700";
   return (
     <section className="flex flex-col gap-3 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-      <h2 className="text-sm font-medium text-neutral-500">Minhas preferências</h2>
+      <h2 className="text-sm font-medium text-neutral-500">{sujeito ? `Preferências de ${sujeito}` : "Minhas preferências"}</h2>
       <label className="flex flex-col gap-1 text-sm">
-        Quantas vezes por mês, no máximo, você prefere servir?
+        {sujeito ? "Máximo de vezes por mês" : "Quantas vezes por mês, no máximo, você prefere servir?"}
         <select className={campo} value={valor} onChange={(e) => setValor(e.target.value)}>
           <option value="">Sem limite</option>
           {[1, 2, 3, 4, 5].map((n) => (
@@ -24,7 +24,7 @@ export function Preferencias({ limite, observacao }: { limite: number | null; ob
         </select>
       </label>
       <label className="flex flex-col gap-1 text-sm">
-        Recado para o facilitador (opcional)
+        {sujeito ? "Recado para o facilitador" : "Recado para o facilitador (opcional)"}
         <textarea className={`${campo} h-20 py-2`} maxLength={200} value={nota} onChange={(e) => setNota(e.target.value)} placeholder="Ex.: prefiro cultos de domingo" />
       </label>
       <p className="text-xs text-neutral-500">
@@ -34,7 +34,7 @@ export function Preferencias({ limite, observacao }: { limite: number | null; ob
         disabled={ocupado}
         onClick={() =>
           iniciar(async () => {
-            const r = await salvarPreferencias(valor === "" ? null : Number(valor), nota);
+            const r = await salvarPreferencias(valor === "" ? null : Number(valor), nota, pessoaId);
             setMsg(r.erro ? { ok: false, texto: r.erro } : { ok: true, texto: "Preferências salvas." });
           })
         }
