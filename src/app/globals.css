@@ -59,3 +59,20 @@ html[data-cor="laranja"] {
   --color-violet-50: #fff7ed; --color-violet-300: #fdba74; --color-violet-400: #fb923c; --color-violet-500: #f97316;
   --color-violet-600: #ea580c; --color-violet-700: #c2410c; --color-violet-800: #9a3412; --color-violet-950: #431407;
 }
+
+/* Animação de pontos (cartão no topo + confetes nos ganhos). Sem movimento para quem pede menos animação. */
+@keyframes cel-entra {
+  0% { opacity: 0; transform: translateY(-24px) scale(0.96); }
+  60% { opacity: 1; transform: translateY(4px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cel-confete {
+  0% { opacity: 1; transform: translateY(-10px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(150px) rotate(var(--giro, 180deg)); }
+}
+.cel-entra { animation: cel-entra 0.45s ease-out both; }
+.cel-confete { animation: cel-confete 1.6s ease-in both; }
+@media (prefers-reduced-motion: reduce) {
+  .cel-entra { animation: none; }
+  .cel-confete { display: none; }
+}

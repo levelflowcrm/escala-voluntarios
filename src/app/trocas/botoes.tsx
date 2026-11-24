@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { anunciar } from "../animacao-pontos";
+import type { Celebracao } from "@/lib/celebracao";
 import { abrirVaga, cancelarTroca, pedirTroca, responderTroca } from "./acoes";
 
 /** Operação descrita por dados simples: funções não podem ser passadas de componente de servidor para cliente. */
@@ -11,7 +13,7 @@ export type Operacao =
   | { tipo: "responderTroca"; troca: string; aceitar: boolean }
   | { tipo: "cancelarTroca"; troca: string };
 
-function executar(o: Operacao): Promise<{ erro?: string }> {
+function executar(o: Operacao): Promise<{ erro?: string; celebracao?: Celebracao }> {
   switch (o.tipo) {
     case "abrirVaga": return abrirVaga(o.escala);
     case "pedirTroca": return pedirTroca(o.escala, o.colega);
@@ -46,6 +48,7 @@ export function BotaoAcao({
           iniciar(async () => {
             const r = await executar(operacao);
             setErro(r.erro ?? null);
+            if (!r.erro) anunciar(r.celebracao);
             if (!r.erro && voltarPara) router.push(voltarPara);
           });
         }}

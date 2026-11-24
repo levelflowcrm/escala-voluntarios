@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { anunciar } from "../animacao-pontos";
 import { assumir } from "./acoes";
 
 export function BotaoAssumir({ eventoId, funcaoId }: { eventoId: string; funcaoId: string }) {
@@ -14,6 +15,7 @@ export function BotaoAssumir({ eventoId, funcaoId }: { eventoId: string; funcaoI
           iniciar(async () => {
             const r = await assumir(eventoId, funcaoId);
             setErro(r.erro ?? null);
+            if (!r.erro) anunciar(r.celebracao);
           })
         }
         className="h-12 rounded-xl bg-violet-600 font-medium text-white disabled:opacity-60"

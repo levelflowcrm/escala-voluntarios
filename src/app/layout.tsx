@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SCRIPT_INICIAL } from "@/lib/aparencia";
+import { PainelCelebracao } from "./animacao-pontos";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <PainelCelebracao />
       </body>
     </html>
   );

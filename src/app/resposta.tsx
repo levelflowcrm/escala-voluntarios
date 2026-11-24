@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { anunciar } from "./animacao-pontos";
 import { responder } from "./acoes";
 
 export function Resposta({ escalaId, status }: { escalaId: string; status: string }) {
@@ -13,7 +14,10 @@ export function Resposta({ escalaId, status }: { escalaId: string; status: strin
     iniciar(async () => {
       const r = await responder(escalaId, resposta, resposta === "recusado" ? motivo : undefined);
       setErro(r.erro);
-      if (!r.erro) setPedindoMotivo(false);
+      if (!r.erro) {
+        setPedindoMotivo(false);
+        anunciar(r.celebracao);
+      }
     });
 
   if (pedindoMotivo) {

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { situacaoChegada } from "@/lib/chegada";
+import { anunciar } from "./animacao-pontos";
 import { registrarChegada } from "./acoes";
 
 /** Pede a posição do celular uma única vez, com mensagens claras quando não dá. */
@@ -50,6 +51,7 @@ export function BotaoCheguei({ escalaId, inicio, chegouEm }: { escalaId: string;
             }
             const r = await registrarChegada(escalaId, pos.lat, pos.lng, pos.precisao);
             setErro(r.erro);
+            if (!r.erro) anunciar(r.celebracao);
           })
         }
         className="h-12 rounded-xl bg-white font-semibold text-violet-700 disabled:opacity-50"
