@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { salvarCelular, salvarEmail, type NivelHab } from "./acoes";
+import { DisponibilidadeDoVoluntario } from "./disponibilidade";
 import { Habilidades, type AreaFuncoes } from "./habilidades";
 import { NovoVoluntario } from "./novo";
 
@@ -10,6 +11,7 @@ export type Voluntario = { id: string; nome: string; email: string; conectado: b
 
 function Linha({ v, areas, habilidades }: { v: Voluntario; areas: AreaFuncoes[]; habilidades: Record<string, NivelHab> }) {
   const [aberto, setAberto] = useState(false);
+  const [abertoDisp, setAbertoDisp] = useState(false);
   const resumo = areas
     .map((a) => ({ nome: a.nome, n: a.funcoes.filter((f) => habilidades[f.id]).length }))
     .filter((a) => a.n > 0);
@@ -102,6 +104,11 @@ function Linha({ v, areas, habilidades }: { v: Voluntario; areas: AreaFuncoes[];
         <span>{aberto ? "▲" : "▼"}</span>
       </button>
       {aberto && <Habilidades pessoaId={v.id} areas={areas} inicial={habilidades} />}
+      <button onClick={() => setAbertoDisp(!abertoDisp)} className="flex items-center justify-between text-left text-sm text-violet-700 dark:text-violet-300">
+        <span>Disponibilidade, ausências e próximas escalas</span>
+        <span>{abertoDisp ? "▲" : "▼"}</span>
+      </button>
+      {abertoDisp && <DisponibilidadeDoVoluntario pessoaId={v.id} nome={v.nome} />}
     </article>
   );
 }
@@ -124,7 +131,7 @@ export function TelaVoluntarios({
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Voluntários</h1>
       <p className="text-sm text-neutral-500">
-        Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir). No primeiro login com esse e-mail, a pessoa é vinculada à escala
+        Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir) e confira a disponibilidade dele: dias, ausências e próximas escalas. No primeiro login com esse e-mail, a pessoa é vinculada à escala
         automaticamente. {conectados} de {voluntarios.length} já entraram.
       </p>
       {semCelular > 0 && (

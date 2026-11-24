@@ -5,6 +5,24 @@ import type { Periodo } from "@/lib/escala/sugerir";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 type Resultado = { erro: string | null };
+type Cliente = Awaited<ReturnType<typeof criarClienteServidor>>;
+
+/**
+ * De quem é a disponibilidade que está sendo mexida: a minha, ou (se vier pessoaId) a de um
+ * voluntário que eu coordeno. O banco também barra quem não é facilitador dessa pessoa.
+ */
+async function alvo(supabase: Cliente, pessoaId?: string): Promise<{ id: string; outro: boolean } | null> {
+  const { data: eu } = await supabase.rpc("minha_pessoa");
+  if (!eu) return null;
+  if (!pessoaId || pessoaId === eu) return { id: eu, outro: false };
+  const { data: pode } = await supabase.rpc("coordeno_pessoa", { p: pessoaId });
+  return pode ? { id: pessoaId, outro: true } : null;
+}
+
+/** "Informar a disponibilidade do mês" é do próprio voluntário; o facilitador editando não conta. */
+async function informar(supabase: Cliente, outro: boolean) {
+  if (!outro) await supabase.rpc("informar_disponibilidade");
+}
 const PERIODOS: Periodo[] = ["manha", "tarde", "noite"];
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -16,13 +34,15 @@ export async function salvarTurno(
   diaSemana: number,
   periodo: Periodo,
   regra: "sempre" | "nunca" | number[],
+  pessoaId?: string,
 ): Promise<Resultado> {
   if (!Number.isInteger(diaSemana) || diaSemana < 0 || diaSemana > 6 || !PERIODOS.includes(periodo)) {
     return { erro: "Turno inválido" };
   }
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
 
   // Um atalho ("só fins de semana") grava o dia inteiro (período nulo). Antes de mexer em um turno,
   // vira uma linha por período para que os outros turnos do dia continuem como estavam.
@@ -59,56 +79,62 @@ export async function salvarTurno(
     const { error } = await supabase.from("indisponibilidades").insert(linhas);
     if (error) return { erro: error.message };
   }
-  await supabase.rpc("informar_disponibilidade");
+  await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: null };
 }
 
-export async function adicionarBloqueio(inicio: string, fim: string, motivo: string): Promise<Resultado> {
+export async function adicionarBloqueio(inicio: string, fim: string, motivo: string, pessoaId?: string): Promise<Resultado> {
   if (!DATA.test(inicio) || !DATA.test(fim)) return { erro: "Informe as duas datas." };
   if (fim < inicio) return { erro: "A data final vem antes da inicial." };
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
   const { error } = await supabase
     .from("bloqueios")
     .insert({ pessoa_id: eu, inicio, fim, motivo: motivo.trim().slice(0, 200) || null });
-  if (!error) await supabase.rpc("informar_disponibilidade");
+  if (!error) await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: error?.message ?? null };
 }
 
-export async function removerBloqueio(id: string): Promise<Resultado> {
+export async function removerBloqueio(id: string, pessoaId?: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
-  const { error } = await supabase.from("bloqueios").delete().eq("id", id);
-  if (!error) await supabase.rpc("informar_disponibilidade");
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const { error } = await supabase.from("bloqueios").delete().eq("id", id).eq("pessoa_id", a.id);
+  if (!error) await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: error?.message ?? null };
 }
 
-export async function salvarPreferencias(limite: number | null, observacao: string): Promise<{ erro: string | null }> {
+export async function salvarPreferencias(limite: number | null, observacao: string, pessoaId?: string): Promise<{ erro: string | null }> {
   if (limite !== null && (!Number.isInteger(limite) || limite < 1 || limite > 10)) return { erro: "Limite inválido" };
   const nota = observacao.trim().slice(0, 200);
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
   const { error } = await supabase
     .from("preferencias")
     .upsert({ pessoa_id: eu, limite_mensal: limite, observacao: nota || null, atualizado_em: new Date().toISOString() });
-  if (!error) await supabase.rpc("informar_disponibilidade");
+  if (!error) await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
 }
 
-export type Atalho = "todos" | "fim_de_semana" | "semana";
+export type { Atalho } from "@/lib/disponibilidade-dados";
+import type { Atalho } from "@/lib/disponibilidade-dados";
 
 /** Atalhos da semana: fim de semana = sábado e domingo; semana = segunda a sexta. Substituem as regras por dia da semana. */
-export async function aplicarAtalho(atalho: Atalho): Promise<Resultado> {
+export async function aplicarAtalho(atalho: Atalho, pessoaId?: string): Promise<Resultado> {
   const bloquear = atalho === "fim_de_semana" ? [1, 2, 3, 4, 5] : atalho === "semana" ? [0, 6] : atalho === "todos" ? [] : null;
   if (!bloquear) return { erro: "Atalho inválido" };
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
   const { error: erroApagar } = await supabase.from("indisponibilidades").delete().eq("pessoa_id", eu);
   if (erroApagar) return { erro: erroApagar.message };
   if (bloquear.length) {
@@ -117,33 +143,35 @@ export async function aplicarAtalho(atalho: Atalho): Promise<Resultado> {
       .insert(bloquear.map((d) => ({ pessoa_id: eu, dia_semana: d, periodo: null, ordem_no_mes: null })));
     if (error) return { erro: error.message };
   }
-  await supabase.rpc("informar_disponibilidade");
+  await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: null };
 }
 
 /** Marca (ou desmarca) um dia do calendário como "posso servir". */
-export async function alternarDia(dia: string, marcar: boolean): Promise<Resultado> {
+export async function alternarDia(dia: string, marcar: boolean, pessoaId?: string): Promise<Resultado> {
   if (!DATA.test(dia)) return { erro: "Data inválida" };
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
   const { error } = marcar
     ? await supabase.from("dias_disponiveis").upsert({ pessoa_id: eu, dia })
     : await supabase.from("dias_disponiveis").delete().eq("pessoa_id", eu).eq("dia", dia);
-  if (!error) await supabase.rpc("informar_disponibilidade");
+  if (!error) await informar(supabase, a.outro);
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
 }
 
 /** "Só sirvo nos dias que eu marcar no calendário." */
-export async function salvarSoDiasMarcados(ligado: boolean): Promise<Resultado> {
+export async function salvarSoDiasMarcados(ligado: boolean, pessoaId?: string): Promise<Resultado> {
   const supabase = await criarClienteServidor();
-  const { data: eu } = await supabase.rpc("minha_pessoa");
-  if (!eu) return { erro: "Cadastro não encontrado" };
+  const a = await alvo(supabase, pessoaId);
+  if (!a) return { erro: "Cadastro não encontrado" };
+  const eu = a.id;
   const { error } = await supabase
     .from("preferencias")
     .upsert({ pessoa_id: eu, so_dias_marcados: ligado, atualizado_em: new Date().toISOString() });
-  if (!error) await supabase.rpc("informar_disponibilidade");
+  if (!error) await informar(supabase, a.outro);
   revalidatePath("/disponibilidade");
   return { erro: error ? "Não foi possível salvar agora. Tente de novo." : null };
 }
