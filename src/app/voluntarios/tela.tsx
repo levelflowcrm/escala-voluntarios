@@ -105,7 +105,7 @@ function Linha({ v, areas, habilidades }: { v: Voluntario; areas: AreaFuncoes[];
       </button>
       {aberto && <Habilidades pessoaId={v.id} areas={areas} inicial={habilidades} />}
       <button onClick={() => setAbertoDisp(!abertoDisp)} className="flex items-center justify-between text-left text-sm text-violet-700 dark:text-violet-300">
-        <span>Disponibilidade, ausências e próximas escalas</span>
+        <span>Disponibilidade (resumo) e próximas escalas</span>
         <span>{abertoDisp ? "▲" : "▼"}</span>
       </button>
       {abertoDisp && <DisponibilidadeDoVoluntario pessoaId={v.id} nome={v.nome} />}
@@ -131,7 +131,7 @@ export function TelaVoluntarios({
       <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
       <h1 className="text-2xl font-semibold">Voluntários</h1>
       <p className="text-sm text-neutral-500">
-        Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir) e confira a disponibilidade dele: dias, ausências e próximas escalas. No primeiro login com esse e-mail, a pessoa é vinculada à escala
+        Cadastre o e-mail Google e as habilidades de cada voluntário (em quais áreas e funções ele pode servir) e consulte o resumo da disponibilidade dele (quem altera é o próprio voluntário). No primeiro login com esse e-mail, a pessoa é vinculada à escala
         automaticamente. {conectados} de {voluntarios.length} já entraram.
       </p>
       {semCelular > 0 && (
