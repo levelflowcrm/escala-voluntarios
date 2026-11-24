@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Celebracao } from "@/lib/celebracao";
+import { buscarCelebracaoDeCulto } from "./acoes";
 
 const EVENTO = "celebracao-pontos";
 
@@ -25,6 +26,17 @@ export function PainelCelebracao() {
     const ao = (e: Event) => setAtual({ ...(e as CustomEvent<Celebracao>).detail, id: Date.now() });
     window.addEventListener(EVENTO, ao);
     return () => window.removeEventListener(EVENTO, ao);
+  }, []);
+
+  // Uma vez por sessão: se serviu desde a última visita, entrega o "missão cumprida"
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("cel-culto")) return;
+      sessionStorage.setItem("cel-culto", "1");
+    } catch {
+      // sem sessionStorage: segue, o banco garante que não repete
+    }
+    buscarCelebracaoDeCulto().then((r) => anunciar(r.celebracao)).catch(() => {});
   }, []);
 
   useEffect(() => {

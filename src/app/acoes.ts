@@ -63,3 +63,12 @@ export async function votarMaisFeliz(eventoId: string, nota: number) {
   revalidatePath("/");
   return error ? { erro: error.message } : { erro: null };
 }
+
+/** Na primeira abertura depois de servir: entrega a animação "missão cumprida" (uma só vez por escala). */
+export async function buscarCelebracaoDeCulto() {
+  const supabase = await criarClienteServidor();
+  const { data, error } = await supabase.rpc("celebrar_cultos_servidos");
+  const cultos = ((data ?? []) as { titulo: string }[]).map((c) => c.titulo);
+  if (error || cultos.length === 0) return { celebracao: undefined };
+  return { celebracao: await celebrar(supabase, "servida", null, cultos) };
+}

@@ -35,6 +35,15 @@ describe("montarCelebracao", () => {
     expect(c.pontos).toBe(4);
     expect(c.texto).toContain("+4 pontos");
   });
+  it("culto servido: +10 por culto e agradece, citando o culto", () => {
+    const um = montarCelebracao("servida", "Duarte", 42, undefined, ["Culto de Domingo"]);
+    expect(um.pontos).toBe(10);
+    expect(um.titulo).toBe("Missão cumprida, Duarte!");
+    expect(um.texto).toContain("no Culto de Domingo");
+    const dois = montarCelebracao("servida", "Duarte", 52, undefined, ["A", "B"]);
+    expect(dois.pontos).toBe(20);
+    expect(dois.titulo).toBe("2 cultos servidos, Duarte!");
+  });
   it("no nível mais alto não fala de próximo nível", () => {
     expect(montarCelebracao("cobriu", "Duarte", 300).nivel).toContain("nível mais alto");
   });
