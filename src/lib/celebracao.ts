@@ -1,7 +1,7 @@
 import { dadosDoNivel, NIVEIS, progressoNivel } from "./pontuacao";
 
 /** Momento do app que mexe na pontuação do voluntário (e só dele). */
-export type MotivoPontos = "chegada" | "assumiu" | "cobriu" | "recusou" | "recuperou";
+export type MotivoPontos = "chegada" | "assumiu" | "cobriu" | "recusou" | "recuperou" | "servida";
 
 export type Celebracao = {
   tom: "ganho" | "perda";
@@ -37,6 +37,7 @@ export function montarCelebracao(
   nome: string,
   pontosAtuais: number,
   variacao?: number,
+  cultos: string[] = [],
 ): Celebracao {
   const n = nome.trim().split(/\s+/)[0] || "voluntário";
   switch (motivo) {
@@ -67,6 +68,21 @@ export function montarCelebracao(
         pontos: PONTOS_DA_ACAO.cobriu,
         nivel: frasesDeNivel(pontosAtuais + PONTOS_DA_ACAO.cobriu),
       };
+    case "servida": {
+      // Pontos da escala servida: +10 por culto (o +3 de pontualidade já foi celebrado no "Cheguei")
+      const total = Math.max(1, cultos.length) * 10;
+      const varios = cultos.length > 1;
+      return {
+        tom: "ganho",
+        emoji: "🎉",
+        titulo: varios ? `${cultos.length} cultos servidos, ${n}!` : `Missão cumprida, ${n}!`,
+        texto: varios
+          ? `Você serviu em ${cultos.length} cultos desde a última visita e ganhou ${sinal(total)} pontos. Gratidão por cuidar do time!`
+          : `Você serviu${cultos[0] ? ` no ${cultos[0]}` : ""} e ganhou ${sinal(total)} pontos. Gratidão por cuidar do time!`,
+        pontos: total,
+        nivel: frasesDeNivel(pontosAtuais),
+      };
+    }
     case "recuperou": {
       const ganho = variacao && variacao > 0 ? variacao : null;
       return {

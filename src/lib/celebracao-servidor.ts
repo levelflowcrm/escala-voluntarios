@@ -14,14 +14,14 @@ export async function pontosAtuais(supabase: Cliente): Promise<number | null> {
  * Monta a animação para o voluntário logado. `antes` é a pontuação lida antes da ação: quando vem,
  * a variação real (depois − antes) alimenta perdas e recuperações. Nunca lança: animação é só carinho.
  */
-export async function celebrar(supabase: Cliente, motivo: MotivoPontos, antes?: number | null): Promise<Celebracao | undefined> {
+export async function celebrar(supabase: Cliente, motivo: MotivoPontos, antes?: number | null, cultos: string[] = []): Promise<Celebracao | undefined> {
   try {
     const { data: eu } = await supabase.rpc("minha_pessoa");
     if (!eu) return undefined;
     const [{ data: pessoa }, depois] = await Promise.all([supabase.from("pessoas").select("nome").eq("id", eu).maybeSingle(), pontosAtuais(supabase)]);
     const atual = depois ?? antes ?? 0;
     const variacao = antes != null && depois != null ? depois - antes : undefined;
-    return montarCelebracao(motivo, pessoa?.nome ?? "", atual, variacao);
+    return montarCelebracao(motivo, pessoa?.nome ?? "", atual, variacao, cultos);
   } catch {
     return undefined;
   }
