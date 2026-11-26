@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { fmtNum, lerNumero, ocupacao, presentes } from "@/lib/metricas";
+import Link from "next/link";
+import { fmtDataHora } from "@/lib/datas";
 import { salvarMetricas } from "../acoes";
+import { enviarRelatorio } from "../relatorio-acoes";
 
 type Inicial = {
   online: number | null; visitantes: number | null; simPraJesus: number | null;
@@ -24,8 +27,9 @@ function Campo({ rotulo, valor, aoMudar, erro }: { rotulo: string; valor: string
   );
 }
 
-export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto }: {
+export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto, relatorio }: {
   evento: string; areas: { id: string; nome: string }[]; inicial: Inicial; cadeiras: number;
+  relatorio: { destinatarios: number; ultimo: { em: string; destinatarios: number } | null };
   auto: { escalados: number | null; presentes: number | null };
 }) {
   const [v, setV] = useState({
@@ -45,7 +49,7 @@ export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto }: {
   const campos = [v.online, v.visitantes, v.sim, v.nave, v.galeria, v.carros, v.motos].map(num);
   const temErro = campos.some((c) => c.erro) || areasNum.some((a) => a.erro) || passou;
 
-  function salvar() {
+  function salvar(enviar = false) {
     setMsg(null);
     if (temErro) return setMsg({ ok: false, texto: passou ? `As cadeiras vazias passam do total (${fmtNum(cadeiras)}).` : "Confira os números: só dígitos, sem vírgula." });
     iniciar(async () => {
@@ -54,7 +58,12 @@ export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto }: {
         online: online.valor, visitantes: visitantes.valor, simPraJesus: sim.valor, naveVazias: nave.valor, galeriaVazias: galeria.valor,
         carros: carros.valor, motos: motos.valor, areas: areasNum.map((a) => ({ areaId: a.id, qtd: a.valor })),
       });
-      setMsg(r.erro ? { ok: false, texto: r.erro } : { ok: true, texto: "Contagem salva." });
+      if (r.erro) return setMsg({ ok: false, texto: r.erro });
+      if (!enviar) return setMsg({ ok: true, texto: "Contagem salva." });
+      const e = await enviarRelatorio(evento);
+      if (e.erro) return setMsg({ ok: false, texto: `Contagem salva, mas o relatório não foi enviado: ${e.erro}` });
+      const quem = `${e.enviados} ${e.enviados === 1 ? "pessoa" : "pessoas"}`;
+      setMsg({ ok: true, texto: `Contagem salva e relatório enviado para ${quem}.${e.falhas ? ` Falhou para ${e.falhas}.` : ""}${e.semAnalise ? " A análise da IA não ficou disponível desta vez." : ""}` });
     });
   }
 
@@ -99,7 +108,12 @@ export function FormularioMetricas({ evento, areas, inicial, cadeiras, auto }: {
 
       <div className="sticky bottom-0 -mx-4 flex flex-col gap-2 bg-white/95 px-4 pb-4 pt-2 backdrop-blur dark:bg-black/90">
         {msg && <p className={`text-sm ${msg.ok ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>{msg.texto}</p>}
-        <button onClick={salvar} disabled={ocupado} className="h-12 rounded-xl bg-blue-600 font-medium text-white disabled:opacity-60">{ocupado ? "Salvando…" : "Salvar contagem"}</button>
+        <button onClick={() => salvar(false)} disabled={ocupado} className="h-12 rounded-xl border border-blue-600 font-medium text-blue-700 disabled:opacity-60 dark:text-blue-300">{ocupado ? "Aguarde…" : "Salvar contagem"}</button>
+        <button onClick={() => salvar(true)} disabled={ocupado || relatorio.destinatarios === 0} className="h-12 rounded-xl bg-blue-600 font-medium text-white disabled:opacity-60">{ocupado ? "Gerando e enviando…" : relatorio.ultimo ? "Salvar e reenviar relatório" : "Salvar e enviar relatório"}</button>
+        <p className="text-xs text-neutral-500">
+          {relatorio.ultimo && <>Último envio: {fmtDataHora.format(new Date(relatorio.ultimo.em))} para {relatorio.ultimo.destinatarios} {relatorio.ultimo.destinatarios === 1 ? "pessoa" : "pessoas"}. </>}
+          <Link href="/metricas/destinatarios" className="underline">{relatorio.destinatarios === 0 ? "Cadastre quem recebe o relatório" : `Quem recebe (${relatorio.destinatarios})`}</Link>
+        </p>
       </div>
     </div>
   );
