@@ -47,7 +47,10 @@ export default async function Metricas({ searchParams }: { searchParams: Promise
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-8">
-      <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/" className="text-sm text-neutral-500 underline">← Voltar</Link>
+        <Link href="/metricas/destinatarios" className="text-sm text-neutral-500 underline">Quem recebe o relatório</Link>
+      </div>
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold">Métricas dos cultos</h1>
         <p className="text-sm text-neutral-500">Público, voluntários, online, decisões e estacionamento. Presentes = {fmtNum(ctx.cadeiras)} cadeiras menos as vazias da Nave e da Galeria.</p>
